@@ -40,19 +40,12 @@ fn run(cli: Cli, config: Config) -> error::Result<()> {
         return handle_query(&path, &config);
     }
 
-    // No command and no path - show help
-    use clap::CommandFactory;
-    Cli::command().print_help()?;
-    println!();
-    Ok(())
+    // No command and no path - launch interactive mode
+    repl::run_repl(&config)
 }
 
 fn handle_command(command: Commands, config: &Config) -> error::Result<()> {
     match command {
-        Commands::Interactive => {
-            repl::run_repl(config)
-        }
-
         Commands::Tiles { offset, limit } => {
             let client = ApiClient::new(config)?;
             let result = commands::query::execute_tiles_query(&client, offset, limit)?;

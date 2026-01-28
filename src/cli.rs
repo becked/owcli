@@ -33,9 +33,6 @@ pub enum Commands {
         action: Action,
     },
 
-    /// Start interactive REPL mode
-    Interactive,
-
     /// Fetch paginated tiles
     Tiles {
         /// Offset for pagination
