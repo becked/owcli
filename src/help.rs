@@ -427,7 +427,8 @@ pub fn generate_queries_list() -> String {
     }
 
     output.push_str("\nSpecial:\n");
-    output.push_str("  tiles --offset N --limit M  Paginated tiles (max 1000)\n");
+    output.push_str("  tiles                       Fetch all tiles (auto-paginated)\n");
+    output.push_str("  tiles --offset N --limit M  Manual pagination (max 1000 per page)\n");
 
     output
 }

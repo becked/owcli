@@ -121,9 +121,19 @@ fn process_repl_line(client: &ApiClient, line: &str, rt: &Runtime) -> ReplResult
 
         "tiles" => {
             let (offset, limit) = parse_tiles_args(&parts[1..]);
-            match rt.block_on(crate::commands::query::execute_tiles_query(
-                client, offset, limit,
-            )) {
+            let result = match (offset, limit) {
+                (Some(o), Some(l)) => {
+                    rt.block_on(crate::commands::query::execute_tiles_query(client, o, l))
+                }
+                (Some(o), None) => {
+                    rt.block_on(crate::commands::query::execute_tiles_query(client, o, 100))
+                }
+                (None, Some(l)) => {
+                    rt.block_on(crate::commands::query::execute_tiles_query(client, 0, l))
+                }
+                (None, None) => rt.block_on(crate::commands::query::execute_all_tiles_query(client)),
+            };
+            match result {
                 Ok(result) => {
                     let output = format_typed_output(&result, false)
                         .unwrap_or_else(|e| format!("Format error: {}", e));
@@ -144,26 +154,26 @@ fn process_repl_line(client: &ApiClient, line: &str, rt: &Runtime) -> ReplResult
     }
 }
 
-fn parse_tiles_args(args: &[&str]) -> (u32, u32) {
-    let mut offset = 0u32;
-    let mut limit = 100u32;
+fn parse_tiles_args(args: &[&str]) -> (Option<u32>, Option<u32>) {
+    let mut offset: Option<u32> = None;
+    let mut limit: Option<u32> = None;
 
     let mut i = 0;
     while i < args.len() {
         match args[i] {
             "--offset" if i + 1 < args.len() => {
-                offset = args[i + 1].parse().unwrap_or(0);
+                offset = args[i + 1].parse().ok();
                 i += 2;
             }
             "--limit" if i + 1 < args.len() => {
-                limit = args[i + 1].parse().unwrap_or(100);
+                limit = args[i + 1].parse().ok().map(|l: u32| l.min(1000));
                 i += 2;
             }
             _ => i += 1,
         }
     }
 
-    (offset, limit.min(1000))
+    (offset, limit)
 }
 
 fn parse_and_execute_command(

@@ -53,7 +53,20 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
     match command {
         Commands::Tiles { offset, limit } => {
             let client = ApiClient::new(config)?;
-            let result = commands::query::execute_tiles_query(&client, offset, limit).await?;
+            let result = match (offset, limit) {
+                // If either is specified, use manual pagination
+                (Some(o), Some(l)) => {
+                    commands::query::execute_tiles_query(&client, o, l).await?
+                }
+                (Some(o), None) => {
+                    commands::query::execute_tiles_query(&client, o, 100).await?
+                }
+                (None, Some(l)) => {
+                    commands::query::execute_tiles_query(&client, 0, l).await?
+                }
+                // Default: fetch all tiles
+                (None, None) => commands::query::execute_all_tiles_query(&client).await?,
+            };
             let output = format_typed_output(&result, config.json_output)?;
             println!("{}", output);
             Ok(())

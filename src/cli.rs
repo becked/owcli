@@ -34,15 +34,15 @@ pub enum Commands {
         action: Action,
     },
 
-    /// Fetch paginated tiles
+    /// Fetch all tiles (or use --offset/--limit for manual pagination)
     Tiles {
-        /// Offset for pagination
-        #[arg(long, default_value = "0")]
-        offset: u32,
+        /// Offset for pagination (enables manual pagination mode)
+        #[arg(long)]
+        offset: Option<u32>,
 
-        /// Limit for pagination (max 1000)
-        #[arg(long, default_value = "100")]
-        limit: u32,
+        /// Limit for pagination (enables manual pagination mode)
+        #[arg(long)]
+        limit: Option<u32>,
     },
 
     /// Execute multiple commands from a file or stdin

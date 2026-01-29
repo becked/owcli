@@ -157,6 +157,33 @@ pub async fn execute_tiles_query(
     ))
 }
 
+/// Execute a query for all tiles (auto-pagination)
+pub async fn execute_all_tiles_query(client: &ApiClient) -> Result<TypedResponse> {
+    const BATCH_SIZE: i32 = 1000;
+
+    // Get total tile count from map metadata
+    let map = client.get_map().await?;
+    let total = map.num_tiles.unwrap_or(0) as i32;
+
+    if total == 0 {
+        return Ok(TypedResponse::Tiles(vec![]));
+    }
+
+    let mut all_tiles = Vec::with_capacity(total as usize);
+    let mut offset = 0;
+
+    while offset < total {
+        let batch = client.get_tiles(Some(offset), Some(BATCH_SIZE)).await?;
+        if batch.is_empty() {
+            break;
+        }
+        all_tiles.extend(batch);
+        offset += BATCH_SIZE;
+    }
+
+    Ok(TypedResponse::Tiles(all_tiles))
+}
+
 /// Extract an integer index from a path like "player/0" or "city/123"
 fn extract_index(path: &str, prefix: &str) -> Result<i32> {
     let parts: Vec<&str> = path.split('/').collect();
