@@ -15,7 +15,7 @@ pub struct Cli {
     pub port: u16,
 
     /// Output raw JSON instead of tables
-    #[arg(long, global = true)]
+    #[arg(long, global = true, env = "OWCLI_JSON")]
     pub json: bool,
 
     #[command(subcommand)]
@@ -67,7 +67,7 @@ pub enum Commands {
     Map,
 }
 
-/// Game commands matching OpenAPI spec (53 commands)
+/// Game commands matching OpenAPI spec (168 commands)
 /// See: https://github.com/becked/OldWorldAPIEndpoint/blob/main/docs/openapi.yaml
 #[derive(Subcommand)]
 pub enum Action {
@@ -578,6 +578,1079 @@ pub enum Action {
         #[arg(long)]
         force: bool,
     },
+
+    // ===== Laws & Economy (7) =====
+    /// Enact a law
+    ChooseLaw {
+        /// Law type to enact (e.g., LAW_SLAVERY)
+        #[arg(long)]
+        law: String,
+    },
+
+    /// Cancel an active law
+    CancelLaw {
+        /// Law type to cancel
+        #[arg(long)]
+        law: String,
+    },
+
+    /// Buy resources with money
+    BuyYield {
+        /// Yield type to buy (e.g., YIELD_TRAINING)
+        #[arg(long, name = "type")]
+        yield_type: String,
+        /// Amount to buy
+        #[arg(long)]
+        amount: i32,
+    },
+
+    /// Sell resources for money
+    SellYield {
+        /// Yield type to sell
+        #[arg(long, name = "type")]
+        yield_type: String,
+        /// Amount to sell
+        #[arg(long)]
+        amount: i32,
+    },
+
+    /// Convert orders to money
+    ConvertOrders,
+
+    /// Convert legitimacy
+    ConvertLegitimacy,
+
+    /// Convert orders to science
+    ConvertOrdersToScience,
+
+    // ===== Luxury Trading (5) =====
+    /// Toggle luxury trading for a city
+    TradeCityLuxury {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Resource type (e.g., RESOURCE_WINE)
+        #[arg(long)]
+        resource: String,
+        /// Enable trading
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Toggle luxury trading for a family
+    TradeFamilyLuxury {
+        /// Family type
+        #[arg(long)]
+        family: String,
+        /// Resource type
+        #[arg(long)]
+        resource: String,
+        /// Enable trading
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Toggle luxury trading with a tribe
+    TradeTribeLuxury {
+        /// Tribe type
+        #[arg(long)]
+        tribe: String,
+        /// Resource type
+        #[arg(long)]
+        resource: String,
+        /// Enable trading
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Toggle luxury trading with another player
+    TradePlayerLuxury {
+        /// Target player index
+        #[arg(long)]
+        player: i32,
+        /// Resource type
+        #[arg(long)]
+        resource: String,
+        /// Enable trading
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Send tribute to a player or tribe
+    Tribute {
+        /// Target player index (use this OR --to-tribe)
+        #[arg(long)]
+        to_player: Option<i32>,
+        /// Target tribe type (use this OR --to-player)
+        #[arg(long)]
+        to_tribe: Option<String>,
+        /// Yield type to send
+        #[arg(long, name = "type")]
+        yield_type: String,
+        /// Amount to send
+        #[arg(long)]
+        amount: i32,
+    },
+
+    // ===== Unit Special Actions (20) =====
+    /// Swap unit position with another unit
+    Swap {
+        /// Unit ID to swap
+        #[arg(long)]
+        unit: i32,
+        /// Target unit ID to swap with
+        #[arg(long)]
+        target_unit: i32,
+    },
+
+    /// Execute unit's queued actions
+    DoUnitQueue {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Cancel unit's queued actions
+    CancelUnitQueue {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Set unit formation
+    Formation {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Effect unit type (e.g., EFFECTUNIT_TESTUDO)
+        #[arg(long)]
+        effect_type: String,
+    },
+
+    /// Unlimber artillery unit
+    Unlimber {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Anchor ship
+    Anchor {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Repair a unit
+    Repair {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Buy goods for repair
+        #[arg(long)]
+        buy_goods: bool,
+    },
+
+    /// Cancel improvement being built
+    CancelImprovement {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Remove vegetation from tile
+    RemoveVegetation {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Harvest resource with worker
+    HarvestResource {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Toggle unit automation
+    UnitAutomate {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Enable automation
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Add urban tile
+    AddUrban {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+    },
+
+    /// Build road to tiles
+    RoadTo {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Target tile ID
+        #[arg(long)]
+        target: i32,
+    },
+
+    /// Buy a tile for a city
+    BuyTile {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Tile ID to buy
+        #[arg(long)]
+        tile: i32,
+    },
+
+    /// Recruit mercenary
+    RecruitMercenary {
+        /// Unit type to recruit
+        #[arg(long, name = "type")]
+        unit_type: String,
+        /// Tile ID for placement
+        #[arg(long)]
+        tile: i32,
+    },
+
+    /// Hire mercenary
+    HireMercenary {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Gift unit to another player
+    GiftUnit {
+        /// Unit ID to gift
+        #[arg(long)]
+        unit: i32,
+        /// Target player index
+        #[arg(long)]
+        player: i32,
+    },
+
+    /// Launch offensive with general
+    LaunchOffensive {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Apply effect to unit
+    ApplyEffectUnit {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Effect type
+        #[arg(long)]
+        effect: String,
+    },
+
+    /// Select a unit
+    SelectUnit {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    // ===== Agent & Caravan (4) =====
+    /// Create agent network in city
+    CreateAgentNetwork {
+        /// Agent unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Target city ID
+        #[arg(long)]
+        city: i32,
+    },
+
+    /// Create trade outpost on tile
+    CreateTradeOutpost {
+        /// Caravan unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+    },
+
+    /// Start caravan mission
+    CaravanMissionStart {
+        /// Caravan unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Target city ID
+        #[arg(long)]
+        target: i32,
+    },
+
+    /// Cancel caravan mission
+    CaravanMissionCancel {
+        /// Caravan unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    // ===== Religious Units (3) =====
+    /// Purge religion from city
+    PurgeReligion {
+        /// Religious unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Target city ID
+        #[arg(long)]
+        city: i32,
+    },
+
+    /// Spread religion to tribe
+    SpreadReligionTribe {
+        /// Religious unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Target tribe type
+        #[arg(long)]
+        tribe: String,
+    },
+
+    /// Establish theology
+    EstablishTheology {
+        /// Religious unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Theology type (e.g., THEOLOGY_CLERGY)
+        #[arg(long)]
+        theology: String,
+    },
+
+    // ===== Character Management Extended (13) =====
+    /// Set character name
+    CharacterName {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// New name
+        #[arg(long)]
+        name: String,
+    },
+
+    /// Add or remove character trait
+    AddCharacterTrait {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Trait type (e.g., TRAIT_WARRIOR)
+        #[arg(long, name = "trait")]
+        trait_type: String,
+        /// Remove instead of add
+        #[arg(long)]
+        remove: bool,
+    },
+
+    /// Set character rating value
+    SetCharacterRating {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Rating type (e.g., RATING_COURAGE)
+        #[arg(long)]
+        rating: String,
+        /// New value
+        #[arg(long)]
+        value: i32,
+    },
+
+    /// Set character XP
+    SetCharacterExperience {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// XP amount
+        #[arg(long)]
+        xp: i32,
+    },
+
+    /// Set character cognomen/title
+    SetCharacterCognomen {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Cognomen type (e.g., COGNOMEN_GREAT)
+        #[arg(long)]
+        cognomen: String,
+    },
+
+    /// Set character nation
+    SetCharacterNation {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Nation type
+        #[arg(long)]
+        nation: String,
+    },
+
+    /// Set character family
+    SetCharacterFamily {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Family type
+        #[arg(long)]
+        family: String,
+    },
+
+    /// Set character religion
+    SetCharacterReligion {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Religion type
+        #[arg(long)]
+        religion: String,
+    },
+
+    /// Set character courtier role
+    SetCharacterCourtier {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Courtier type
+        #[arg(long)]
+        courtier: String,
+    },
+
+    /// Set character council position
+    SetCharacterCouncil {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Council type
+        #[arg(long)]
+        council: String,
+    },
+
+    /// Set player leader
+    PlayerLeader {
+        /// Player index
+        #[arg(long)]
+        player: i32,
+        /// Character ID to make leader
+        #[arg(long)]
+        character: i32,
+    },
+
+    /// Set family head
+    FamilyHead {
+        /// Family type
+        #[arg(long)]
+        family: String,
+        /// Character ID to make head
+        #[arg(long)]
+        character: i32,
+    },
+
+    /// Pin character in UI
+    PinCharacter {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Pin (true) or unpin (false)
+        #[arg(long)]
+        pin: bool,
+    },
+
+    // ===== City Management (8) =====
+    /// Rename a city
+    CityRename {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// New name
+        #[arg(long)]
+        name: String,
+    },
+
+    /// Toggle city automation
+    CityAutomate {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Enable automation
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Build specialist on tile
+    BuildSpecialist {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Specialist type (e.g., SPECIALIST_SAGE)
+        #[arg(long, name = "type")]
+        specialist_type: String,
+    },
+
+    /// Set tile specialist
+    SetSpecialist {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Specialist type
+        #[arg(long, name = "type")]
+        specialist_type: String,
+    },
+
+    /// Change city citizen count
+    ChangeCitizens {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Delta (positive to add, negative to remove)
+        #[arg(long)]
+        delta: i32,
+    },
+
+    /// Add/remove religion in city
+    ChangeReligion {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Religion type
+        #[arg(long)]
+        religion: String,
+        /// Add (true) or remove (false)
+        #[arg(long)]
+        add: bool,
+    },
+
+    /// Change city family
+    ChangeFamily {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Family type
+        #[arg(long)]
+        family: String,
+    },
+
+    /// Change family seat city
+    ChangeFamilySeat {
+        /// Family type
+        #[arg(long)]
+        family: String,
+        /// City ID for new seat
+        #[arg(long)]
+        city: i32,
+    },
+
+    // ===== Goals & Communication (9) =====
+    /// Abandon an ambition
+    AbandonAmbition {
+        /// Ambition type (optional)
+        #[arg(long)]
+        ambition: Option<String>,
+    },
+
+    /// Add a goal to player
+    AddPlayerGoal {
+        /// Player index
+        #[arg(long)]
+        player: i32,
+        /// Goal type
+        #[arg(long)]
+        goal: String,
+    },
+
+    /// Remove player goal
+    RemovePlayerGoal {
+        /// Player index
+        #[arg(long)]
+        player: i32,
+        /// Goal type
+        #[arg(long)]
+        goal: String,
+    },
+
+    /// Trigger event story
+    EventStory {
+        /// Event type
+        #[arg(long)]
+        event: String,
+    },
+
+    /// Complete or fail a goal
+    FinishGoal {
+        /// Goal type
+        #[arg(long)]
+        goal: String,
+        /// Success (true) or failure (false)
+        #[arg(long)]
+        success: bool,
+    },
+
+    /// Send chat message
+    Chat {
+        /// Message text
+        #[arg(long)]
+        message: String,
+    },
+
+    /// Ping a map location
+    Ping {
+        /// Tile ID to ping
+        #[arg(long)]
+        tile: i32,
+    },
+
+    /// Create custom reminder
+    CustomReminder {
+        /// Reminder text
+        #[arg(long)]
+        text: String,
+        /// Turn number for reminder
+        #[arg(long)]
+        turn: i32,
+    },
+
+    /// Clear chat history
+    ClearChat,
+
+    // ===== Game State & Turn (7) =====
+    /// Extend game time
+    ExtendTime {
+        /// Minutes to extend
+        #[arg(long)]
+        minutes: i32,
+    },
+
+    /// Pause the game
+    Pause {
+        /// Enable pause
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Undo last action
+    Undo,
+
+    /// Redo undone action
+    Redo,
+
+    /// Replay previous turns
+    ReplayTurn {
+        /// Turn number to replay from
+        #[arg(long)]
+        turn: i32,
+    },
+
+    /// Let AI finish turn
+    AiFinishTurn,
+
+    /// Toggle turn replay setting
+    ToggleNoReplay,
+
+    // ===== Diplomacy Extended (3) =====
+    /// Create team alliance
+    TeamAlliance {
+        /// Team number
+        #[arg(long)]
+        team: i32,
+        /// Ally team number
+        #[arg(long)]
+        ally_team: i32,
+        /// Enable alliance
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Trigger tribe invasion
+    TribeInvasion {
+        /// Tribe type
+        #[arg(long)]
+        tribe: String,
+    },
+
+    /// Set victory for team
+    VictoryTeam {
+        /// Team number
+        #[arg(long)]
+        team: i32,
+    },
+
+    // ===== Editor/Debug - Units (8) =====
+    /// Create a unit at a tile
+    CreateUnit {
+        /// Tile ID for placement
+        #[arg(long)]
+        tile: i32,
+        /// Unit type to create
+        #[arg(long, name = "type")]
+        unit_type: String,
+        /// Player index (owner)
+        #[arg(long)]
+        player: i32,
+    },
+
+    /// Set unit name
+    UnitName {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// New name
+        #[arg(long)]
+        name: String,
+    },
+
+    /// Change unit's family
+    SetUnitFamily {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Family type
+        #[arg(long)]
+        family: String,
+    },
+
+    /// Transfer unit to player/tribe
+    ChangeUnitOwner {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// New player owner (use this OR --tribe)
+        #[arg(long)]
+        player: Option<i32>,
+        /// New tribe owner (use this OR --player)
+        #[arg(long)]
+        tribe: Option<String>,
+    },
+
+    /// Modify unit cooldown
+    ChangeCooldown {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Delta to add
+        #[arg(long)]
+        delta: i32,
+    },
+
+    /// Modify unit damage
+    ChangeDamage {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Delta to add
+        #[arg(long)]
+        delta: i32,
+    },
+
+    /// Increase unit level
+    UnitIncrementLevel {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+    },
+
+    /// Add/remove promotion
+    UnitChangePromotion {
+        /// Unit ID
+        #[arg(long)]
+        unit: i32,
+        /// Promotion type
+        #[arg(long)]
+        promotion: String,
+        /// Remove instead of add
+        #[arg(long)]
+        remove: bool,
+    },
+
+    // ===== Editor/Debug - Cities (8) =====
+    /// Create a city at a tile
+    CreateCity {
+        /// Tile ID for placement
+        #[arg(long)]
+        tile: i32,
+        /// Player index (owner)
+        #[arg(long)]
+        player: i32,
+        /// Family type
+        #[arg(long)]
+        family: String,
+    },
+
+    /// Remove a city
+    RemoveCity {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+    },
+
+    /// Change city owner
+    CityOwner {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// New player owner
+        #[arg(long)]
+        player: i32,
+    },
+
+    /// Modify city damage
+    ChangeCityDamage {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Delta to add
+        #[arg(long)]
+        delta: i32,
+    },
+
+    /// Grow/shrink city culture
+    ChangeCulture {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Delta to add
+        #[arg(long)]
+        delta: i32,
+    },
+
+    /// Modify build progress
+    ChangeCityBuildTurns {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Delta to add
+        #[arg(long)]
+        delta: i32,
+    },
+
+    /// Modify discontent level
+    ChangeCityDiscontentLevel {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Delta to add
+        #[arg(long)]
+        delta: i32,
+    },
+
+    /// Modify project progress
+    ChangeProject {
+        /// City ID
+        #[arg(long)]
+        city: i32,
+        /// Project type
+        #[arg(long)]
+        project: String,
+        /// Delta to add
+        #[arg(long)]
+        delta: i32,
+    },
+
+    // ===== Editor/Debug - Tiles (9) =====
+    /// Set tile terrain type
+    SetTerrain {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Terrain type
+        #[arg(long, name = "type")]
+        terrain_type: String,
+    },
+
+    /// Set tile height
+    SetTerrainHeight {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Height type
+        #[arg(long)]
+        height: String,
+    },
+
+    /// Set tile vegetation
+    SetVegetation {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Vegetation type
+        #[arg(long, name = "type")]
+        vegetation_type: String,
+    },
+
+    /// Set tile resource
+    SetResource {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Resource type
+        #[arg(long, name = "type")]
+        resource_type: String,
+    },
+
+    /// Add/remove road
+    SetRoad {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Enable road
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Set tile improvement
+    SetImprovement {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Improvement type
+        #[arg(long, name = "type")]
+        improvement_type: String,
+    },
+
+    /// Set tile owner
+    SetTileOwner {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Player index (optional)
+        #[arg(long)]
+        player: Option<i32>,
+        /// City ID (optional)
+        #[arg(long)]
+        city: Option<i32>,
+    },
+
+    /// Set city site marker
+    SetCitySite {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Enable city site
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Set improvement build turns
+    ImprovementBuildTurns {
+        /// Tile ID
+        #[arg(long)]
+        tile: i32,
+        /// Turns remaining
+        #[arg(long)]
+        turns: i32,
+    },
+
+    // ===== Editor/Debug - Map & Player (6) =====
+    /// Reveal entire map
+    MapReveal {
+        /// Team index (-1 for all teams)
+        #[arg(long, default_value = "-1")]
+        team: i32,
+    },
+
+    /// Hide entire map
+    MapUnreveal {
+        /// Team index (-1 for all teams)
+        #[arg(long, default_value = "-1")]
+        team: i32,
+    },
+
+    /// Grant technology to player
+    AddTech {
+        /// Player index
+        #[arg(long)]
+        player: i32,
+        /// Technology type
+        #[arg(long)]
+        tech: String,
+    },
+
+    /// Add yield to player stockpile
+    AddYield {
+        /// Player index
+        #[arg(long)]
+        player: i32,
+        /// Yield type
+        #[arg(long, name = "type")]
+        yield_type: String,
+        /// Amount to add
+        #[arg(long)]
+        amount: i32,
+    },
+
+    /// Add money to player
+    AddMoney {
+        /// Player index
+        #[arg(long)]
+        player: i32,
+        /// Amount to add
+        #[arg(long)]
+        amount: i32,
+    },
+
+    /// Execute cheat hotkey
+    Cheat {
+        /// Cheat key
+        #[arg(long)]
+        key: String,
+    },
+
+    // ===== Editor/Debug - Characters (5) =====
+    /// Kill a character
+    MakeCharacterDead {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+    },
+
+    /// Make character immune to death
+    MakeCharacterSafe {
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+        /// Enable safety
+        #[arg(long)]
+        enable: bool,
+    },
+
+    /// Create random character
+    NewCharacter {
+        /// Player index
+        #[arg(long)]
+        player: i32,
+    },
+
+    /// Add specific character type
+    AddCharacter {
+        /// Player index
+        #[arg(long)]
+        player: i32,
+        /// Character type
+        #[arg(long, name = "type")]
+        character_type: String,
+    },
+
+    /// Set tribe leader
+    TribeLeader {
+        /// Tribe type
+        #[arg(long)]
+        tribe: String,
+        /// Character ID
+        #[arg(long)]
+        character: i32,
+    },
 }
 
 impl Action {
@@ -742,6 +1815,312 @@ impl Action {
                 let p = if *force { json!({ "force": true }) } else { json!({}) };
                 (GameCommandAction::EndTurn, p)
             }
+
+            // ===== Laws & Economy =====
+            Action::ChooseLaw { law } => (GameCommandAction::ChooseLaw, json!({ "lawType": law })),
+            Action::CancelLaw { law } => (GameCommandAction::CancelLaw, json!({ "lawType": law })),
+            Action::BuyYield { yield_type, amount } =>
+                (GameCommandAction::BuyYield, json!({ "yieldType": yield_type, "amount": amount })),
+            Action::SellYield { yield_type, amount } =>
+                (GameCommandAction::SellYield, json!({ "yieldType": yield_type, "amount": amount })),
+            Action::ConvertOrders => (GameCommandAction::ConvertOrders, json!({})),
+            Action::ConvertLegitimacy => (GameCommandAction::ConvertLegitimacy, json!({})),
+            Action::ConvertOrdersToScience => (GameCommandAction::ConvertOrdersToScience, json!({})),
+
+            // ===== Luxury Trading =====
+            Action::TradeCityLuxury { city, resource, enable } => {
+                let mut p = json!({ "cityId": city, "resourceType": resource });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::TradeCityLuxury, p)
+            }
+            Action::TradeFamilyLuxury { family, resource, enable } => {
+                let mut p = json!({ "familyType": family, "resourceType": resource });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::TradeFamilyLuxury, p)
+            }
+            Action::TradeTribeLuxury { tribe, resource, enable } => {
+                let mut p = json!({ "tribeType": tribe, "resourceType": resource });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::TradeTribeLuxury, p)
+            }
+            Action::TradePlayerLuxury { player, resource, enable } => {
+                let mut p = json!({ "targetPlayer": player, "resourceType": resource });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::TradePlayerLuxury, p)
+            }
+            Action::Tribute { to_player, to_tribe, yield_type, amount } => {
+                let mut p = json!({ "yieldType": yield_type, "amount": amount });
+                if let Some(player) = to_player { p["toPlayer"] = json!(player); }
+                if let Some(tribe) = to_tribe { p["toTribe"] = json!(tribe); }
+                (GameCommandAction::Tribute, p)
+            }
+
+            // ===== Unit Special Actions =====
+            Action::Swap { unit, target_unit } =>
+                (GameCommandAction::Swap, json!({ "unitId": unit, "targetUnitId": target_unit })),
+            Action::DoUnitQueue { unit } => (GameCommandAction::DoUnitQueue, json!({ "unitId": unit })),
+            Action::CancelUnitQueue { unit } => (GameCommandAction::CancelUnitQueue, json!({ "unitId": unit })),
+            Action::Formation { unit, effect_type } =>
+                (GameCommandAction::Formation, json!({ "unitId": unit, "effectUnitType": effect_type })),
+            Action::Unlimber { unit } => (GameCommandAction::Unlimber, json!({ "unitId": unit })),
+            Action::Anchor { unit } => (GameCommandAction::Anchor, json!({ "unitId": unit })),
+            Action::Repair { unit, buy_goods } => {
+                let mut p = json!({ "unitId": unit });
+                if *buy_goods { p["buyGoods"] = json!(true); }
+                (GameCommandAction::Repair, p)
+            }
+            Action::CancelImprovement { unit } => (GameCommandAction::CancelImprovement, json!({ "unitId": unit })),
+            Action::RemoveVegetation { unit } => (GameCommandAction::RemoveVegetation, json!({ "unitId": unit })),
+            Action::HarvestResource { unit } => (GameCommandAction::HarvestResource, json!({ "unitId": unit })),
+            Action::UnitAutomate { unit, enable } => {
+                let mut p = json!({ "unitId": unit });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::UnitAutomate, p)
+            }
+            Action::AddUrban { unit, tile } =>
+                (GameCommandAction::AddUrban, json!({ "unitId": unit, "tileId": tile })),
+            Action::RoadTo { unit, target } =>
+                (GameCommandAction::RoadTo, json!({ "unitId": unit, "targetTileId": target })),
+            Action::BuyTile { city, tile } =>
+                (GameCommandAction::BuyTile, json!({ "cityId": city, "tileId": tile })),
+            Action::RecruitMercenary { unit_type, tile } =>
+                (GameCommandAction::RecruitMercenary, json!({ "unitType": unit_type, "tileId": tile })),
+            Action::HireMercenary { unit } => (GameCommandAction::HireMercenary, json!({ "unitId": unit })),
+            Action::GiftUnit { unit, player } =>
+                (GameCommandAction::GiftUnit, json!({ "unitId": unit, "targetPlayer": player })),
+            Action::LaunchOffensive { unit } => (GameCommandAction::LaunchOffensive, json!({ "unitId": unit })),
+            Action::ApplyEffectUnit { unit, effect } =>
+                (GameCommandAction::ApplyEffectUnit, json!({ "unitId": unit, "effectType": effect })),
+            Action::SelectUnit { unit } => (GameCommandAction::SelectUnit, json!({ "unitId": unit })),
+
+            // ===== Agent & Caravan =====
+            Action::CreateAgentNetwork { unit, city } =>
+                (GameCommandAction::CreateAgentNetwork, json!({ "unitId": unit, "cityId": city })),
+            Action::CreateTradeOutpost { unit, tile } =>
+                (GameCommandAction::CreateTradeOutpost, json!({ "unitId": unit, "tileId": tile })),
+            Action::CaravanMissionStart { unit, target } =>
+                (GameCommandAction::CaravanMissionStart, json!({ "unitId": unit, "targetCityId": target })),
+            Action::CaravanMissionCancel { unit } =>
+                (GameCommandAction::CaravanMissionCancel, json!({ "unitId": unit })),
+
+            // ===== Religious Units =====
+            Action::PurgeReligion { unit, city } =>
+                (GameCommandAction::PurgeReligion, json!({ "unitId": unit, "cityId": city })),
+            Action::SpreadReligionTribe { unit, tribe } =>
+                (GameCommandAction::SpreadReligionTribe, json!({ "unitId": unit, "tribeType": tribe })),
+            Action::EstablishTheology { unit, theology } =>
+                (GameCommandAction::EstablishTheology, json!({ "unitId": unit, "theologyType": theology })),
+
+            // ===== Character Management Extended =====
+            Action::CharacterName { character, name } =>
+                (GameCommandAction::CharacterName, json!({ "characterId": character, "name": name })),
+            Action::AddCharacterTrait { character, trait_type, remove } => {
+                let mut p = json!({ "characterId": character, "traitType": trait_type });
+                if *remove { p["remove"] = json!(true); }
+                (GameCommandAction::AddCharacterTrait, p)
+            }
+            Action::SetCharacterRating { character, rating, value } =>
+                (GameCommandAction::SetCharacterRating, json!({ "characterId": character, "ratingType": rating, "value": value })),
+            Action::SetCharacterExperience { character, xp } =>
+                (GameCommandAction::SetCharacterExperience, json!({ "characterId": character, "xp": xp })),
+            Action::SetCharacterCognomen { character, cognomen } =>
+                (GameCommandAction::SetCharacterCognomen, json!({ "characterId": character, "cognomenType": cognomen })),
+            Action::SetCharacterNation { character, nation } =>
+                (GameCommandAction::SetCharacterNation, json!({ "characterId": character, "nationType": nation })),
+            Action::SetCharacterFamily { character, family } =>
+                (GameCommandAction::SetCharacterFamily, json!({ "characterId": character, "familyType": family })),
+            Action::SetCharacterReligion { character, religion } =>
+                (GameCommandAction::SetCharacterReligion, json!({ "characterId": character, "religionType": religion })),
+            Action::SetCharacterCourtier { character, courtier } =>
+                (GameCommandAction::SetCharacterCourtier, json!({ "characterId": character, "courtierType": courtier })),
+            Action::SetCharacterCouncil { character, council } =>
+                (GameCommandAction::SetCharacterCouncil, json!({ "characterId": character, "councilType": council })),
+            Action::PlayerLeader { player, character } =>
+                (GameCommandAction::PlayerLeader, json!({ "playerIndex": player, "characterId": character })),
+            Action::FamilyHead { family, character } =>
+                (GameCommandAction::FamilyHead, json!({ "familyType": family, "characterId": character })),
+            Action::PinCharacter { character, pin } => {
+                let mut p = json!({ "characterId": character });
+                if *pin { p["pin"] = json!(true); }
+                (GameCommandAction::PinCharacter, p)
+            }
+
+            // ===== City Management =====
+            Action::CityRename { city, name } =>
+                (GameCommandAction::CityRename, json!({ "cityId": city, "name": name })),
+            Action::CityAutomate { city, enable } => {
+                let mut p = json!({ "cityId": city });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::CityAutomate, p)
+            }
+            Action::BuildSpecialist { tile, specialist_type } =>
+                (GameCommandAction::BuildSpecialist, json!({ "tileId": tile, "specialistType": specialist_type })),
+            Action::SetSpecialist { tile, specialist_type } =>
+                (GameCommandAction::SetSpecialist, json!({ "tileId": tile, "specialistType": specialist_type })),
+            Action::ChangeCitizens { city, delta } =>
+                (GameCommandAction::ChangeCitizens, json!({ "cityId": city, "delta": delta })),
+            Action::ChangeReligion { city, religion, add } => {
+                let mut p = json!({ "cityId": city, "religionType": religion });
+                if *add { p["add"] = json!(true); }
+                (GameCommandAction::ChangeReligion, p)
+            }
+            Action::ChangeFamily { city, family } =>
+                (GameCommandAction::ChangeFamily, json!({ "cityId": city, "familyType": family })),
+            Action::ChangeFamilySeat { family, city } =>
+                (GameCommandAction::ChangeFamilySeat, json!({ "familyType": family, "cityId": city })),
+
+            // ===== Goals & Communication =====
+            Action::AbandonAmbition { ambition } => {
+                let mut p = json!({});
+                if let Some(a) = ambition { p["ambitionType"] = json!(a); }
+                (GameCommandAction::AbandonAmbition, p)
+            }
+            Action::AddPlayerGoal { player, goal } =>
+                (GameCommandAction::AddPlayerGoal, json!({ "playerIndex": player, "goalType": goal })),
+            Action::RemovePlayerGoal { player, goal } =>
+                (GameCommandAction::RemovePlayerGoal, json!({ "playerIndex": player, "goalType": goal })),
+            Action::EventStory { event } =>
+                (GameCommandAction::EventStory, json!({ "eventType": event })),
+            Action::FinishGoal { goal, success } => {
+                let mut p = json!({ "goalType": goal });
+                if *success { p["success"] = json!(true); }
+                (GameCommandAction::FinishGoal, p)
+            }
+            Action::Chat { message } =>
+                (GameCommandAction::Chat, json!({ "message": message })),
+            Action::Ping { tile } =>
+                (GameCommandAction::Ping, json!({ "tileId": tile })),
+            Action::CustomReminder { text, turn } =>
+                (GameCommandAction::CustomReminder, json!({ "text": text, "turn": turn })),
+            Action::ClearChat => (GameCommandAction::ClearChat, json!({})),
+
+            // ===== Game State & Turn =====
+            Action::ExtendTime { minutes } =>
+                (GameCommandAction::ExtendTime, json!({ "minutes": minutes })),
+            Action::Pause { enable } => {
+                let mut p = json!({});
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::Pause, p)
+            }
+            Action::Undo => (GameCommandAction::Undo, json!({})),
+            Action::Redo => (GameCommandAction::Redo, json!({})),
+            Action::ReplayTurn { turn } =>
+                (GameCommandAction::ReplayTurn, json!({ "turn": turn })),
+            Action::AiFinishTurn => (GameCommandAction::AiFinishTurn, json!({})),
+            Action::ToggleNoReplay => (GameCommandAction::ToggleNoReplay, json!({})),
+
+            // ===== Diplomacy Extended =====
+            Action::TeamAlliance { team, ally_team, enable } => {
+                let mut p = json!({ "team": team, "allyTeam": ally_team });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::TeamAlliance, p)
+            }
+            Action::TribeInvasion { tribe } =>
+                (GameCommandAction::TribeInvasion, json!({ "tribeType": tribe })),
+            Action::VictoryTeam { team } =>
+                (GameCommandAction::VictoryTeam, json!({ "team": team })),
+
+            // ===== Editor/Debug - Units =====
+            Action::CreateUnit { tile, unit_type, player } =>
+                (GameCommandAction::CreateUnit, json!({ "tileId": tile, "unitType": unit_type, "playerType": player })),
+            Action::UnitName { unit, name } =>
+                (GameCommandAction::UnitName, json!({ "unitId": unit, "name": name })),
+            Action::SetUnitFamily { unit, family } =>
+                (GameCommandAction::SetUnitFamily, json!({ "unitId": unit, "familyType": family })),
+            Action::ChangeUnitOwner { unit, player, tribe } => {
+                let mut p = json!({ "unitId": unit });
+                if let Some(pl) = player { p["playerType"] = json!(pl); }
+                if let Some(tr) = tribe { p["tribeType"] = json!(tr); }
+                (GameCommandAction::ChangeUnitOwner, p)
+            }
+            Action::ChangeCooldown { unit, delta } =>
+                (GameCommandAction::ChangeCooldown, json!({ "unitId": unit, "delta": delta })),
+            Action::ChangeDamage { unit, delta } =>
+                (GameCommandAction::ChangeDamage, json!({ "unitId": unit, "delta": delta })),
+            Action::UnitIncrementLevel { unit } =>
+                (GameCommandAction::UnitIncrementLevel, json!({ "unitId": unit })),
+            Action::UnitChangePromotion { unit, promotion, remove } => {
+                let mut p = json!({ "unitId": unit, "promotionType": promotion });
+                if *remove { p["remove"] = json!(true); }
+                (GameCommandAction::UnitChangePromotion, p)
+            }
+
+            // ===== Editor/Debug - Cities =====
+            Action::CreateCity { tile, player, family } =>
+                (GameCommandAction::CreateCity, json!({ "tileId": tile, "playerType": player, "familyType": family })),
+            Action::RemoveCity { city } =>
+                (GameCommandAction::RemoveCity, json!({ "cityId": city })),
+            Action::CityOwner { city, player } =>
+                (GameCommandAction::CityOwner, json!({ "cityId": city, "playerType": player })),
+            Action::ChangeCityDamage { city, delta } =>
+                (GameCommandAction::ChangeCityDamage, json!({ "cityId": city, "delta": delta })),
+            Action::ChangeCulture { city, delta } =>
+                (GameCommandAction::ChangeCulture, json!({ "cityId": city, "delta": delta })),
+            Action::ChangeCityBuildTurns { city, delta } =>
+                (GameCommandAction::ChangeCityBuildTurns, json!({ "cityId": city, "delta": delta })),
+            Action::ChangeCityDiscontentLevel { city, delta } =>
+                (GameCommandAction::ChangeCityDiscontentLevel, json!({ "cityId": city, "delta": delta })),
+            Action::ChangeProject { city, project, delta } =>
+                (GameCommandAction::ChangeProject, json!({ "cityId": city, "projectType": project, "delta": delta })),
+
+            // ===== Editor/Debug - Tiles =====
+            Action::SetTerrain { tile, terrain_type } =>
+                (GameCommandAction::SetTerrain, json!({ "tileId": tile, "terrainType": terrain_type })),
+            Action::SetTerrainHeight { tile, height } =>
+                (GameCommandAction::SetTerrainHeight, json!({ "tileId": tile, "heightType": height })),
+            Action::SetVegetation { tile, vegetation_type } =>
+                (GameCommandAction::SetVegetation, json!({ "tileId": tile, "vegetationType": vegetation_type })),
+            Action::SetResource { tile, resource_type } =>
+                (GameCommandAction::SetResource, json!({ "tileId": tile, "resourceType": resource_type })),
+            Action::SetRoad { tile, enable } => {
+                let mut p = json!({ "tileId": tile });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::SetRoad, p)
+            }
+            Action::SetImprovement { tile, improvement_type } =>
+                (GameCommandAction::SetImprovement, json!({ "tileId": tile, "improvementType": improvement_type })),
+            Action::SetTileOwner { tile, player, city } => {
+                let mut p = json!({ "tileId": tile });
+                if let Some(pl) = player { p["playerType"] = json!(pl); }
+                if let Some(c) = city { p["cityId"] = json!(c); }
+                (GameCommandAction::SetTileOwner, p)
+            }
+            Action::SetCitySite { tile, enable } => {
+                let mut p = json!({ "tileId": tile });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::SetCitySite, p)
+            }
+            Action::ImprovementBuildTurns { tile, turns } =>
+                (GameCommandAction::ImprovementBuildTurns, json!({ "tileId": tile, "turns": turns })),
+
+            // ===== Editor/Debug - Map & Player =====
+            Action::MapReveal { team } =>
+                (GameCommandAction::MapReveal, json!({ "teamType": team })),
+            Action::MapUnreveal { team } =>
+                (GameCommandAction::MapUnreveal, json!({ "teamType": team })),
+            Action::AddTech { player, tech } =>
+                (GameCommandAction::AddTech, json!({ "playerType": player, "techType": tech })),
+            Action::AddYield { player, yield_type, amount } =>
+                (GameCommandAction::AddYield, json!({ "playerType": player, "yieldType": yield_type, "amount": amount })),
+            Action::AddMoney { player, amount } =>
+                (GameCommandAction::AddMoney, json!({ "playerType": player, "amount": amount })),
+            Action::Cheat { key } =>
+                (GameCommandAction::Cheat, json!({ "key": key })),
+
+            // ===== Editor/Debug - Characters =====
+            Action::MakeCharacterDead { character } =>
+                (GameCommandAction::MakeCharacterDead, json!({ "characterId": character })),
+            Action::MakeCharacterSafe { character, enable } => {
+                let mut p = json!({ "characterId": character });
+                if *enable { p["enable"] = json!(true); }
+                (GameCommandAction::MakeCharacterSafe, p)
+            }
+            Action::NewCharacter { player } =>
+                (GameCommandAction::NewCharacter, json!({ "playerType": player })),
+            Action::AddCharacter { player, character_type } =>
+                (GameCommandAction::AddCharacter, json!({ "playerType": player, "characterType": character_type })),
+            Action::TribeLeader { tribe, character } =>
+                (GameCommandAction::TribeLeader, json!({ "tribeType": tribe, "characterId": character })),
         };
 
         GameCommand {

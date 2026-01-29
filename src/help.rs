@@ -170,6 +170,7 @@ pub const PLAYER_RESOURCES: &[&str] = &[
 /// Command categories for organized help display
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CommandCategory {
+    // Original categories (9)
     UnitMovement,
     UnitActions,
     Worker,
@@ -179,6 +180,22 @@ pub enum CommandCategory {
     Diplomacy,
     Characters,
     TurnControl,
+    // New categories (15)
+    LawsEconomy,
+    LuxuryTrading,
+    UnitSpecialActions,
+    AgentCaravan,
+    ReligiousUnits,
+    CharacterExtended,
+    CityManagement,
+    GoalsCommunication,
+    GameState,
+    DiplomacyExtended,
+    EditorUnits,
+    EditorCities,
+    EditorTiles,
+    EditorMapPlayer,
+    EditorCharacters,
 }
 
 impl CommandCategory {
@@ -193,6 +210,21 @@ impl CommandCategory {
             Self::Diplomacy => "Diplomacy",
             Self::Characters => "Character Management",
             Self::TurnControl => "Turn Control",
+            Self::LawsEconomy => "Laws & Economy",
+            Self::LuxuryTrading => "Luxury Trading",
+            Self::UnitSpecialActions => "Unit Special Actions",
+            Self::AgentCaravan => "Agent & Caravan",
+            Self::ReligiousUnits => "Religious Units",
+            Self::CharacterExtended => "Character Management (Extended)",
+            Self::CityManagement => "City Management",
+            Self::GoalsCommunication => "Goals & Communication",
+            Self::GameState => "Game State & Turn",
+            Self::DiplomacyExtended => "Diplomacy (Extended)",
+            Self::EditorUnits => "Editor/Debug - Units",
+            Self::EditorCities => "Editor/Debug - Cities",
+            Self::EditorTiles => "Editor/Debug - Tiles",
+            Self::EditorMapPlayer => "Editor/Debug - Map & Player",
+            Self::EditorCharacters => "Editor/Debug - Characters",
         }
     }
 
@@ -237,6 +269,82 @@ impl CommandCategory {
             // Turn Control (1)
             "end-turn" => Self::TurnControl,
 
+            // Laws & Economy (7)
+            "choose-law" | "cancel-law" | "buy-yield" | "sell-yield" | "convert-orders"
+            | "convert-legitimacy" | "convert-orders-to-science" => Self::LawsEconomy,
+
+            // Luxury Trading (5)
+            "trade-city-luxury" | "trade-family-luxury" | "trade-tribe-luxury"
+            | "trade-player-luxury" | "tribute" => Self::LuxuryTrading,
+
+            // Unit Special Actions (20)
+            "swap" | "do-unit-queue" | "cancel-unit-queue" | "formation" | "unlimber" | "anchor"
+            | "repair" | "cancel-improvement" | "remove-vegetation" | "harvest-resource"
+            | "unit-automate" | "add-urban" | "road-to" | "buy-tile" | "recruit-mercenary"
+            | "hire-mercenary" | "gift-unit" | "launch-offensive" | "apply-effect-unit"
+            | "select-unit" => Self::UnitSpecialActions,
+
+            // Agent & Caravan (4)
+            "create-agent-network" | "create-trade-outpost" | "caravan-mission-start"
+            | "caravan-mission-cancel" => Self::AgentCaravan,
+
+            // Religious Units (3)
+            "purge-religion" | "spread-religion-tribe" | "establish-theology" => {
+                Self::ReligiousUnits
+            }
+
+            // Character Management Extended (13)
+            "character-name" | "add-character-trait" | "set-character-rating"
+            | "set-character-experience" | "set-character-cognomen" | "set-character-nation"
+            | "set-character-family" | "set-character-religion" | "set-character-courtier"
+            | "set-character-council" | "player-leader" | "family-head" | "pin-character" => {
+                Self::CharacterExtended
+            }
+
+            // City Management (8)
+            "city-rename" | "city-automate" | "build-specialist" | "set-specialist"
+            | "change-citizens" | "change-religion" | "change-family" | "change-family-seat" => {
+                Self::CityManagement
+            }
+
+            // Goals & Communication (9)
+            "abandon-ambition" | "add-player-goal" | "remove-player-goal" | "event-story"
+            | "finish-goal" | "chat" | "ping" | "custom-reminder" | "clear-chat" => {
+                Self::GoalsCommunication
+            }
+
+            // Game State & Turn (7)
+            "extend-time" | "pause" | "undo" | "redo" | "replay-turn" | "ai-finish-turn"
+            | "toggle-no-replay" => Self::GameState,
+
+            // Diplomacy Extended (3)
+            "team-alliance" | "tribe-invasion" | "victory-team" => Self::DiplomacyExtended,
+
+            // Editor/Debug - Units (8)
+            "create-unit" | "unit-name" | "set-unit-family" | "change-unit-owner"
+            | "change-cooldown" | "change-damage" | "unit-increment-level"
+            | "unit-change-promotion" => Self::EditorUnits,
+
+            // Editor/Debug - Cities (8)
+            "create-city" | "remove-city" | "city-owner" | "change-city-damage" | "change-culture"
+            | "change-city-build-turns" | "change-city-discontent-level" | "change-project" => {
+                Self::EditorCities
+            }
+
+            // Editor/Debug - Tiles (9)
+            "set-terrain" | "set-terrain-height" | "set-vegetation" | "set-resource" | "set-road"
+            | "set-improvement" | "set-tile-owner" | "set-city-site"
+            | "improvement-build-turns" => Self::EditorTiles,
+
+            // Editor/Debug - Map & Player (6)
+            "map-reveal" | "map-unreveal" | "add-tech" | "add-yield" | "add-money" | "cheat" => {
+                Self::EditorMapPlayer
+            }
+
+            // Editor/Debug - Characters (5)
+            "make-character-dead" | "make-character-safe" | "new-character" | "add-character"
+            | "tribe-leader" => Self::EditorCharacters,
+
             _ => Self::UnitMovement, // fallback
         }
     }
@@ -253,6 +361,21 @@ impl CommandCategory {
             Self::Diplomacy,
             Self::Characters,
             Self::TurnControl,
+            Self::LawsEconomy,
+            Self::LuxuryTrading,
+            Self::UnitSpecialActions,
+            Self::AgentCaravan,
+            Self::ReligiousUnits,
+            Self::CharacterExtended,
+            Self::CityManagement,
+            Self::GoalsCommunication,
+            Self::GameState,
+            Self::DiplomacyExtended,
+            Self::EditorUnits,
+            Self::EditorCities,
+            Self::EditorTiles,
+            Self::EditorMapPlayer,
+            Self::EditorCharacters,
         ]
     }
 }
@@ -443,7 +566,7 @@ mod tests {
         assert!(names.contains(&"move-unit".to_string()));
         assert!(names.contains(&"end-turn".to_string()));
         assert!(names.contains(&"declare-war".to_string()));
-        assert_eq!(names.len(), 53); // 53 commands per OpenAPI spec
+        assert_eq!(names.len(), 168); // 168 commands per OpenAPI spec
     }
 
     #[test]
