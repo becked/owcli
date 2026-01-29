@@ -4,6 +4,7 @@ mod commands;
 mod config;
 mod error;
 mod help;
+mod map;
 mod output;
 mod path_parser;
 mod repl;
@@ -178,6 +179,25 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
                     )
                 }
             };
+            println!("{}", output);
+            Ok(())
+        }
+
+        Commands::Map => {
+            let client = ApiClient::new(config)?;
+
+            // Fetch all required data
+            let tiles_result = commands::query::execute_all_tiles_query(&client).await?;
+            let cities = client.get_cities().await?;
+            let players = client.get_players().await?;
+
+            // Extract tiles from TypedResponse
+            let tiles = match tiles_result {
+                output::TypedResponse::Tiles(t) => t,
+                _ => return Err(error::OwcliError::Other("Unexpected response type".into())),
+            };
+
+            let output = map::render_map(&tiles, &cities, &players)?;
             println!("{}", output);
             Ok(())
         }

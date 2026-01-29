@@ -62,6 +62,9 @@ pub enum Commands {
         #[arg(trailing_var_arg = true)]
         topic: Vec<String>,
     },
+
+    /// Render a hex map of the game world
+    Map,
 }
 
 /// Game commands matching OpenAPI spec (53 commands)
