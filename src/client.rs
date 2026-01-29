@@ -1,58 +1,307 @@
 use crate::config::Config;
 use crate::error::{OwcliError, Result};
-use reqwest::blocking::Client;
 use serde_json::Value;
 use uuid::Uuid;
 
+// Include generated progenitor code
+mod generated {
+    include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
+}
+
+pub use generated::types;
+pub use generated::Client as ProgenitorClient;
+
 pub struct ApiClient {
-    client: Client,
+    inner: ProgenitorClient,
     base_url: String,
+    http_client: reqwest::Client,
 }
 
 impl ApiClient {
     pub fn new(config: &Config) -> Result<Self> {
-        let client = Client::builder()
+        let http_client = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(30))
             .build()?;
 
+        let base_url = config.base_url();
+        let inner = ProgenitorClient::new_with_client(&base_url, http_client.clone());
+
         Ok(Self {
-            client,
-            base_url: config.base_url(),
+            inner,
+            base_url,
+            http_client,
         })
     }
 
-    /// Execute a GET request to the given path
-    pub fn get(&self, path: &str) -> Result<Value> {
-        let url = format!("{}/{}", self.base_url, path.trim_start_matches('/'));
-        let response = self.client.get(&url).send()?;
+    // === Generated typed endpoints ===
 
-        let status = response.status();
-        let body = response.text()?;
-
-        if status.is_success() {
-            Ok(serde_json::from_str(&body)?)
-        } else {
-            Err(OwcliError::from_status(status, &body))
-        }
+    pub async fn get_state(&self) -> Result<types::GameState> {
+        self.inner
+            .get_state()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
     }
 
-    /// Execute a GET request with query parameters
-    pub fn get_with_params(&self, path: &str, params: &[(&str, String)]) -> Result<Value> {
-        let url = format!("{}/{}", self.base_url, path.trim_start_matches('/'));
-        let response = self.client.get(&url).query(params).send()?;
-
-        let status = response.status();
-        let body = response.text()?;
-
-        if status.is_success() {
-            Ok(serde_json::from_str(&body)?)
-        } else {
-            Err(OwcliError::from_status(status, &body))
-        }
+    pub async fn get_config(&self) -> Result<types::GameConfig> {
+        self.inner
+            .get_config()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
     }
 
-    /// Execute a game command
-    pub fn command(&self, action: &str, params: Value) -> Result<CommandResponse> {
+    pub async fn get_players(&self) -> Result<Vec<types::Player>> {
+        self.inner
+            .get_players()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player(&self, index: i32) -> Result<types::Player> {
+        self.inner
+            .get_player_by_index(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player_units(&self, index: i32) -> Result<Vec<types::Unit>> {
+        self.inner
+            .get_player_units(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player_techs(&self, index: i32) -> Result<types::PlayerTechs> {
+        self.inner
+            .get_player_techs(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player_families(&self, index: i32) -> Result<types::PlayerFamilies> {
+        self.inner
+            .get_player_families(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player_religion(&self, index: i32) -> Result<types::PlayerReligion> {
+        self.inner
+            .get_player_religion(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player_goals(&self, index: i32) -> Result<types::PlayerGoals> {
+        self.inner
+            .get_player_goals(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player_decisions(&self, index: i32) -> Result<types::PlayerDecisions> {
+        self.inner
+            .get_player_decisions(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player_laws(&self, index: i32) -> Result<types::PlayerLaws> {
+        self.inner
+            .get_player_laws(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player_missions(&self, index: i32) -> Result<types::PlayerMissions> {
+        self.inner
+            .get_player_missions(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_player_resources(&self, index: i32) -> Result<types::PlayerResources> {
+        self.inner
+            .get_player_resources(index as u64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_cities(&self) -> Result<Vec<types::City>> {
+        self.inner
+            .get_cities()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_city(&self, id: i32) -> Result<types::City> {
+        self.inner
+            .get_city_by_id(id as i64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_characters(&self) -> Result<Vec<types::Character>> {
+        self.inner
+            .get_characters()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_character(&self, id: i32) -> Result<types::Character> {
+        self.inner
+            .get_character_by_id(id as i64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_units(&self) -> Result<Vec<types::Unit>> {
+        self.inner
+            .get_units()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_unit(&self, id: i32) -> Result<types::Unit> {
+        self.inner
+            .get_unit_by_id(id as i64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_map(&self) -> Result<types::MapMetadata> {
+        self.inner
+            .get_map()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_tiles(&self, offset: Option<i32>, limit: Option<i32>) -> Result<Vec<types::Tile>> {
+        self.inner
+            .get_tiles(limit.map(|l| l as i64), offset.map(|o| o as u64))
+            .await
+            .map(|r| r.into_inner().tiles)
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_tile_by_id(&self, id: i32) -> Result<types::Tile> {
+        self.inner
+            .get_tile_by_id(id as i64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_tile_by_coords(&self, x: i32, y: i32) -> Result<types::Tile> {
+        self.inner
+            .get_tile_by_coords(x as i64, y as i64)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_tribes(&self) -> Result<Vec<types::Tribe>> {
+        self.inner
+            .get_tribes()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_tribe(&self, tribe_type: &str) -> Result<types::Tribe> {
+        self.inner
+            .get_tribe_by_type(tribe_type)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_religions(&self) -> Result<Vec<types::Religion>> {
+        self.inner
+            .get_religions()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_team_diplomacy(&self) -> Result<Vec<types::TeamDiplomacy>> {
+        self.inner
+            .get_team_diplomacy()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_team_alliances(&self) -> Result<Vec<types::TeamAlliance>> {
+        self.inner
+            .get_team_alliances()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_tribe_diplomacy(&self) -> Result<Vec<types::TribeDiplomacy>> {
+        self.inner
+            .get_tribe_diplomacy()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_tribe_alliances(&self) -> Result<Vec<types::TribeAlliance>> {
+        self.inner
+            .get_tribe_alliances()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_character_events(&self) -> Result<Vec<types::CharacterEvent>> {
+        self.inner
+            .get_character_events()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_unit_events(&self) -> Result<Vec<types::UnitEvent>> {
+        self.inner
+            .get_unit_events()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    pub async fn get_city_events(&self) -> Result<Vec<types::CityEvent>> {
+        self.inner
+            .get_city_events()
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
+    }
+
+    // === Manual POST /command implementation ===
+
+    pub async fn command(&self, action: &str, params: Value) -> Result<CommandResponse> {
         let url = format!("{}/command", self.base_url);
         let request_id = Uuid::new_v4().to_string();
 
@@ -62,10 +311,10 @@ impl ApiClient {
             "params": params
         });
 
-        let response = self.client.post(&url).json(&body).send()?;
+        let response = self.http_client.post(&url).json(&body).send().await?;
 
         let status = response.status();
-        let response_body = response.text()?;
+        let response_body = response.text().await?;
 
         if status.is_success() {
             let result: CommandResponse = serde_json::from_str(&response_body)?;
@@ -77,21 +326,41 @@ impl ApiClient {
 
     /// Validate a command without executing it
     #[allow(dead_code)]
-    pub fn validate(&self, action: &str, params: &[(&str, String)]) -> Result<ValidationResponse> {
+    pub async fn validate(&self, action: &str, params: &[(&str, String)]) -> Result<ValidationResponse> {
         let url = format!("{}/validate", self.base_url);
         let mut query_params: Vec<(&str, String)> = vec![("action", action.to_string())];
         query_params.extend(params.iter().cloned());
 
-        let response = self.client.get(&url).query(&query_params).send()?;
+        let response = self.http_client.get(&url).query(&query_params).send().await?;
 
         let status = response.status();
-        let body = response.text()?;
+        let body = response.text().await?;
 
         if status.is_success() {
             Ok(serde_json::from_str(&body)?)
         } else {
             Err(OwcliError::from_status(status, &body))
         }
+    }
+}
+
+fn map_progenitor_error<T: std::fmt::Debug>(err: progenitor_client::Error<T>) -> OwcliError {
+    match &err {
+        progenitor_client::Error::ErrorResponse(resp) => {
+            let status = resp.status();
+            match status.as_u16() {
+                503 => OwcliError::GameUnavailable,
+                404 => OwcliError::NotFound(format!("{:?}", err)),
+                code => OwcliError::Api {
+                    message: format!("{:?}", err),
+                    code: Some(code),
+                },
+            }
+        }
+        progenitor_client::Error::CommunicationError(_) => {
+            OwcliError::Other(format!("Communication error: {:?}", err))
+        }
+        _ => OwcliError::Other(format!("{:?}", err)),
     }
 }
 

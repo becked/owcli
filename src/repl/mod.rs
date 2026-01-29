@@ -4,12 +4,14 @@ use crate::cli::Action;
 use crate::client::ApiClient;
 use crate::commands::{execute_action, execute_query};
 use crate::config::Config;
-use crate::output::{format_command_response, format_output};
+use crate::output::{format_command_response, format_typed_output};
 use completer::OwcliCompleter;
 use rustyline::error::ReadlineError;
 use rustyline::{CompletionType, Config as RlConfig, EditMode, Editor};
+use tokio::runtime::Runtime;
 
 pub fn run_repl(config: &Config) -> crate::error::Result<()> {
+    let rt = Runtime::new().map_err(|e| crate::error::OwcliError::Other(e.to_string()))?;
     let client = ApiClient::new(config)?;
 
     let rl_config = RlConfig::builder()
@@ -36,7 +38,7 @@ pub fn run_repl(config: &Config) -> crate::error::Result<()> {
 
                 rl.add_history_entry(line)?;
 
-                match process_repl_line(&client, line) {
+                match process_repl_line(&client, line, &rt) {
                     ReplResult::Continue(output) => {
                         if let Some(text) = output {
                             println!("{}\n", text);
@@ -71,7 +73,7 @@ enum ReplResult {
     Exit,
 }
 
-fn process_repl_line(client: &ApiClient, line: &str) -> ReplResult {
+fn process_repl_line(client: &ApiClient, line: &str, rt: &Runtime) -> ReplResult {
     let parts: Vec<&str> = line.split_whitespace().collect();
     if parts.is_empty() {
         return ReplResult::Continue(None);
@@ -88,19 +90,18 @@ fn process_repl_line(client: &ApiClient, line: &str) -> ReplResult {
                     "Usage: command <action> [--param value ...]\nUse 'help commands' for available actions".to_string()
                 ));
             }
-            match parse_and_execute_command(client, &parts[1..]) {
+            match parse_and_execute_command(client, &parts[1..], rt) {
                 Ok(output) => ReplResult::Continue(Some(output)),
                 Err(e) => ReplResult::Continue(Some(format!("Error: {}", e))),
             }
         }
 
         "tiles" => {
-            // Handle tiles with optional pagination
             let (offset, limit) = parse_tiles_args(&parts[1..]);
-            match crate::commands::query::execute_tiles_query(client, offset, limit) {
+            match rt.block_on(crate::commands::query::execute_tiles_query(client, offset, limit)) {
                 Ok(result) => {
-                    let output = format_output(&result.data, &result.path.endpoint_type, false)
-                        .unwrap_or_else(|_| result.data.to_string());
+                    let output = format_typed_output(&result, false)
+                        .unwrap_or_else(|e| format!("Format error: {}", e));
                     ReplResult::Continue(Some(output))
                 }
                 Err(e) => ReplResult::Continue(Some(format!("Error: {}", e))),
@@ -108,11 +109,10 @@ fn process_repl_line(client: &ApiClient, line: &str) -> ReplResult {
         }
 
         _ => {
-            // Treat as a path query
-            match execute_query(client, parts[0]) {
+            match rt.block_on(execute_query(client, parts[0])) {
                 Ok(result) => {
-                    let output = format_output(&result.data, &result.path.endpoint_type, false)
-                        .unwrap_or_else(|_| result.data.to_string());
+                    let output = format_typed_output(&result, false)
+                        .unwrap_or_else(|e| format!("Format error: {}", e));
                     ReplResult::Continue(Some(output))
                 }
                 Err(e) => ReplResult::Continue(Some(format!("Error: {}", e))),
@@ -143,13 +143,13 @@ fn parse_tiles_args(args: &[&str]) -> (u32, u32) {
     (offset, limit.min(1000))
 }
 
-fn parse_and_execute_command(client: &ApiClient, args: &[&str]) -> crate::error::Result<String> {
+fn parse_and_execute_command(client: &ApiClient, args: &[&str], rt: &Runtime) -> crate::error::Result<String> {
     if args.is_empty() {
         return Ok("No action specified".to_string());
     }
 
     let action = parse_action_from_args(args)?;
-    let response = execute_action(client, &action)?;
+    let response = rt.block_on(execute_action(client, &action))?;
 
     Ok(format_command_response(
         response.success,
@@ -165,7 +165,6 @@ fn parse_action_from_args(args: &[&str]) -> crate::error::Result<Action> {
     let action_name = args[0];
     let params = &args[1..];
 
-    // Parse --key value pairs
     let get_param = |key: &str| -> Option<&str> {
         for i in 0..params.len() {
             if params[i] == format!("--{}", key) && i + 1 < params.len() {

@@ -47,3 +47,8 @@ Environment variables (also via `.env` file):
 - `OWCLI_PORT` - API port (default: 9877)
 
 CLI flags: `--host`, `--port`, `--json` (raw JSON output instead of tables)
+
+## Git Policy
+
+- Do not commit unless specifically asked to
+- Never push to remote
