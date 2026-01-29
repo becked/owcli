@@ -107,7 +107,10 @@ pub fn format_units(units: &[types::Unit]) -> String {
         .map(|u| UnitRow {
             id: u.id.unwrap_or(0),
             unit_type: u.unit_type.as_deref().map(shorten_type).unwrap_or_default(),
-            owner: u.owner_id.map(|v| v.to_string()).unwrap_or_else(|| "-".to_string()),
+            owner: u
+                .owner_id
+                .map(|v| v.to_string())
+                .unwrap_or_else(|| "-".to_string()),
             hp: format!("{}/{}", u.hp.unwrap_or(0), u.hp_max.unwrap_or(0)),
             pos: format!("({},{})", u.x.unwrap_or(0), u.y.unwrap_or(0)),
             status: get_unit_status(u),
@@ -121,14 +124,22 @@ pub fn format_unit(unit: &types::Unit) -> String {
     let mut lines = Vec::new();
 
     let id = unit.id.unwrap_or(0);
-    let unit_type = unit.unit_type.as_deref().map(shorten_type).unwrap_or_else(|| "Unknown".to_string());
+    let unit_type = unit
+        .unit_type
+        .as_deref()
+        .map(shorten_type)
+        .unwrap_or_else(|| "Unknown".to_string());
     lines.push(format!("Unit {} - {}", id, unit_type));
 
     if let Some(owner) = unit.owner_id {
         lines.push(format!("  Owner: Player {}", owner));
     }
 
-    lines.push(format!("  HP: {}/{}", unit.hp.unwrap_or(0), unit.hp_max.unwrap_or(0)));
+    lines.push(format!(
+        "  HP: {}/{}",
+        unit.hp.unwrap_or(0),
+        unit.hp_max.unwrap_or(0)
+    ));
 
     lines.push(format!(
         "  Position: ({}, {}) [tile {}]",
@@ -196,7 +207,10 @@ pub fn format_cities(cities: &[types::City]) -> String {
         .map(|c| CityRow {
             id: c.id.unwrap_or(0),
             name: c.name.clone().unwrap_or_default(),
-            owner: c.owner_id.map(|v| v.to_string()).unwrap_or_else(|| "-".to_string()),
+            owner: c
+                .owner_id
+                .map(|v| v.to_string())
+                .unwrap_or_else(|| "-".to_string()),
             citizens: c.citizens.unwrap_or(0),
             hp: format!("{}/{}", c.hp.unwrap_or(0), c.hp_max.unwrap_or(0)),
             pos: format!("({},{})", c.x.unwrap_or(0), c.y.unwrap_or(0)),
@@ -226,8 +240,16 @@ pub fn format_city(city: &types::City) -> String {
     }
 
     lines.push(format!("  Population: {}", city.citizens.unwrap_or(0)));
-    lines.push(format!("  HP: {}/{}", city.hp.unwrap_or(0), city.hp_max.unwrap_or(0)));
-    lines.push(format!("  Position: ({}, {})", city.x.unwrap_or(0), city.y.unwrap_or(0)));
+    lines.push(format!(
+        "  HP: {}/{}",
+        city.hp.unwrap_or(0),
+        city.hp_max.unwrap_or(0)
+    ));
+    lines.push(format!(
+        "  Position: ({}, {})",
+        city.x.unwrap_or(0),
+        city.y.unwrap_or(0)
+    ));
 
     if !city.yields.is_empty() {
         lines.push("  Yields per turn:".to_string());
@@ -268,7 +290,10 @@ pub fn format_characters(characters: &[types::Character]) -> String {
             id: c.id.unwrap_or(0),
             name: c.name.clone().unwrap_or_default(),
             age: c.age.unwrap_or(0),
-            player: c.player_id.map(|v| v.to_string()).unwrap_or_else(|| "-".to_string()),
+            player: c
+                .player_id
+                .map(|v| v.to_string())
+                .unwrap_or_else(|| "-".to_string()),
             role: get_character_role(c),
         })
         .collect();
@@ -303,9 +328,21 @@ pub fn format_character(character: &types::Character) -> String {
 
     // Ratings from hashmap
     if !character.ratings.is_empty() {
-        let courage = character.ratings.get("RATING_COURAGE").copied().unwrap_or(0);
-        let discipline = character.ratings.get("RATING_DISCIPLINE").copied().unwrap_or(0);
-        let charisma = character.ratings.get("RATING_CHARISMA").copied().unwrap_or(0);
+        let courage = character
+            .ratings
+            .get("RATING_COURAGE")
+            .copied()
+            .unwrap_or(0);
+        let discipline = character
+            .ratings
+            .get("RATING_DISCIPLINE")
+            .copied()
+            .unwrap_or(0);
+        let charisma = character
+            .ratings
+            .get("RATING_CHARISMA")
+            .copied()
+            .unwrap_or(0);
         let wisdom = character.ratings.get("RATING_WISDOM").copied().unwrap_or(0);
         lines.push(format!(
             "  Ratings: COU {} / DIS {} / CHA {} / WIS {}",
@@ -359,10 +396,25 @@ pub fn format_tiles(tiles: &[types::Tile]) -> String {
         .map(|t| TileRow {
             id: t.id.unwrap_or(0),
             pos: format!("({},{})", t.x.unwrap_or(0), t.y.unwrap_or(0)),
-            terrain: t.terrain.as_deref().map(shorten_type).unwrap_or_else(|| "-".to_string()),
-            resource: t.resource.as_deref().map(shorten_type).unwrap_or_else(|| "-".to_string()),
-            improvement: t.improvement.as_deref().map(shorten_type).unwrap_or_else(|| "-".to_string()),
-            owner: t.owner_id.map(|v| v.to_string()).unwrap_or_else(|| "-".to_string()),
+            terrain: t
+                .terrain
+                .as_deref()
+                .map(shorten_type)
+                .unwrap_or_else(|| "-".to_string()),
+            resource: t
+                .resource
+                .as_deref()
+                .map(shorten_type)
+                .unwrap_or_else(|| "-".to_string()),
+            improvement: t
+                .improvement
+                .as_deref()
+                .map(shorten_type)
+                .unwrap_or_else(|| "-".to_string()),
+            owner: t
+                .owner_id
+                .map(|v| v.to_string())
+                .unwrap_or_else(|| "-".to_string()),
         })
         .collect();
 
@@ -394,7 +446,11 @@ pub fn format_tile(tile: &types::Tile) -> String {
     if let Some(improvement) = &tile.improvement {
         let pillaged = tile.is_pillaged.unwrap_or(false);
         let suffix = if pillaged { " (pillaged)" } else { "" };
-        lines.push(format!("  Improvement: {}{}", shorten_type(improvement), suffix));
+        lines.push(format!(
+            "  Improvement: {}{}",
+            shorten_type(improvement),
+            suffix
+        ));
     }
     if let Some(owner) = tile.owner_id {
         lines.push(format!("  Owner: Player {}", owner));
@@ -428,7 +484,11 @@ pub fn format_tribes(tribes: &[types::Tribe]) -> String {
     let rows: Vec<TribeRow> = tribes
         .iter()
         .map(|t| TribeRow {
-            tribe_type: t.tribe_type.as_deref().map(shorten_type).unwrap_or_default(),
+            tribe_type: t
+                .tribe_type
+                .as_deref()
+                .map(shorten_type)
+                .unwrap_or_default(),
             strength: t.strength.unwrap_or(0),
             num_units: t.num_units.unwrap_or(0),
             num_cities: t.num_cities.unwrap_or(0),
@@ -564,9 +624,19 @@ pub fn format_character_events(events: &[types::CharacterEvent]) -> String {
     let rows: Vec<CharacterEventRow> = events
         .iter()
         .map(|e| CharacterEventRow {
-            event: e.event_type.as_ref().map(|t| format!("{:?}", t)).unwrap_or_else(|| "-".to_string()),
-            character: e.character_id.map(|id| format!("#{}", id)).unwrap_or_else(|| "-".to_string()),
-            player: e.player_id.map(|id| id.to_string()).unwrap_or_else(|| "-".to_string()),
+            event: e
+                .event_type
+                .as_ref()
+                .map(|t| format!("{:?}", t))
+                .unwrap_or_else(|| "-".to_string()),
+            character: e
+                .character_id
+                .map(|id| format!("#{}", id))
+                .unwrap_or_else(|| "-".to_string()),
+            player: e
+                .player_id
+                .map(|id| id.to_string())
+                .unwrap_or_else(|| "-".to_string()),
         })
         .collect();
 
@@ -591,13 +661,19 @@ pub fn format_unit_events(events: &[types::UnitEvent]) -> String {
     let rows: Vec<UnitEventRow> = events
         .iter()
         .map(|e| UnitEventRow {
-            event: e.event_type.as_ref().map(|t| format!("{:?}", t)).unwrap_or_else(|| "-".to_string()),
-            unit: e
-                .unit_type
-                .as_deref()
-                .map(shorten_type)
-                .unwrap_or_else(|| e.unit_id.map(|id| format!("#{}", id)).unwrap_or_else(|| "-".to_string())),
-            location: e.location.as_ref()
+            event: e
+                .event_type
+                .as_ref()
+                .map(|t| format!("{:?}", t))
+                .unwrap_or_else(|| "-".to_string()),
+            unit: e.unit_type.as_deref().map(shorten_type).unwrap_or_else(|| {
+                e.unit_id
+                    .map(|id| format!("#{}", id))
+                    .unwrap_or_else(|| "-".to_string())
+            }),
+            location: e
+                .location
+                .as_ref()
                 .map(|loc| format!("({},{})", loc.x.unwrap_or(0), loc.y.unwrap_or(0)))
                 .unwrap_or_else(|| "-".to_string()),
         })
@@ -624,12 +700,19 @@ pub fn format_city_events(events: &[types::CityEvent]) -> String {
     let rows: Vec<CityEventRow> = events
         .iter()
         .map(|e| CityEventRow {
-            event: e.event_type.as_ref().map(|t| format!("{:?}", t)).unwrap_or_else(|| "-".to_string()),
-            city: e
-                .city_name
-                .clone()
-                .unwrap_or_else(|| e.city_id.map(|id| format!("#{}", id)).unwrap_or_else(|| "-".to_string())),
-            location: e.location.as_ref()
+            event: e
+                .event_type
+                .as_ref()
+                .map(|t| format!("{:?}", t))
+                .unwrap_or_else(|| "-".to_string()),
+            city: e.city_name.clone().unwrap_or_else(|| {
+                e.city_id
+                    .map(|id| format!("#{}", id))
+                    .unwrap_or_else(|| "-".to_string())
+            }),
+            location: e
+                .location
+                .as_ref()
                 .map(|loc| format!("({},{})", loc.x.unwrap_or(0), loc.y.unwrap_or(0)))
                 .unwrap_or_else(|| "-".to_string()),
         })
@@ -698,9 +781,21 @@ pub fn format_religions(religions: &[types::Religion]) -> String {
     let rows: Vec<ReligionRow> = religions
         .iter()
         .map(|r| ReligionRow {
-            religion: r.religion_type.as_deref().map(shorten_type).unwrap_or_default(),
-            founded: if r.is_founded.unwrap_or(false) { "Yes" } else { "No" }.to_string(),
-            holy_city: r.holy_city_id.map(|id| id.to_string()).unwrap_or_else(|| "-".to_string()),
+            religion: r
+                .religion_type
+                .as_deref()
+                .map(shorten_type)
+                .unwrap_or_default(),
+            founded: if r.is_founded.unwrap_or(false) {
+                "Yes"
+            } else {
+                "No"
+            }
+            .to_string(),
+            holy_city: r
+                .holy_city_id
+                .map(|id| id.to_string())
+                .unwrap_or_else(|| "-".to_string()),
         })
         .collect();
 
@@ -772,7 +867,11 @@ pub fn format_player_techs(techs: &types::PlayerTechs) -> String {
     // Currently researching
     if let Some(researching) = &techs.researching {
         let progress = techs.progress.get(researching).copied().unwrap_or(0);
-        lines.push(format!("  Currently: {} ({} progress)", shorten_type(researching), progress));
+        lines.push(format!(
+            "  Currently: {} ({} progress)",
+            shorten_type(researching),
+            progress
+        ));
     } else {
         lines.push("  Currently: None".to_string());
     }
@@ -839,7 +938,10 @@ pub fn format_player_religion(religion: &types::PlayerReligion) -> String {
     lines.push("Player Religion".to_string());
 
     if let Some(state_religion) = &religion.state_religion {
-        lines.push(format!("  State Religion: {}", shorten_type(state_religion)));
+        lines.push(format!(
+            "  State Religion: {}",
+            shorten_type(state_religion)
+        ));
     } else {
         lines.push("  State Religion: None".to_string());
     }

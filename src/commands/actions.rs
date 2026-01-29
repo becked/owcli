@@ -1,9 +1,9 @@
 use crate::cli::Action;
-use crate::client::{ApiClient, CommandResponse};
+use crate::client::{types::CommandResult, ApiClient};
 use crate::error::Result;
 
 /// Execute a game action command
-pub async fn execute_action(client: &ApiClient, action: &Action) -> Result<CommandResponse> {
-    let (action_name, params) = action.to_api_params();
-    client.command(action_name, params).await
+pub async fn execute_action(client: &ApiClient, action: &Action) -> Result<CommandResult> {
+    let command = action.to_game_command();
+    client.execute_command(&command).await
 }

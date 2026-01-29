@@ -17,39 +17,57 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
         }
         EndpointType::PlayerUnits => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::PlayerUnits(client.get_player_units(index).await?))
+            Ok(TypedResponse::PlayerUnits(
+                client.get_player_units(index).await?,
+            ))
         }
         EndpointType::PlayerTechs => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::PlayerTechs(client.get_player_techs(index).await?))
+            Ok(TypedResponse::PlayerTechs(
+                client.get_player_techs(index).await?,
+            ))
         }
         EndpointType::PlayerFamilies => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::PlayerFamilies(client.get_player_families(index).await?))
+            Ok(TypedResponse::PlayerFamilies(
+                client.get_player_families(index).await?,
+            ))
         }
         EndpointType::PlayerReligion => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::PlayerReligion(client.get_player_religion(index).await?))
+            Ok(TypedResponse::PlayerReligion(
+                client.get_player_religion(index).await?,
+            ))
         }
         EndpointType::PlayerGoals => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::PlayerGoals(client.get_player_goals(index).await?))
+            Ok(TypedResponse::PlayerGoals(
+                client.get_player_goals(index).await?,
+            ))
         }
         EndpointType::PlayerDecisions => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::PlayerDecisions(client.get_player_decisions(index).await?))
+            Ok(TypedResponse::PlayerDecisions(
+                client.get_player_decisions(index).await?,
+            ))
         }
         EndpointType::PlayerLaws => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::PlayerLaws(client.get_player_laws(index).await?))
+            Ok(TypedResponse::PlayerLaws(
+                client.get_player_laws(index).await?,
+            ))
         }
         EndpointType::PlayerMissions => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::PlayerMissions(client.get_player_missions(index).await?))
+            Ok(TypedResponse::PlayerMissions(
+                client.get_player_missions(index).await?,
+            ))
         }
         EndpointType::PlayerResources => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::PlayerResources(client.get_player_resources(index).await?))
+            Ok(TypedResponse::PlayerResources(
+                client.get_player_resources(index).await?,
+            ))
         }
         EndpointType::Cities => Ok(TypedResponse::Cities(client.get_cities().await?)),
         EndpointType::City => {
@@ -69,16 +87,18 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
         EndpointType::Map => Ok(TypedResponse::Map(client.get_map().await?)),
         EndpointType::Tiles => {
             // Default pagination
-            Ok(TypedResponse::Tiles(client.get_tiles(Some(0), Some(100)).await?))
+            Ok(TypedResponse::Tiles(
+                client.get_tiles(Some(0), Some(100)).await?,
+            ))
         }
         EndpointType::Tile => {
             // Parse tile path - could be tile/<id> or tile/<x>/<y>
             let parts: Vec<&str> = api_path.path.split('/').collect();
             match parts.as_slice() {
                 ["tile", id] => {
-                    let tile_id = id.parse::<i32>().map_err(|_| {
-                        OwcliError::InvalidPath(format!("Invalid tile ID: {}", id))
-                    })?;
+                    let tile_id = id
+                        .parse::<i32>()
+                        .map_err(|_| OwcliError::InvalidPath(format!("Invalid tile ID: {}", id)))?;
                     Ok(TypedResponse::Tile(client.get_tile_by_id(tile_id).await?))
                 }
                 ["tile", x, y] => {
@@ -88,9 +108,14 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
                     let y_coord = y.parse::<i32>().map_err(|_| {
                         OwcliError::InvalidPath(format!("Invalid y coordinate: {}", y))
                     })?;
-                    Ok(TypedResponse::Tile(client.get_tile_by_coords(x_coord, y_coord).await?))
+                    Ok(TypedResponse::Tile(
+                        client.get_tile_by_coords(x_coord, y_coord).await?,
+                    ))
                 }
-                _ => Err(OwcliError::InvalidPath(format!("Invalid tile path: {}", api_path.path))),
+                _ => Err(OwcliError::InvalidPath(format!(
+                    "Invalid tile path: {}",
+                    api_path.path
+                ))),
             }
         }
         EndpointType::Tribes => Ok(TypedResponse::Tribes(client.get_tribes().await?)),
@@ -99,11 +124,21 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
             Ok(TypedResponse::Tribe(client.get_tribe(&tribe_type).await?))
         }
         EndpointType::Religions => Ok(TypedResponse::Religions(client.get_religions().await?)),
-        EndpointType::TeamDiplomacy => Ok(TypedResponse::TeamDiplomacy(client.get_team_diplomacy().await?)),
-        EndpointType::TeamAlliances => Ok(TypedResponse::TeamAlliances(client.get_team_alliances().await?)),
-        EndpointType::TribeDiplomacy => Ok(TypedResponse::TribeDiplomacy(client.get_tribe_diplomacy().await?)),
-        EndpointType::TribeAlliances => Ok(TypedResponse::TribeAlliances(client.get_tribe_alliances().await?)),
-        EndpointType::CharacterEvents => Ok(TypedResponse::CharacterEvents(client.get_character_events().await?)),
+        EndpointType::TeamDiplomacy => Ok(TypedResponse::TeamDiplomacy(
+            client.get_team_diplomacy().await?,
+        )),
+        EndpointType::TeamAlliances => Ok(TypedResponse::TeamAlliances(
+            client.get_team_alliances().await?,
+        )),
+        EndpointType::TribeDiplomacy => Ok(TypedResponse::TribeDiplomacy(
+            client.get_tribe_diplomacy().await?,
+        )),
+        EndpointType::TribeAlliances => Ok(TypedResponse::TribeAlliances(
+            client.get_tribe_alliances().await?,
+        )),
+        EndpointType::CharacterEvents => Ok(TypedResponse::CharacterEvents(
+            client.get_character_events().await?,
+        )),
         EndpointType::UnitEvents => Ok(TypedResponse::UnitEvents(client.get_unit_events().await?)),
         EndpointType::CityEvents => Ok(TypedResponse::CityEvents(client.get_city_events().await?)),
     }
@@ -116,7 +151,9 @@ pub async fn execute_tiles_query(
     limit: u32,
 ) -> Result<TypedResponse> {
     Ok(TypedResponse::Tiles(
-        client.get_tiles(Some(offset as i32), Some(limit as i32)).await?,
+        client
+            .get_tiles(Some(offset as i32), Some(limit as i32))
+            .await?,
     ))
 }
 
@@ -124,9 +161,9 @@ pub async fn execute_tiles_query(
 fn extract_index(path: &str, prefix: &str) -> Result<i32> {
     let parts: Vec<&str> = path.split('/').collect();
     if parts.len() >= 2 && parts[0] == prefix {
-        parts[1].parse::<i32>().map_err(|_| {
-            OwcliError::InvalidPath(format!("Invalid {} index: {}", prefix, parts[1]))
-        })
+        parts[1]
+            .parse::<i32>()
+            .map_err(|_| OwcliError::InvalidPath(format!("Invalid {} index: {}", prefix, parts[1])))
     } else {
         Err(OwcliError::InvalidPath(format!(
             "Could not extract index from path: {}",

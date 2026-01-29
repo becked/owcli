@@ -1,7 +1,5 @@
 use crate::config::Config;
 use crate::error::{OwcliError, Result};
-use serde_json::Value;
-use uuid::Uuid;
 
 // Include generated progenitor code
 mod generated {
@@ -13,8 +11,6 @@ pub use generated::Client as ProgenitorClient;
 
 pub struct ApiClient {
     inner: ProgenitorClient,
-    base_url: String,
-    http_client: reqwest::Client,
 }
 
 impl ApiClient {
@@ -24,16 +20,12 @@ impl ApiClient {
             .build()?;
 
         let base_url = config.base_url();
-        let inner = ProgenitorClient::new_with_client(&base_url, http_client.clone());
+        let inner = ProgenitorClient::new_with_client(&base_url, http_client);
 
-        Ok(Self {
-            inner,
-            base_url,
-            http_client,
-        })
+        Ok(Self { inner })
     }
 
-    // === Generated typed endpoints ===
+    // === Query endpoints (using generated client) ===
 
     pub async fn get_state(&self) -> Result<types::GameState> {
         self.inner
@@ -195,7 +187,11 @@ impl ApiClient {
             .map_err(map_progenitor_error)
     }
 
-    pub async fn get_tiles(&self, offset: Option<i32>, limit: Option<i32>) -> Result<Vec<types::Tile>> {
+    pub async fn get_tiles(
+        &self,
+        offset: Option<i32>,
+        limit: Option<i32>,
+    ) -> Result<Vec<types::Tile>> {
         self.inner
             .get_tiles(limit.map(|l| l as i64), offset.map(|o| o as u64))
             .await
@@ -299,48 +295,27 @@ impl ApiClient {
             .map_err(map_progenitor_error)
     }
 
-    // === Manual POST /command implementation ===
+    // === Command endpoints (using generated client) ===
 
-    pub async fn command(&self, action: &str, params: Value) -> Result<CommandResponse> {
-        let url = format!("{}/command", self.base_url);
-        let request_id = Uuid::new_v4().to_string();
-
-        let body = serde_json::json!({
-            "action": action,
-            "requestId": request_id,
-            "params": params
-        });
-
-        let response = self.http_client.post(&url).json(&body).send().await?;
-
-        let status = response.status();
-        let response_body = response.text().await?;
-
-        if status.is_success() {
-            let result: CommandResponse = serde_json::from_str(&response_body)?;
-            Ok(result)
-        } else {
-            Err(OwcliError::from_status(status, &response_body))
-        }
+    /// Execute a single game command
+    pub async fn execute_command(&self, command: &types::GameCommand) -> Result<types::CommandResult> {
+        self.inner
+            .execute_command(command)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
     }
 
-    /// Validate a command without executing it
-    #[allow(dead_code)]
-    pub async fn validate(&self, action: &str, params: &[(&str, String)]) -> Result<ValidationResponse> {
-        let url = format!("{}/validate", self.base_url);
-        let mut query_params: Vec<(&str, String)> = vec![("action", action.to_string())];
-        query_params.extend(params.iter().cloned());
-
-        let response = self.http_client.get(&url).query(&query_params).send().await?;
-
-        let status = response.status();
-        let body = response.text().await?;
-
-        if status.is_success() {
-            Ok(serde_json::from_str(&body)?)
-        } else {
-            Err(OwcliError::from_status(status, &body))
-        }
+    /// Execute multiple commands in sequence
+    pub async fn execute_bulk_commands(
+        &self,
+        bulk: &types::BulkCommand,
+    ) -> Result<types::BulkCommandResult> {
+        self.inner
+            .execute_bulk_commands(bulk)
+            .await
+            .map(|r| r.into_inner())
+            .map_err(map_progenitor_error)
     }
 }
 
@@ -364,17 +339,7 @@ fn map_progenitor_error<T: std::fmt::Debug>(err: progenitor_client::Error<T>) ->
     }
 }
 
-#[derive(Debug, serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CommandResponse {
-    pub request_id: Option<String>,
-    pub success: bool,
-    pub error: Option<String>,
-}
-
-#[allow(dead_code)]
-#[derive(Debug, serde::Deserialize)]
-pub struct ValidationResponse {
-    pub valid: bool,
-    pub reason: Option<String>,
+/// Helper to check if a command succeeded
+pub fn command_succeeded(result: &types::CommandResult) -> bool {
+    result.success.unwrap_or(true)
 }

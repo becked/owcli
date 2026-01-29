@@ -1,4 +1,4 @@
-use crate::path_parser::{get_player_resource_completions, get_static_completions};
+use crate::help::{get_command_names, get_player_resource_completions, get_query_completions};
 use rustyline::completion::{Completer, Pair};
 use rustyline::highlight::Highlighter;
 use rustyline::hint::Hinter;
@@ -14,21 +14,16 @@ pub struct OwcliCompleter {
 impl OwcliCompleter {
     pub fn new() -> Self {
         Self {
-            static_paths: get_static_completions().iter().map(|s| s.to_string()).collect(),
-            player_resources: get_player_resource_completions().iter().map(|s| s.to_string()).collect(),
-            commands: vec![
-                "move-unit", "attack", "fortify", "pass", "skip", "sleep", "sentry",
-                "wake", "disband", "heal", "march", "lock", "found-city", "join-city",
-                "build-improvement", "add-road", "upgrade-improvement", "pillage", "burn",
-                "promote", "upgrade", "spread-religion", "build-unit", "build-project",
-                "build-queue", "hurry-civics", "hurry-training", "hurry-money",
-                "hurry-population", "hurry-orders", "research", "redraw-tech", "target-tech",
-                "make-decision", "remove-decision", "declare-war", "make-peace",
-                "declare-truce", "declare-war-tribe", "make-peace-tribe", "declare-truce-tribe",
-                "gift-city", "gift-yield", "ally-tribe", "assign-governor", "release-governor",
-                "assign-general", "release-general", "assign-agent", "release-agent",
-                "start-mission", "end-turn",
-            ].iter().map(|s| s.to_string()).collect(),
+            static_paths: get_query_completions()
+                .iter()
+                .map(|s| s.to_string())
+                .collect(),
+            player_resources: get_player_resource_completions()
+                .iter()
+                .map(|s| s.to_string())
+                .collect(),
+            // Dynamic from Clap introspection - stays in sync with cli.rs
+            commands: get_command_names(),
         }
     }
 }
@@ -78,7 +73,8 @@ impl Completer for OwcliCompleter {
         if words.len() >= 1 && (words[0] == "command" || words[0] == "cmd") {
             if words.len() == 1 || (words.len() == 2 && !line_to_cursor.ends_with(' ')) {
                 let prefix = if words.len() == 2 { words[1] } else { "" };
-                let completions: Vec<Pair> = self.commands
+                let completions: Vec<Pair> = self
+                    .commands
                     .iter()
                     .filter(|cmd| cmd.starts_with(prefix))
                     .map(|cmd| Pair {
@@ -103,7 +99,8 @@ impl Completer for OwcliCompleter {
             if parts.len() == 3 {
                 // player/0/un... -> complete with resources
                 let prefix = parts[2];
-                let completions: Vec<Pair> = self.player_resources
+                let completions: Vec<Pair> = self
+                    .player_resources
                     .iter()
                     .filter(|r| r.starts_with(prefix))
                     .map(|r| Pair {

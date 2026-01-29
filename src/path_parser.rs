@@ -69,7 +69,10 @@ pub fn parse_path(input: &str) -> Result<ApiPath> {
         ["team-alliances"] => ("team-alliances".to_string(), EndpointType::TeamAlliances),
         ["tribe-diplomacy"] => ("tribe-diplomacy".to_string(), EndpointType::TribeDiplomacy),
         ["tribe-alliances"] => ("tribe-alliances".to_string(), EndpointType::TribeAlliances),
-        ["character-events"] => ("character-events".to_string(), EndpointType::CharacterEvents),
+        ["character-events"] => (
+            "character-events".to_string(),
+            EndpointType::CharacterEvents,
+        ),
         ["unit-events"] => ("unit-events".to_string(), EndpointType::UnitEvents),
         ["city-events"] => ("city-events".to_string(), EndpointType::CityEvents),
 
@@ -88,11 +91,17 @@ pub fn parse_path(input: &str) -> Result<ApiPath> {
         }
         ["player", index, "families"] => {
             validate_integer(index)?;
-            (format!("player/{}/families", index), EndpointType::PlayerFamilies)
+            (
+                format!("player/{}/families", index),
+                EndpointType::PlayerFamilies,
+            )
         }
         ["player", index, "religion"] => {
             validate_integer(index)?;
-            (format!("player/{}/religion", index), EndpointType::PlayerReligion)
+            (
+                format!("player/{}/religion", index),
+                EndpointType::PlayerReligion,
+            )
         }
         ["player", index, "goals"] => {
             validate_integer(index)?;
@@ -100,7 +109,10 @@ pub fn parse_path(input: &str) -> Result<ApiPath> {
         }
         ["player", index, "decisions"] => {
             validate_integer(index)?;
-            (format!("player/{}/decisions", index), EndpointType::PlayerDecisions)
+            (
+                format!("player/{}/decisions", index),
+                EndpointType::PlayerDecisions,
+            )
         }
         ["player", index, "laws"] => {
             validate_integer(index)?;
@@ -108,11 +120,17 @@ pub fn parse_path(input: &str) -> Result<ApiPath> {
         }
         ["player", index, "missions"] => {
             validate_integer(index)?;
-            (format!("player/{}/missions", index), EndpointType::PlayerMissions)
+            (
+                format!("player/{}/missions", index),
+                EndpointType::PlayerMissions,
+            )
         }
         ["player", index, "resources"] => {
             validate_integer(index)?;
-            (format!("player/{}/resources", index), EndpointType::PlayerResources)
+            (
+                format!("player/{}/resources", index),
+                EndpointType::PlayerResources,
+            )
         }
 
         // City by ID
@@ -145,9 +163,7 @@ pub fn parse_path(input: &str) -> Result<ApiPath> {
         }
 
         // Tribe by type
-        ["tribe", tribe_type] => {
-            (format!("tribe/{}", tribe_type), EndpointType::Tribe)
-        }
+        ["tribe", tribe_type] => (format!("tribe/{}", tribe_type), EndpointType::Tribe),
 
         _ => {
             return Err(OwcliError::InvalidPath(format!(
@@ -157,57 +173,16 @@ pub fn parse_path(input: &str) -> Result<ApiPath> {
         }
     };
 
-    Ok(ApiPath { path, endpoint_type })
+    Ok(ApiPath {
+        path,
+        endpoint_type,
+    })
 }
 
 fn validate_integer(s: &str) -> Result<()> {
     s.parse::<i32>()
         .map(|_| ())
         .map_err(|_| OwcliError::InvalidPath(format!("Expected integer, got '{}'", s)))
-}
-
-/// Get available paths for auto-completion
-pub fn get_static_completions() -> Vec<&'static str> {
-    vec![
-        "state",
-        "config",
-        "players",
-        "player/",
-        "cities",
-        "city/",
-        "characters",
-        "character/",
-        "units",
-        "unit/",
-        "map",
-        "tiles",
-        "tile/",
-        "tribes",
-        "tribe/",
-        "religions",
-        "team-diplomacy",
-        "team-alliances",
-        "tribe-diplomacy",
-        "tribe-alliances",
-        "character-events",
-        "unit-events",
-        "city-events",
-    ]
-}
-
-/// Get sub-path completions for player resources
-pub fn get_player_resource_completions() -> Vec<&'static str> {
-    vec![
-        "units",
-        "techs",
-        "families",
-        "religion",
-        "goals",
-        "decisions",
-        "laws",
-        "missions",
-        "resources",
-    ]
 }
 
 #[cfg(test)]

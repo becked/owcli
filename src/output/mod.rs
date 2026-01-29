@@ -153,3 +153,47 @@ pub fn format_command_response(
         }
     }
 }
+
+/// Format a bulk command response
+pub fn format_bulk_response(
+    response: &types::BulkCommandResult,
+    json_mode: bool,
+) -> String {
+    if json_mode {
+        serde_json::to_string_pretty(response).unwrap_or_else(|_| "{}".to_string())
+    } else {
+        let mut output = String::new();
+        let succeeded = response
+            .results
+            .iter()
+            .filter(|r| r.success.unwrap_or(false))
+            .count();
+        let failed = response.results.len() - succeeded;
+
+        output.push_str(&format!(
+            "Bulk execution: {} succeeded, {} failed\n",
+            succeeded, failed
+        ));
+
+        if let Some(ref id) = response.request_id {
+            output.push_str(&format!("Request ID: {}\n", id));
+        }
+
+        for result in &response.results {
+            let status = if result.success.unwrap_or(false) {
+                "OK"
+            } else {
+                "FAIL"
+            };
+            let error_msg = result
+                .error
+                .as_ref()
+                .map(|e| format!(" - {}", e))
+                .unwrap_or_default();
+            let index = result.index.unwrap_or(-1);
+            output.push_str(&format!("  [{}] Command {}{}\n", status, index, error_msg));
+        }
+
+        output
+    }
+}
