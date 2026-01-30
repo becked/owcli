@@ -131,7 +131,9 @@ fn process_repl_line(client: &ApiClient, line: &str, rt: &Runtime) -> ReplResult
                 (None, Some(l)) => {
                     rt.block_on(crate::commands::query::execute_tiles_query(client, 0, l))
                 }
-                (None, None) => rt.block_on(crate::commands::query::execute_all_tiles_query(client)),
+                (None, None) => {
+                    rt.block_on(crate::commands::query::execute_all_tiles_query(client))
+                }
             };
             match result {
                 Ok(result) => {

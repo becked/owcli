@@ -56,15 +56,9 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
             let client = ApiClient::new(config)?;
             let result = match (offset, limit) {
                 // If either is specified, use manual pagination
-                (Some(o), Some(l)) => {
-                    commands::query::execute_tiles_query(&client, o, l).await?
-                }
-                (Some(o), None) => {
-                    commands::query::execute_tiles_query(&client, o, 100).await?
-                }
-                (None, Some(l)) => {
-                    commands::query::execute_tiles_query(&client, 0, l).await?
-                }
+                (Some(o), Some(l)) => commands::query::execute_tiles_query(&client, o, l).await?,
+                (Some(o), None) => commands::query::execute_tiles_query(&client, o, 100).await?,
+                (None, Some(l)) => commands::query::execute_tiles_query(&client, 0, l).await?,
                 // Default: fetch all tiles
                 (None, None) => commands::query::execute_all_tiles_query(&client).await?,
             };
@@ -95,7 +89,7 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
             file,
             continue_on_error,
         } => {
-            use client::types::{BulkCommand, GameCommand, GameCommandAction};
+            use client::types::{BulkCommand, GameCommand};
 
             let input = if file == "-" {
                 let mut buf = String::new();
@@ -105,31 +99,14 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
                 std::fs::read_to_string(&file)?
             };
 
-            // Parse JSON input into GameCommand structs
-            let raw_commands: Vec<serde_json::Value> = serde_json::from_str(&input)?;
-            let game_commands: Vec<GameCommand> = raw_commands
-                .into_iter()
-                .filter_map(|cmd| {
-                    let action_str = cmd["action"].as_str()?;
-                    let action: GameCommandAction = serde_json::from_value(
-                        serde_json::Value::String(action_str.to_string())
-                    ).ok()?;
-                    let params = cmd.get("params")
-                        .and_then(|p| p.as_object())
-                        .cloned()
-                        .unwrap_or_default();
-                    Some(GameCommand {
-                        action,
-                        params,
-                        request_id: None,
-                    })
-                })
-                .collect();
+            // Parse JSON input into GameCommand enum variants
+            // Each command is deserialized using serde's untagged enum support
+            let game_commands: Vec<GameCommand> = serde_json::from_str(&input)?;
 
             let bulk = BulkCommand {
                 commands: game_commands,
                 request_id: None,
-                stop_on_error: !continue_on_error,
+                stop_on_error: Some(!continue_on_error),
             };
 
             let client = ApiClient::new(config)?;
@@ -163,14 +140,13 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
                     )
                 }),
                 // Handle "help command <cmd>" syntax
-                [first, cmd] if first == "command" || first == "cmd" => {
-                    generate_command_help(cmd).unwrap_or_else(|| {
+                [first, cmd] if first == "command" || first == "cmd" => generate_command_help(cmd)
+                    .unwrap_or_else(|| {
                         format!(
                             "Unknown command: '{}'. Use 'help commands' for available commands.",
                             cmd
                         )
-                    })
-                }
+                    }),
                 _ => {
                     let joined = topic.join(" ");
                     format!(

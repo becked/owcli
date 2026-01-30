@@ -155,10 +155,7 @@ pub fn format_command_response(
 }
 
 /// Format a bulk command response
-pub fn format_bulk_response(
-    response: &types::BulkCommandResult,
-    json_mode: bool,
-) -> String {
+pub fn format_bulk_response(response: &types::BulkCommandResult, json_mode: bool) -> String {
     if json_mode {
         serde_json::to_string_pretty(response).unwrap_or_else(|_| "{}".to_string())
     } else {

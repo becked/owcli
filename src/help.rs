@@ -258,8 +258,14 @@ impl CommandCategory {
             }
 
             // Diplomacy (9)
-            "declare-war" | "make-peace" | "declare-truce" | "declare-war-tribe"
-            | "make-peace-tribe" | "declare-truce-tribe" | "gift-city" | "gift-yield"
+            "declare-war"
+            | "make-peace"
+            | "declare-truce"
+            | "declare-war-tribe"
+            | "make-peace-tribe"
+            | "declare-truce-tribe"
+            | "gift-city"
+            | "gift-yield"
             | "ally-tribe" => Self::Diplomacy,
 
             // Character Management (7)
@@ -270,22 +276,32 @@ impl CommandCategory {
             "end-turn" => Self::TurnControl,
 
             // Laws & Economy (7)
-            "choose-law" | "cancel-law" | "buy-yield" | "sell-yield" | "convert-orders"
-            | "convert-legitimacy" | "convert-orders-to-science" => Self::LawsEconomy,
+            "choose-law"
+            | "cancel-law"
+            | "buy-yield"
+            | "sell-yield"
+            | "convert-orders"
+            | "convert-legitimacy"
+            | "convert-orders-to-science" => Self::LawsEconomy,
 
             // Luxury Trading (5)
-            "trade-city-luxury" | "trade-family-luxury" | "trade-tribe-luxury"
-            | "trade-player-luxury" | "tribute" => Self::LuxuryTrading,
+            "trade-city-luxury"
+            | "trade-family-luxury"
+            | "trade-tribe-luxury"
+            | "trade-player-luxury"
+            | "tribute" => Self::LuxuryTrading,
 
             // Unit Special Actions (20)
-            "swap" | "do-unit-queue" | "cancel-unit-queue" | "formation" | "unlimber" | "anchor"
-            | "repair" | "cancel-improvement" | "remove-vegetation" | "harvest-resource"
-            | "unit-automate" | "add-urban" | "road-to" | "buy-tile" | "recruit-mercenary"
-            | "hire-mercenary" | "gift-unit" | "launch-offensive" | "apply-effect-unit"
-            | "select-unit" => Self::UnitSpecialActions,
+            "swap" | "do-unit-queue" | "cancel-unit-queue" | "formation" | "unlimber"
+            | "anchor" | "repair" | "cancel-improvement" | "remove-vegetation"
+            | "harvest-resource" | "unit-automate" | "add-urban" | "road-to" | "buy-tile"
+            | "recruit-mercenary" | "hire-mercenary" | "gift-unit" | "launch-offensive"
+            | "apply-effect-unit" | "select-unit" => Self::UnitSpecialActions,
 
             // Agent & Caravan (4)
-            "create-agent-network" | "create-trade-outpost" | "caravan-mission-start"
+            "create-agent-network"
+            | "create-trade-outpost"
+            | "caravan-mission-start"
             | "caravan-mission-cancel" => Self::AgentCaravan,
 
             // Religious Units (3)
@@ -294,12 +310,19 @@ impl CommandCategory {
             }
 
             // Character Management Extended (13)
-            "character-name" | "add-character-trait" | "set-character-rating"
-            | "set-character-experience" | "set-character-cognomen" | "set-character-nation"
-            | "set-character-family" | "set-character-religion" | "set-character-courtier"
-            | "set-character-council" | "player-leader" | "family-head" | "pin-character" => {
-                Self::CharacterExtended
-            }
+            "character-name"
+            | "add-character-trait"
+            | "set-character-rating"
+            | "set-character-experience"
+            | "set-character-cognomen"
+            | "set-character-nation"
+            | "set-character-family"
+            | "set-character-religion"
+            | "set-character-courtier"
+            | "set-character-council"
+            | "player-leader"
+            | "family-head"
+            | "pin-character" => Self::CharacterExtended,
 
             // City Management (8)
             "city-rename" | "city-automate" | "build-specialist" | "set-specialist"
@@ -321,19 +344,34 @@ impl CommandCategory {
             "team-alliance" | "tribe-invasion" | "victory-team" => Self::DiplomacyExtended,
 
             // Editor/Debug - Units (8)
-            "create-unit" | "unit-name" | "set-unit-family" | "change-unit-owner"
-            | "change-cooldown" | "change-damage" | "unit-increment-level"
+            "create-unit"
+            | "unit-name"
+            | "set-unit-family"
+            | "change-unit-owner"
+            | "change-cooldown"
+            | "change-damage"
+            | "unit-increment-level"
             | "unit-change-promotion" => Self::EditorUnits,
 
             // Editor/Debug - Cities (8)
-            "create-city" | "remove-city" | "city-owner" | "change-city-damage" | "change-culture"
-            | "change-city-build-turns" | "change-city-discontent-level" | "change-project" => {
-                Self::EditorCities
-            }
+            "create-city"
+            | "remove-city"
+            | "city-owner"
+            | "change-city-damage"
+            | "change-culture"
+            | "change-city-build-turns"
+            | "change-city-discontent-level"
+            | "change-project" => Self::EditorCities,
 
             // Editor/Debug - Tiles (9)
-            "set-terrain" | "set-terrain-height" | "set-vegetation" | "set-resource" | "set-road"
-            | "set-improvement" | "set-tile-owner" | "set-city-site"
+            "set-terrain"
+            | "set-terrain-height"
+            | "set-vegetation"
+            | "set-resource"
+            | "set-road"
+            | "set-improvement"
+            | "set-tile-owner"
+            | "set-city-site"
             | "improvement-build-turns" => Self::EditorTiles,
 
             // Editor/Debug - Map & Player (6)
@@ -342,7 +380,10 @@ impl CommandCategory {
             }
 
             // Editor/Debug - Characters (5)
-            "make-character-dead" | "make-character-safe" | "new-character" | "add-character"
+            "make-character-dead"
+            | "make-character-safe"
+            | "new-character"
+            | "add-character"
             | "tribe-leader" => Self::EditorCharacters,
 
             _ => Self::UnitMovement, // fallback
@@ -566,7 +607,7 @@ mod tests {
         assert!(names.contains(&"move-unit".to_string()));
         assert!(names.contains(&"end-turn".to_string()));
         assert!(names.contains(&"declare-war".to_string()));
-        assert_eq!(names.len(), 168); // 168 commands per OpenAPI spec
+        assert_eq!(names.len(), 158); // 158 commands per OpenAPI spec
     }
 
     #[test]

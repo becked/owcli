@@ -298,7 +298,10 @@ impl ApiClient {
     // === Command endpoints (using generated client) ===
 
     /// Execute a single game command
-    pub async fn execute_command(&self, command: &types::GameCommand) -> Result<types::CommandResult> {
+    pub async fn execute_command(
+        &self,
+        command: &types::GameCommand,
+    ) -> Result<types::CommandResult> {
         self.inner
             .execute_command(command)
             .await

@@ -182,4 +182,3 @@ fn render_bottom_edge(map_data: &MapData) -> String {
 
     line
 }
-
