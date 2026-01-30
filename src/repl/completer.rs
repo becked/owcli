@@ -70,26 +70,27 @@ impl Completer for OwcliCompleter {
         }
 
         // After "command", complete with action names
-        if words.len() >= 1 && (words[0] == "command" || words[0] == "cmd") {
-            if words.len() == 1 || (words.len() == 2 && !line_to_cursor.ends_with(' ')) {
-                let prefix = if words.len() == 2 { words[1] } else { "" };
-                let completions: Vec<Pair> = self
-                    .commands
-                    .iter()
-                    .filter(|cmd| cmd.starts_with(prefix))
-                    .map(|cmd| Pair {
-                        display: cmd.clone(),
-                        replacement: cmd.clone(),
-                    })
-                    .collect();
+        if !words.is_empty()
+            && (words[0] == "command" || words[0] == "cmd")
+            && (words.len() == 1 || (words.len() == 2 && !line_to_cursor.ends_with(' ')))
+        {
+            let prefix = if words.len() == 2 { words[1] } else { "" };
+            let completions: Vec<Pair> = self
+                .commands
+                .iter()
+                .filter(|cmd| cmd.starts_with(prefix))
+                .map(|cmd| Pair {
+                    display: cmd.clone(),
+                    replacement: cmd.clone(),
+                })
+                .collect();
 
-                let start = if words.len() == 2 {
-                    line_to_cursor.len() - prefix.len()
-                } else {
-                    line_to_cursor.len()
-                };
-                return Ok((start, completions));
-            }
+            let start = if words.len() == 2 {
+                line_to_cursor.len() - prefix.len()
+            } else {
+                line_to_cursor.len()
+            };
+            return Ok((start, completions));
         }
 
         // Complete player resources after player/<index>/

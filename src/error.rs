@@ -30,17 +30,4 @@ pub enum OwcliError {
     Other(String),
 }
 
-impl OwcliError {
-    pub fn from_status(status: reqwest::StatusCode, body: &str) -> Self {
-        match status.as_u16() {
-            503 => OwcliError::GameUnavailable,
-            404 => OwcliError::NotFound(body.to_string()),
-            code => OwcliError::Api {
-                message: body.to_string(),
-                code: Some(code),
-            },
-        }
-    }
-}
-
 pub type Result<T> = std::result::Result<T, OwcliError>;

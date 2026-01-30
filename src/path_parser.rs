@@ -63,6 +63,7 @@ pub fn parse_path(input: &str) -> Result<ApiPath> {
         ["characters"] => ("characters".to_string(), EndpointType::Characters),
         ["units"] => ("units".to_string(), EndpointType::Units),
         ["map"] => ("map".to_string(), EndpointType::Map),
+        ["tiles"] => ("tiles".to_string(), EndpointType::Tiles),
         ["tribes"] => ("tribes".to_string(), EndpointType::Tribes),
         ["religions"] => ("religions".to_string(), EndpointType::Religions),
         ["team-diplomacy"] => ("team-diplomacy".to_string(), EndpointType::TeamDiplomacy),

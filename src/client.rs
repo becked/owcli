@@ -2,6 +2,7 @@ use crate::config::Config;
 use crate::error::{OwcliError, Result};
 
 // Include generated progenitor code
+#[allow(dead_code)]
 mod generated {
     include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 }

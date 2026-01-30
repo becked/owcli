@@ -1,0 +1,3 @@
+[env]
+# Larger stack size needed for tests due to deeply nested Clap command tree (168 subcommands)
+RUST_MIN_STACK = "8388608"
