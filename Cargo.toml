@@ -31,3 +31,7 @@ syn = "2.0"
 [[bin]]
 name = "gen"
 path = "src/bin/gen.rs"
+
+[[bin]]
+name = "gen_formatters"
+path = "src/bin/gen_formatters.rs"
