@@ -39,28 +39,44 @@ fn main() {
 
 async fn run(cli: Cli, config: Config) -> error::Result<()> {
     if let Some(command) = cli.command {
-        return handle_command(command, &config).await;
+        return handle_command(command, &config, cli.fields.as_deref()).await;
     }
 
     if !cli.path.is_empty() {
         let path = cli.path.join("/");
-        return handle_query(&path, &config).await;
+        return handle_query(&path, &config, cli.fields.as_deref()).await;
     }
 
     Ok(())
 }
 
-async fn handle_command(command: Commands, config: &Config) -> error::Result<()> {
+async fn handle_command(
+    command: Commands,
+    config: &Config,
+    global_fields: Option<&str>,
+) -> error::Result<()> {
     match command {
-        Commands::Tiles { offset, limit } => {
+        Commands::Tiles {
+            offset,
+            limit,
+            fields,
+        } => {
             let client = ApiClient::new(config)?;
+            // Prefer subcommand --fields over global --fields
+            let fields = fields.as_deref().or(global_fields);
             let result = match (offset, limit) {
                 // If either is specified, use manual pagination
-                (Some(o), Some(l)) => commands::query::execute_tiles_query(&client, o, l).await?,
-                (Some(o), None) => commands::query::execute_tiles_query(&client, o, 100).await?,
-                (None, Some(l)) => commands::query::execute_tiles_query(&client, 0, l).await?,
+                (Some(o), Some(l)) => {
+                    commands::query::execute_tiles_query(&client, o, l, fields).await?
+                }
+                (Some(o), None) => {
+                    commands::query::execute_tiles_query(&client, o, 100, fields).await?
+                }
+                (None, Some(l)) => {
+                    commands::query::execute_tiles_query(&client, 0, l, fields).await?
+                }
                 // Default: fetch all tiles
-                (None, None) => commands::query::execute_all_tiles_query(&client).await?,
+                (None, None) => commands::query::execute_all_tiles_query(&client, fields).await?,
             };
             let output = format_typed_output(&result, config.json_output)?;
             println!("{}", output);
@@ -161,8 +177,10 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
         Commands::Map => {
             let client = ApiClient::new(config)?;
 
-            // Fetch all required data
-            let tiles_result = commands::query::execute_all_tiles_query(&client).await?;
+            // Fetch tiles with only fields needed for map rendering
+            const MAP_TILE_FIELDS: &str = "x,y,terrain,height,vegetation,owner";
+            let tiles_result =
+                commands::query::execute_all_tiles_query(&client, Some(MAP_TILE_FIELDS)).await?;
             let cities = client::fetch(client.inner.get_cities()).await?;
             let players = client::fetch(client.inner.get_players()).await?;
 
@@ -179,9 +197,9 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
     }
 }
 
-async fn handle_query(path: &str, config: &Config) -> error::Result<()> {
+async fn handle_query(path: &str, config: &Config, fields: Option<&str>) -> error::Result<()> {
     let client = ApiClient::new(config)?;
-    let result = execute_query(&client, path).await?;
+    let result = execute_query(&client, path, fields).await?;
     let output = format_typed_output(&result, config.json_output)?;
     println!("{}", output);
     Ok(())

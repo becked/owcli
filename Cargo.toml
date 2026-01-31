@@ -16,6 +16,7 @@ rustyline = "15"
 uuid = { version = "1.0", features = ["v4"] }
 thiserror = "2.0"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+futures = "0.3"
 progenitor-client = "0.8"
 crossterm = "0.28"
 

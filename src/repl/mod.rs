@@ -123,16 +123,16 @@ fn process_repl_line(client: &ApiClient, line: &str, rt: &Runtime) -> ReplResult
             let (offset, limit) = parse_tiles_args(&parts[1..]);
             let result = match (offset, limit) {
                 (Some(o), Some(l)) => {
-                    rt.block_on(crate::commands::query::execute_tiles_query(client, o, l))
+                    rt.block_on(crate::commands::query::execute_tiles_query(client, o, l, None))
                 }
                 (Some(o), None) => {
-                    rt.block_on(crate::commands::query::execute_tiles_query(client, o, 100))
+                    rt.block_on(crate::commands::query::execute_tiles_query(client, o, 100, None))
                 }
                 (None, Some(l)) => {
-                    rt.block_on(crate::commands::query::execute_tiles_query(client, 0, l))
+                    rt.block_on(crate::commands::query::execute_tiles_query(client, 0, l, None))
                 }
                 (None, None) => {
-                    rt.block_on(crate::commands::query::execute_all_tiles_query(client))
+                    rt.block_on(crate::commands::query::execute_all_tiles_query(client, None))
                 }
             };
             match result {
@@ -145,7 +145,7 @@ fn process_repl_line(client: &ApiClient, line: &str, rt: &Runtime) -> ReplResult
             }
         }
 
-        _ => match rt.block_on(execute_query(client, parts[0])) {
+        _ => match rt.block_on(execute_query(client, parts[0], None)) {
             Ok(result) => {
                 let output = format_typed_output(&result, false)
                     .unwrap_or_else(|e| format!("Format error: {}", e));

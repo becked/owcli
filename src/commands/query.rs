@@ -4,7 +4,11 @@ use crate::output::TypedResponse;
 use crate::path_parser::{parse_path, EndpointType};
 
 /// Execute a query for the given path
-pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedResponse> {
+pub async fn execute_query(
+    client: &ApiClient,
+    path_str: &str,
+    fields: Option<&str>,
+) -> Result<TypedResponse> {
     let api_path = parse_path(path_str)?;
 
     match api_path.endpoint_type {
@@ -87,7 +91,7 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
         EndpointType::Map => Ok(TypedResponse::Map(fetch(client.inner.get_map()).await?)),
         EndpointType::Tiles => {
             // Default pagination
-            let response = fetch(client.inner.get_tiles(Some(100), Some(0))).await?;
+            let response = fetch(client.inner.get_tiles(fields, Some(100), Some(0))).await?;
             Ok(TypedResponse::Tiles(response.tiles))
         }
         EndpointType::Tile => {
@@ -98,7 +102,9 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
                     let tile_id = id
                         .parse::<i32>()
                         .map_err(|_| OwcliError::InvalidPath(format!("Invalid tile ID: {}", id)))?;
-                    Ok(TypedResponse::Tile(fetch(client.inner.get_tile(tile_id as i64)).await?))
+                    Ok(TypedResponse::Tile(
+                        fetch(client.inner.get_tile(tile_id as i64, fields)).await?,
+                    ))
                 }
                 ["tile", x, y] => {
                     let x_coord = x.parse::<i32>().map_err(|_| {
@@ -108,7 +114,8 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
                         OwcliError::InvalidPath(format!("Invalid y coordinate: {}", y))
                     })?;
                     Ok(TypedResponse::Tile(
-                        fetch(client.inner.get_tile_by_coords(x_coord as i64, y_coord as i64)).await?,
+                        fetch(client.inner.get_tile_by_coords(x_coord as i64, y_coord as i64, fields))
+                            .await?,
                     ))
                 }
                 _ => Err(OwcliError::InvalidPath(format!(
@@ -152,14 +159,22 @@ pub async fn execute_tiles_query(
     client: &ApiClient,
     offset: u32,
     limit: u32,
+    fields: Option<&str>,
 ) -> Result<TypedResponse> {
-    let response = fetch(client.inner.get_tiles(Some(limit as i64), Some(offset as i64))).await?;
+    let response =
+        fetch(client.inner.get_tiles(fields, Some(limit as i64), Some(offset as i64))).await?;
     Ok(TypedResponse::Tiles(response.tiles))
 }
 
-/// Execute a query for all tiles (auto-pagination)
-pub async fn execute_all_tiles_query(client: &ApiClient) -> Result<TypedResponse> {
+/// Execute a query for all tiles (parallel batched fetching)
+pub async fn execute_all_tiles_query(
+    client: &ApiClient,
+    fields: Option<&str>,
+) -> Result<TypedResponse> {
+    use futures::stream::{self, StreamExt};
+
     const BATCH_SIZE: i64 = 1000;
+    const MAX_CONCURRENT: usize = 4;
 
     // Get total tile count from map metadata
     let map = fetch(client.inner.get_map()).await?;
@@ -169,16 +184,22 @@ pub async fn execute_all_tiles_query(client: &ApiClient) -> Result<TypedResponse
         return Ok(TypedResponse::Tiles(vec![]));
     }
 
-    let mut all_tiles = Vec::with_capacity(total as usize);
-    let mut offset = 0i64;
+    // Calculate offsets for all batches
+    let offsets: Vec<i64> = (0..total).step_by(BATCH_SIZE as usize).collect();
 
-    while offset < total {
-        let response = fetch(client.inner.get_tiles(Some(BATCH_SIZE), Some(offset))).await?;
-        if response.tiles.is_empty() {
-            break;
-        }
-        all_tiles.extend(response.tiles);
-        offset += BATCH_SIZE;
+    // Fetch batches in parallel with concurrency limit (buffered preserves order)
+    let results: Vec<_> = stream::iter(offsets)
+        .map(|offset| async move {
+            fetch(client.inner.get_tiles(fields, Some(BATCH_SIZE), Some(offset))).await
+        })
+        .buffered(MAX_CONCURRENT)
+        .collect()
+        .await;
+
+    // Combine results, preserving order by offset
+    let mut all_tiles = Vec::with_capacity(total as usize);
+    for result in results {
+        all_tiles.extend(result?.tiles);
     }
 
     Ok(TypedResponse::Tiles(all_tiles))

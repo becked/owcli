@@ -24,6 +24,10 @@ pub struct Cli {
     /// API path to query (e.g., player/0/units, cities, tile/5/12)
     #[arg(trailing_var_arg = true)]
     pub path: Vec<String>,
+
+    /// Comma-separated list of fields to include for tile queries (e.g., "x,y,terrain,height")
+    #[arg(long, global = true)]
+    pub fields: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -43,6 +47,10 @@ pub enum Commands {
         /// Limit for pagination (enables manual pagination mode)
         #[arg(long)]
         limit: Option<u32>,
+
+        /// Comma-separated list of fields to include (e.g., "x,y,terrain,height")
+        #[arg(long)]
+        fields: Option<String>,
     },
 
     /// Execute multiple commands from a file or stdin
