@@ -66,16 +66,13 @@ pub fn parse_path(input: &str) -> Result<ApiPath> {
         ["tiles"] => ("tiles".to_string(), EndpointType::Tiles),
         ["tribes"] => ("tribes".to_string(), EndpointType::Tribes),
         ["religions"] => ("religions".to_string(), EndpointType::Religions),
-        ["team-diplomacy"] => ("team-diplomacy".to_string(), EndpointType::TeamDiplomacy),
-        ["team-alliances"] => ("team-alliances".to_string(), EndpointType::TeamAlliances),
-        ["tribe-diplomacy"] => ("tribe-diplomacy".to_string(), EndpointType::TribeDiplomacy),
-        ["tribe-alliances"] => ("tribe-alliances".to_string(), EndpointType::TribeAlliances),
-        ["character-events"] => (
-            "character-events".to_string(),
-            EndpointType::CharacterEvents,
-        ),
-        ["unit-events"] => ("unit-events".to_string(), EndpointType::UnitEvents),
-        ["city-events"] => ("city-events".to_string(), EndpointType::CityEvents),
+        ["diplomacy", "teams"] => ("diplomacy/teams".to_string(), EndpointType::TeamDiplomacy),
+        ["diplomacy", "tribes"] => ("diplomacy/tribes".to_string(), EndpointType::TribeDiplomacy),
+        ["alliances", "teams"] => ("alliances/teams".to_string(), EndpointType::TeamAlliances),
+        ["alliances", "tribes"] => ("alliances/tribes".to_string(), EndpointType::TribeAlliances),
+        ["events", "characters"] => ("events/characters".to_string(), EndpointType::CharacterEvents),
+        ["events", "units"] => ("events/units".to_string(), EndpointType::UnitEvents),
+        ["events", "cities"] => ("events/cities".to_string(), EndpointType::CityEvents),
 
         // Player with index
         ["player", index] => {

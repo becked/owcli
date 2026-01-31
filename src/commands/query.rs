@@ -1,4 +1,4 @@
-use crate::client::ApiClient;
+use crate::client::{fetch, ApiClient};
 use crate::error::{OwcliError, Result};
 use crate::output::TypedResponse;
 use crate::path_parser::{parse_path, EndpointType};
@@ -8,88 +8,87 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
     let api_path = parse_path(path_str)?;
 
     match api_path.endpoint_type {
-        EndpointType::State => Ok(TypedResponse::State(client.get_state().await?)),
-        EndpointType::Config => Ok(TypedResponse::Config(client.get_config().await?)),
-        EndpointType::Players => Ok(TypedResponse::Players(client.get_players().await?)),
+        EndpointType::State => Ok(TypedResponse::State(fetch(client.inner.get_state()).await?)),
+        EndpointType::Config => Ok(TypedResponse::Config(fetch(client.inner.get_config()).await?)),
+        EndpointType::Players => Ok(TypedResponse::Players(fetch(client.inner.get_players()).await?)),
         EndpointType::Player => {
             let index = extract_index(&api_path.path, "player")?;
-            Ok(TypedResponse::Player(client.get_player(index).await?))
+            Ok(TypedResponse::Player(fetch(client.inner.get_player(index as i64)).await?))
         }
         EndpointType::PlayerUnits => {
             let index = extract_index(&api_path.path, "player")?;
             Ok(TypedResponse::PlayerUnits(
-                client.get_player_units(index).await?,
+                fetch(client.inner.get_player_units(index as i64)).await?,
             ))
         }
         EndpointType::PlayerTechs => {
             let index = extract_index(&api_path.path, "player")?;
             Ok(TypedResponse::PlayerTechs(
-                client.get_player_techs(index).await?,
+                fetch(client.inner.get_player_techs(index as i64)).await?,
             ))
         }
         EndpointType::PlayerFamilies => {
             let index = extract_index(&api_path.path, "player")?;
             Ok(TypedResponse::PlayerFamilies(
-                client.get_player_families(index).await?,
+                fetch(client.inner.get_player_families(index as i64)).await?,
             ))
         }
         EndpointType::PlayerReligion => {
             let index = extract_index(&api_path.path, "player")?;
             Ok(TypedResponse::PlayerReligion(
-                client.get_player_religion(index).await?,
+                fetch(client.inner.get_player_religion(index as i64)).await?,
             ))
         }
         EndpointType::PlayerGoals => {
             let index = extract_index(&api_path.path, "player")?;
             Ok(TypedResponse::PlayerGoals(
-                client.get_player_goals(index).await?,
+                fetch(client.inner.get_player_goals(index as i64)).await?,
             ))
         }
         EndpointType::PlayerDecisions => {
             let index = extract_index(&api_path.path, "player")?;
             Ok(TypedResponse::PlayerDecisions(
-                client.get_player_decisions(index).await?,
+                fetch(client.inner.get_player_decisions(index as i64)).await?,
             ))
         }
         EndpointType::PlayerLaws => {
             let index = extract_index(&api_path.path, "player")?;
             Ok(TypedResponse::PlayerLaws(
-                client.get_player_laws(index).await?,
+                fetch(client.inner.get_player_laws(index as i64)).await?,
             ))
         }
         EndpointType::PlayerMissions => {
             let index = extract_index(&api_path.path, "player")?;
             Ok(TypedResponse::PlayerMissions(
-                client.get_player_missions(index).await?,
+                fetch(client.inner.get_player_missions(index as i64)).await?,
             ))
         }
         EndpointType::PlayerResources => {
             let index = extract_index(&api_path.path, "player")?;
             Ok(TypedResponse::PlayerResources(
-                client.get_player_resources(index).await?,
+                fetch(client.inner.get_player_resources(index as i64)).await?,
             ))
         }
-        EndpointType::Cities => Ok(TypedResponse::Cities(client.get_cities().await?)),
+        EndpointType::Cities => Ok(TypedResponse::Cities(fetch(client.inner.get_cities()).await?)),
         EndpointType::City => {
             let id = extract_index(&api_path.path, "city")?;
-            Ok(TypedResponse::City(client.get_city(id).await?))
+            Ok(TypedResponse::City(fetch(client.inner.get_city(id as i64)).await?))
         }
-        EndpointType::Characters => Ok(TypedResponse::Characters(client.get_characters().await?)),
+        EndpointType::Characters => Ok(TypedResponse::Characters(fetch(client.inner.get_characters()).await?)),
         EndpointType::Character => {
             let id = extract_index(&api_path.path, "character")?;
-            Ok(TypedResponse::Character(client.get_character(id).await?))
+            Ok(TypedResponse::Character(fetch(client.inner.get_character(id as i64)).await?))
         }
-        EndpointType::Units => Ok(TypedResponse::Units(client.get_units().await?)),
+        EndpointType::Units => Ok(TypedResponse::Units(fetch(client.inner.get_units()).await?)),
         EndpointType::Unit => {
             let id = extract_index(&api_path.path, "unit")?;
-            Ok(TypedResponse::Unit(client.get_unit(id).await?))
+            Ok(TypedResponse::Unit(fetch(client.inner.get_unit(id as i64)).await?))
         }
-        EndpointType::Map => Ok(TypedResponse::Map(client.get_map().await?)),
+        EndpointType::Map => Ok(TypedResponse::Map(fetch(client.inner.get_map()).await?)),
         EndpointType::Tiles => {
             // Default pagination
-            Ok(TypedResponse::Tiles(
-                client.get_tiles(Some(0), Some(100)).await?,
-            ))
+            let response = fetch(client.inner.get_tiles(Some(100), Some(0))).await?;
+            Ok(TypedResponse::Tiles(response.tiles))
         }
         EndpointType::Tile => {
             // Parse tile path - could be tile/<id> or tile/<x>/<y>
@@ -99,7 +98,7 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
                     let tile_id = id
                         .parse::<i32>()
                         .map_err(|_| OwcliError::InvalidPath(format!("Invalid tile ID: {}", id)))?;
-                    Ok(TypedResponse::Tile(client.get_tile_by_id(tile_id).await?))
+                    Ok(TypedResponse::Tile(fetch(client.inner.get_tile(tile_id as i64)).await?))
                 }
                 ["tile", x, y] => {
                     let x_coord = x.parse::<i32>().map_err(|_| {
@@ -109,7 +108,7 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
                         OwcliError::InvalidPath(format!("Invalid y coordinate: {}", y))
                     })?;
                     Ok(TypedResponse::Tile(
-                        client.get_tile_by_coords(x_coord, y_coord).await?,
+                        fetch(client.inner.get_tile_by_coords(x_coord as i64, y_coord as i64)).await?,
                     ))
                 }
                 _ => Err(OwcliError::InvalidPath(format!(
@@ -118,29 +117,33 @@ pub async fn execute_query(client: &ApiClient, path_str: &str) -> Result<TypedRe
                 ))),
             }
         }
-        EndpointType::Tribes => Ok(TypedResponse::Tribes(client.get_tribes().await?)),
+        EndpointType::Tribes => Ok(TypedResponse::Tribes(fetch(client.inner.get_tribes()).await?)),
         EndpointType::Tribe => {
             let tribe_type = extract_string_param(&api_path.path, "tribe")?;
-            Ok(TypedResponse::Tribe(client.get_tribe(&tribe_type).await?))
+            Ok(TypedResponse::Tribe(fetch(client.inner.get_tribe(&tribe_type)).await?))
         }
-        EndpointType::Religions => Ok(TypedResponse::Religions(client.get_religions().await?)),
+        EndpointType::Religions => Ok(TypedResponse::Religions(fetch(client.inner.get_religions()).await?)),
         EndpointType::TeamDiplomacy => Ok(TypedResponse::TeamDiplomacy(
-            client.get_team_diplomacy().await?,
+            fetch(client.inner.get_diplomacy_teams()).await?,
         )),
         EndpointType::TeamAlliances => Ok(TypedResponse::TeamAlliances(
-            client.get_team_alliances().await?,
+            fetch(client.inner.get_alliances_teams()).await?,
         )),
         EndpointType::TribeDiplomacy => Ok(TypedResponse::TribeDiplomacy(
-            client.get_tribe_diplomacy().await?,
+            fetch(client.inner.get_diplomacy_tribes()).await?,
         )),
         EndpointType::TribeAlliances => Ok(TypedResponse::TribeAlliances(
-            client.get_tribe_alliances().await?,
+            fetch(client.inner.get_alliances_tribes()).await?,
         )),
         EndpointType::CharacterEvents => Ok(TypedResponse::CharacterEvents(
-            client.get_character_events().await?,
+            fetch(client.inner.get_turn_summary_characters()).await?,
         )),
-        EndpointType::UnitEvents => Ok(TypedResponse::UnitEvents(client.get_unit_events().await?)),
-        EndpointType::CityEvents => Ok(TypedResponse::CityEvents(client.get_city_events().await?)),
+        EndpointType::UnitEvents => Ok(TypedResponse::UnitEvents(
+            fetch(client.inner.get_turn_summary_units()).await?,
+        )),
+        EndpointType::CityEvents => Ok(TypedResponse::CityEvents(
+            fetch(client.inner.get_turn_summary_cities()).await?,
+        )),
     }
 }
 
@@ -150,34 +153,31 @@ pub async fn execute_tiles_query(
     offset: u32,
     limit: u32,
 ) -> Result<TypedResponse> {
-    Ok(TypedResponse::Tiles(
-        client
-            .get_tiles(Some(offset as i32), Some(limit as i32))
-            .await?,
-    ))
+    let response = fetch(client.inner.get_tiles(Some(limit as i64), Some(offset as i64))).await?;
+    Ok(TypedResponse::Tiles(response.tiles))
 }
 
 /// Execute a query for all tiles (auto-pagination)
 pub async fn execute_all_tiles_query(client: &ApiClient) -> Result<TypedResponse> {
-    const BATCH_SIZE: i32 = 1000;
+    const BATCH_SIZE: i64 = 1000;
 
     // Get total tile count from map metadata
-    let map = client.get_map().await?;
-    let total = map.num_tiles.unwrap_or(0) as i32;
+    let map = fetch(client.inner.get_map()).await?;
+    let total = map.num_tiles.unwrap_or(0) as i64;
 
     if total == 0 {
         return Ok(TypedResponse::Tiles(vec![]));
     }
 
     let mut all_tiles = Vec::with_capacity(total as usize);
-    let mut offset = 0;
+    let mut offset = 0i64;
 
     while offset < total {
-        let batch = client.get_tiles(Some(offset), Some(BATCH_SIZE)).await?;
-        if batch.is_empty() {
+        let response = fetch(client.inner.get_tiles(Some(BATCH_SIZE), Some(offset))).await?;
+        if response.tiles.is_empty() {
             break;
         }
-        all_tiles.extend(batch);
+        all_tiles.extend(response.tiles);
         offset += BATCH_SIZE;
     }
 

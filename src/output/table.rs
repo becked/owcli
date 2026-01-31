@@ -9,16 +9,10 @@ struct PlayerRow {
     index: i64,
     #[tabled(rename = "Nation")]
     nation: String,
-    #[tabled(rename = "Cities")]
-    cities: i64,
-    #[tabled(rename = "Units")]
-    units: i64,
     #[tabled(rename = "Legitimacy")]
-    legitimacy: i64,
-    #[tabled(rename = "Food")]
-    food: i64,
-    #[tabled(rename = "Gold")]
-    gold: i64,
+    legitimacy: i32,
+    #[tabled(rename = "Alive")]
+    alive: bool,
 }
 
 pub fn format_players(players: &[types::Player]) -> String {
@@ -31,11 +25,8 @@ pub fn format_players(players: &[types::Player]) -> String {
         .map(|p| PlayerRow {
             index: p.index.unwrap_or(0),
             nation: p.nation.as_deref().map(shorten_type).unwrap_or_default(),
-            cities: p.cities.unwrap_or(0),
-            units: p.units.unwrap_or(0),
             legitimacy: p.legitimacy.unwrap_or(0),
-            food: *p.stockpiles.get("YIELD_FOOD").unwrap_or(&0),
-            gold: *p.stockpiles.get("YIELD_MONEY").unwrap_or(&0),
+            alive: p.is_alive.unwrap_or(false),
         })
         .collect();
 
@@ -51,14 +42,11 @@ pub fn format_player(player: &types::Player) -> String {
     if let Some(nation) = &player.nation {
         lines.push(format!("  Nation: {}", shorten_type(nation)));
     }
-    if let Some(cities) = player.cities {
-        lines.push(format!("  Cities: {}", cities));
-    }
-    if let Some(units) = player.units {
-        lines.push(format!("  Units: {}", units));
-    }
     if let Some(legitimacy) = player.legitimacy {
         lines.push(format!("  Legitimacy: {}", legitimacy));
+    }
+    if let Some(alive) = player.is_alive {
+        lines.push(format!("  Alive: {}", alive));
     }
 
     if !player.stockpiles.is_empty() {
@@ -71,8 +59,7 @@ pub fn format_player(player: &types::Player) -> String {
     if !player.rates.is_empty() {
         lines.push("  Per Turn:".to_string());
         for (key, val) in &player.rates {
-            let sign = if *val >= 0 { "+" } else { "" };
-            lines.push(format!("    {}: {}{}", shorten_type(key), sign, val));
+            lines.push(format!("    {}: {}", shorten_type(key), val));
         }
     }
 
@@ -84,15 +71,15 @@ pub fn format_player(player: &types::Player) -> String {
 #[derive(Tabled)]
 struct UnitRow {
     #[tabled(rename = "ID")]
-    id: i64,
+    id: i32,
     #[tabled(rename = "Type")]
     unit_type: String,
     #[tabled(rename = "Owner")]
     owner: String,
     #[tabled(rename = "HP")]
     hp: String,
-    #[tabled(rename = "Pos")]
-    pos: String,
+    #[tabled(rename = "Tile")]
+    tile: i32,
     #[tabled(rename = "Status")]
     status: String,
 }
@@ -106,13 +93,10 @@ pub fn format_units(units: &[types::Unit]) -> String {
         .iter()
         .map(|u| UnitRow {
             id: u.id.unwrap_or(0),
-            unit_type: u.unit_type.as_deref().map(shorten_type).unwrap_or_default(),
-            owner: u
-                .owner_id
-                .map(|v| v.to_string())
-                .unwrap_or_else(|| "-".to_string()),
+            unit_type: u.type_.as_deref().map(shorten_type).unwrap_or_default(),
+            owner: get_unit_owner(u),
             hp: format!("{}/{}", u.hp.unwrap_or(0), u.hp_max.unwrap_or(0)),
-            pos: format!("({},{})", u.x.unwrap_or(0), u.y.unwrap_or(0)),
+            tile: u.tile_id.unwrap_or(0),
             status: get_unit_status(u),
         })
         .collect();
@@ -125,14 +109,15 @@ pub fn format_unit(unit: &types::Unit) -> String {
 
     let id = unit.id.unwrap_or(0);
     let unit_type = unit
-        .unit_type
+        .type_
         .as_deref()
         .map(shorten_type)
         .unwrap_or_else(|| "Unknown".to_string());
     lines.push(format!("Unit {} - {}", id, unit_type));
 
-    if let Some(owner) = unit.owner_id {
-        lines.push(format!("  Owner: Player {}", owner));
+    let owner = get_unit_owner(unit);
+    if owner != "-" {
+        lines.push(format!("  Owner: {}", owner));
     }
 
     lines.push(format!(
@@ -141,25 +126,33 @@ pub fn format_unit(unit: &types::Unit) -> String {
         unit.hp_max.unwrap_or(0)
     ));
 
-    lines.push(format!(
-        "  Position: ({}, {}) [tile {}]",
-        unit.x.unwrap_or(0),
-        unit.y.unwrap_or(0),
-        unit.tile_id.unwrap_or(0)
-    ));
+    if let Some(tile) = unit.tile_id {
+        lines.push(format!("  Tile: {}", tile));
+    }
 
     lines.push(format!("  Status: {}", get_unit_status(unit)));
 
-    if let Some(xp) = unit.xp {
-        lines.push(format!("  XP: {} (Level {})", xp, unit.level.unwrap_or(0)));
-    }
-
-    if !unit.promotions.is_empty() {
-        let promo_str: Vec<String> = unit.promotions.iter().map(|p| shorten_type(p)).collect();
-        lines.push(format!("  Promotions: {}", promo_str.join(", ")));
-    }
-
     lines.join("\n")
+}
+
+fn get_unit_owner(unit: &types::Unit) -> String {
+    // Check player first, but "NONE" means it's a tribe unit
+    if let Some(player) = &unit.player {
+        if player != "NONE" {
+            // Player can be a player index (e.g., "0") or nation type (e.g., "NATION_ROME")
+            if player.parse::<i32>().is_ok() {
+                return format!("Player {}", player);
+            }
+            return shorten_type(player);
+        }
+    }
+    // Fall back to tribe for tribe units
+    if let Some(tribe) = &unit.tribe {
+        if tribe != "NONE" {
+            return shorten_type(tribe);
+        }
+    }
+    "-".to_string()
 }
 
 fn get_unit_status(unit: &types::Unit) -> String {
@@ -168,9 +161,6 @@ fn get_unit_status(unit: &types::Unit) -> String {
     }
     if unit.is_sentry.unwrap_or(false) {
         return "Sentry".to_string();
-    }
-    if unit.is_pass.unwrap_or(false) {
-        return "Pass".to_string();
     }
     let fortify = unit.fortify_turns.unwrap_or(0);
     if fortify > 0 {
@@ -184,13 +174,13 @@ fn get_unit_status(unit: &types::Unit) -> String {
 #[derive(Tabled)]
 struct CityRow {
     #[tabled(rename = "ID")]
-    id: i64,
+    id: i32,
     #[tabled(rename = "Name")]
     name: String,
     #[tabled(rename = "Owner")]
     owner: String,
     #[tabled(rename = "Pop")]
-    citizens: i64,
+    citizens: i32,
     #[tabled(rename = "HP")]
     hp: String,
     #[tabled(rename = "Pos")]
@@ -208,7 +198,7 @@ pub fn format_cities(cities: &[types::City]) -> String {
             id: c.id.unwrap_or(0),
             name: c.name.clone().unwrap_or_default(),
             owner: c
-                .owner_id
+                .player_int
                 .map(|v| v.to_string())
                 .unwrap_or_else(|| "-".to_string()),
             citizens: c.citizens.unwrap_or(0),
@@ -227,7 +217,7 @@ pub fn format_city(city: &types::City) -> String {
     let id = city.id.unwrap_or(0);
     lines.push(format!("{} (ID: {})", name, id));
 
-    if let Some(owner) = city.owner_id {
+    if let Some(owner) = city.player_int {
         lines.push(format!("  Owner: Player {}", owner));
     }
 
@@ -254,7 +244,8 @@ pub fn format_city(city: &types::City) -> String {
     if !city.yields.is_empty() {
         lines.push("  Yields per turn:".to_string());
         for (key, val) in &city.yields {
-            if let Some(per_turn) = val.per_turn {
+            // yields is now serde_json::Map, so val is serde_json::Value
+            if let Some(per_turn) = val.get("perTurn").and_then(|v| v.as_i64()) {
                 lines.push(format!("    {}: {}", shorten_type(key), per_turn));
             }
         }
@@ -268,11 +259,11 @@ pub fn format_city(city: &types::City) -> String {
 #[derive(Tabled)]
 struct CharacterRow {
     #[tabled(rename = "ID")]
-    id: i64,
+    id: i32,
     #[tabled(rename = "Name")]
     name: String,
     #[tabled(rename = "Age")]
-    age: i64,
+    age: i32,
     #[tabled(rename = "Player")]
     player: String,
     #[tabled(rename = "Role")]
@@ -288,10 +279,10 @@ pub fn format_characters(characters: &[types::Character]) -> String {
         .iter()
         .map(|c| CharacterRow {
             id: c.id.unwrap_or(0),
-            name: c.name.clone().unwrap_or_default(),
+            name: c.first_name.clone().unwrap_or_default(),
             age: c.age.unwrap_or(0),
             player: c
-                .player_id
+                .player_int
                 .map(|v| v.to_string())
                 .unwrap_or_else(|| "-".to_string()),
             role: get_character_role(c),
@@ -304,16 +295,16 @@ pub fn format_characters(characters: &[types::Character]) -> String {
 pub fn format_character(character: &types::Character) -> String {
     let mut lines = Vec::new();
 
-    let name = character.name.as_deref().unwrap_or("Unknown");
+    let name = character.first_name.as_deref().unwrap_or("Unknown");
     let id = character.id.unwrap_or(0);
     lines.push(format!("{} (ID: {})", name, id));
 
     if let Some(gender) = &character.gender {
         let age = character.age.unwrap_or(0);
-        lines.push(format!("  {} years old, {:?}", age, gender));
+        lines.push(format!("  {} years old, {}", age, gender));
     }
 
-    if let Some(player) = character.player_id {
+    if let Some(player) = character.player_int {
         lines.push(format!("  Player: {}", player));
     }
 
@@ -326,23 +317,11 @@ pub fn format_character(character: &types::Character) -> String {
         lines.push(format!("  Nation: {}", shorten_type(nation)));
     }
 
-    // Ratings from hashmap
+    // Ratings
     if !character.ratings.is_empty() {
-        let courage = character
-            .ratings
-            .get("RATING_COURAGE")
-            .copied()
-            .unwrap_or(0);
-        let discipline = character
-            .ratings
-            .get("RATING_DISCIPLINE")
-            .copied()
-            .unwrap_or(0);
-        let charisma = character
-            .ratings
-            .get("RATING_CHARISMA")
-            .copied()
-            .unwrap_or(0);
+        let courage = character.ratings.get("RATING_COURAGE").copied().unwrap_or(0);
+        let discipline = character.ratings.get("RATING_DISCIPLINE").copied().unwrap_or(0);
+        let charisma = character.ratings.get("RATING_CHARISMA").copied().unwrap_or(0);
         let wisdom = character.ratings.get("RATING_WISDOM").copied().unwrap_or(0);
         lines.push(format!(
             "  Ratings: COU {} / DIS {} / CHA {} / WIS {}",
@@ -373,7 +352,7 @@ fn get_character_role(character: &types::Character) -> String {
 #[derive(Tabled)]
 struct TileRow {
     #[tabled(rename = "ID")]
-    id: i64,
+    id: i32,
     #[tabled(rename = "Pos")]
     pos: String,
     #[tabled(rename = "Terrain")]
@@ -412,8 +391,9 @@ pub fn format_tiles(tiles: &[types::Tile]) -> String {
                 .map(shorten_type)
                 .unwrap_or_else(|| "-".to_string()),
             owner: t
-                .owner_id
-                .map(|v| v.to_string())
+                .owner
+                .as_deref()
+                .map(shorten_type)
                 .unwrap_or_else(|| "-".to_string()),
         })
         .collect();
@@ -452,8 +432,8 @@ pub fn format_tile(tile: &types::Tile) -> String {
             suffix
         ));
     }
-    if let Some(owner) = tile.owner_id {
-        lines.push(format!("  Owner: Player {}", owner));
+    if let Some(owner) = &tile.owner {
+        lines.push(format!("  Owner: {}", shorten_type(owner)));
     }
     if let Some(city) = tile.city_id {
         lines.push(format!("  City: {}", city));
@@ -468,12 +448,12 @@ pub fn format_tile(tile: &types::Tile) -> String {
 struct TribeRow {
     #[tabled(rename = "Type")]
     tribe_type: String,
-    #[tabled(rename = "Strength")]
-    strength: i64,
-    #[tabled(rename = "Units")]
-    num_units: i64,
-    #[tabled(rename = "Cities")]
-    num_cities: i64,
+    #[tabled(rename = "Alive")]
+    alive: bool,
+    #[tabled(rename = "Has Leader")]
+    has_leader: bool,
+    #[tabled(rename = "Religion")]
+    religion: String,
 }
 
 pub fn format_tribes(tribes: &[types::Tribe]) -> String {
@@ -489,9 +469,13 @@ pub fn format_tribes(tribes: &[types::Tribe]) -> String {
                 .as_deref()
                 .map(shorten_type)
                 .unwrap_or_default(),
-            strength: t.strength.unwrap_or(0),
-            num_units: t.num_units.unwrap_or(0),
-            num_cities: t.num_cities.unwrap_or(0),
+            alive: t.is_alive.unwrap_or(false),
+            has_leader: t.has_leader.unwrap_or(false),
+            religion: t
+                .religion
+                .as_deref()
+                .map(shorten_type)
+                .unwrap_or_else(|| "-".to_string()),
         })
         .collect();
 
@@ -504,17 +488,21 @@ pub fn format_tribe(tribe: &types::Tribe) -> String {
     if let Some(tribe_type) = &tribe.tribe_type {
         lines.push(format!("Tribe: {}", shorten_type(tribe_type)));
     }
-    if let Some(strength) = tribe.strength {
-        lines.push(format!("  Strength: {}", strength));
-    }
-    if let Some(num_units) = tribe.num_units {
-        lines.push(format!("  Units: {}", num_units));
-    }
-    if let Some(num_cities) = tribe.num_cities {
-        lines.push(format!("  Cities: {}", num_cities));
-    }
     if tribe.is_alive.unwrap_or(false) {
         lines.push("  Status: Alive".to_string());
+    } else if tribe.is_dead.unwrap_or(false) {
+        lines.push("  Status: Dead".to_string());
+    }
+    if tribe.has_leader.unwrap_or(false) {
+        if let Some(leader_id) = tribe.leader_id {
+            lines.push(format!("  Leader ID: {}", leader_id));
+        }
+    }
+    if let Some(religion) = &tribe.religion {
+        lines.push(format!("  Religion: {}", shorten_type(religion)));
+    }
+    if let Some(ally_id) = tribe.ally_player_id {
+        lines.push(format!("  Ally: Player {}", ally_id));
     }
 
     lines.join("\n")
@@ -581,8 +569,8 @@ pub fn format_team_diplomacy(diplomacy: &[types::TeamDiplomacy]) -> String {
 struct TribeDiplomacyRow {
     #[tabled(rename = "Tribe")]
     tribe: String,
-    #[tabled(rename = "Team")]
-    to_team: i64,
+    #[tabled(rename = "Player")]
+    player_id: i64,
     #[tabled(rename = "Diplomacy")]
     diplomacy: String,
 }
@@ -595,8 +583,12 @@ pub fn format_tribe_diplomacy(diplomacy: &[types::TribeDiplomacy]) -> String {
     let rows: Vec<TribeDiplomacyRow> = diplomacy
         .iter()
         .map(|d| TribeDiplomacyRow {
-            tribe: d.tribe.as_deref().map(shorten_type).unwrap_or_default(),
-            to_team: d.to_team.unwrap_or(0),
+            tribe: d
+                .tribe_type
+                .as_deref()
+                .map(shorten_type)
+                .unwrap_or_default(),
+            player_id: d.player_id.unwrap_or(0),
             diplomacy: d.diplomacy.clone().unwrap_or_else(|| "-".to_string()),
         })
         .collect();
@@ -806,10 +798,12 @@ pub fn format_religions(religions: &[types::Religion]) -> String {
 
 #[derive(Tabled)]
 struct TeamAllianceRow {
-    #[tabled(rename = "Team")]
-    team: i64,
-    #[tabled(rename = "Ally Team")]
-    ally_team: i64,
+    #[tabled(rename = "Team 1")]
+    team1: i64,
+    #[tabled(rename = "Team 2")]
+    team2: i64,
+    #[tabled(rename = "Type")]
+    alliance_type: String,
 }
 
 pub fn format_team_alliances(alliances: &[types::TeamAlliance]) -> String {
@@ -820,8 +814,13 @@ pub fn format_team_alliances(alliances: &[types::TeamAlliance]) -> String {
     let rows: Vec<TeamAllianceRow> = alliances
         .iter()
         .map(|a| TeamAllianceRow {
-            team: a.team.unwrap_or(0),
-            ally_team: a.ally_team.unwrap_or(0),
+            team1: a.team1.unwrap_or(0),
+            team2: a.team2.unwrap_or(0),
+            alliance_type: a
+                .alliance_type
+                .as_deref()
+                .map(shorten_type)
+                .unwrap_or_else(|| "-".to_string()),
         })
         .collect();
 
@@ -834,10 +833,10 @@ pub fn format_team_alliances(alliances: &[types::TeamAlliance]) -> String {
 struct TribeAllianceRow {
     #[tabled(rename = "Tribe")]
     tribe: String,
+    #[tabled(rename = "Player")]
+    player_id: i64,
     #[tabled(rename = "Ally Player")]
     ally_player: i64,
-    #[tabled(rename = "Ally Team")]
-    ally_team: i64,
 }
 
 pub fn format_tribe_alliances(alliances: &[types::TribeAlliance]) -> String {
@@ -848,9 +847,13 @@ pub fn format_tribe_alliances(alliances: &[types::TribeAlliance]) -> String {
     let rows: Vec<TribeAllianceRow> = alliances
         .iter()
         .map(|a| TribeAllianceRow {
-            tribe: a.tribe.as_deref().map(shorten_type).unwrap_or_default(),
+            tribe: a
+                .tribe_type
+                .as_deref()
+                .map(shorten_type)
+                .unwrap_or_default(),
+            player_id: a.player_id.unwrap_or(0),
             ally_player: a.ally_player_id.unwrap_or(0),
-            ally_team: a.ally_team.unwrap_or(0),
         })
         .collect();
 
@@ -866,7 +869,11 @@ pub fn format_player_techs(techs: &types::PlayerTechs) -> String {
 
     // Currently researching
     if let Some(researching) = &techs.researching {
-        let progress = techs.progress.get(researching).copied().unwrap_or(0);
+        let progress = techs
+            .progress
+            .get(researching)
+            .and_then(|v| v.as_i64())
+            .unwrap_or(0);
         lines.push(format!(
             "  Currently: {} ({} progress)",
             shorten_type(researching),
@@ -922,8 +929,15 @@ pub fn format_player_families(families: &types::PlayerFamilies) -> String {
         .families
         .iter()
         .map(|f| FamilyRow {
-            family: f.family.as_deref().map(shorten_type).unwrap_or_default(),
-            opinion_rate: f.opinion_rate.unwrap_or(0),
+            family: f
+                .get("family")
+                .and_then(|v| v.as_str())
+                .map(shorten_type)
+                .unwrap_or_default(),
+            opinion_rate: f
+                .get("opinionRate")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0),
         })
         .collect();
 
@@ -949,7 +963,8 @@ pub fn format_player_religion(religion: &types::PlayerReligion) -> String {
     if !religion.religion_counts.is_empty() {
         lines.push("  Followers:".to_string());
         for (rel, count) in &religion.religion_counts {
-            lines.push(format!("    {}: {}", shorten_type(rel), count));
+            let count_val = count.as_i64().unwrap_or(0);
+            lines.push(format!("    {}: {}", shorten_type(rel), count_val));
         }
     }
 
@@ -963,12 +978,14 @@ pub fn format_player_goals(goals: &types::PlayerGoals) -> String {
 
     lines.push("Player Goals".to_string());
 
-    if let Some(note) = &goals.note {
-        lines.push(format!("  Note: {}", note));
-    }
-
-    if goals.goals.is_empty() && goals.note.is_none() {
+    if goals.goals.is_empty() {
         lines.push("  No goals".to_string());
+    } else {
+        for goal in &goals.goals {
+            if let Some(goal_type) = goal.get("goalType").and_then(|v| v.as_str()) {
+                lines.push(format!("  - {}", shorten_type(goal_type)));
+            }
+        }
     }
 
     lines.join("\n")
@@ -981,12 +998,14 @@ pub fn format_player_decisions(decisions: &types::PlayerDecisions) -> String {
 
     lines.push("Player Decisions".to_string());
 
-    if let Some(note) = &decisions.note {
-        lines.push(format!("  Note: {}", note));
-    }
-
-    if decisions.decisions.is_empty() && decisions.note.is_none() {
+    if decisions.decisions.is_empty() {
         lines.push("  No pending decisions".to_string());
+    } else {
+        for decision in &decisions.decisions {
+            if let Some(decision_type) = decision.get("decisionType").and_then(|v| v.as_str()) {
+                lines.push(format!("  - {}", shorten_type(decision_type)));
+            }
+        }
     }
 
     lines.join("\n")
@@ -999,15 +1018,12 @@ pub fn format_player_laws(laws: &types::PlayerLaws) -> String {
 
     lines.push("Player Laws".to_string());
 
-    if let Some(note) = &laws.note {
-        lines.push(format!("  Note: {}", note));
-    }
-
-    if laws.active_laws.is_empty() && laws.note.is_none() {
+    if laws.active_laws.is_empty() {
         lines.push("  No active laws".to_string());
     } else {
         for (law, value) in &laws.active_laws {
-            lines.push(format!("  - {}: {}", shorten_type(law), value));
+            let value_str = value.as_str().unwrap_or("-");
+            lines.push(format!("  - {}: {}", shorten_type(law), shorten_type(value_str)));
         }
     }
 
@@ -1021,12 +1037,23 @@ pub fn format_player_missions(missions: &types::PlayerMissions) -> String {
 
     lines.push("Player Missions".to_string());
 
-    if let Some(note) = &missions.note {
-        lines.push(format!("  Note: {}", note));
+    if missions.missions.is_empty() {
+        lines.push("  No active missions".to_string());
+    } else {
+        for mission in &missions.missions {
+            if let Some(mission_type) = mission.get("missionType").and_then(|v| v.as_str()) {
+                lines.push(format!("  - {}", shorten_type(mission_type)));
+            }
+        }
     }
 
-    if missions.missions.is_empty() && missions.note.is_none() {
-        lines.push("  No active missions".to_string());
+    if !missions.cooldowns.is_empty() {
+        lines.push("".to_string());
+        lines.push("Cooldowns:".to_string());
+        for (mission, turns) in &missions.cooldowns {
+            let turns_val = turns.as_i64().unwrap_or(0);
+            lines.push(format!("  - {}: {} turns", shorten_type(mission), turns_val));
+        }
     }
 
     lines.join("\n")
@@ -1039,15 +1066,24 @@ pub fn format_player_resources(resources: &types::PlayerResources) -> String {
 
     lines.push("Player Resources".to_string());
 
-    if let Some(note) = &resources.note {
-        lines.push(format!("  Note: {}", note));
+    if !resources.luxuries.is_empty() {
+        lines.push("  Luxuries:".to_string());
+        for (resource, amount) in &resources.luxuries {
+            let amount_val = amount.as_i64().unwrap_or(0);
+            lines.push(format!("    {}: {}", shorten_type(resource), amount_val));
+        }
     }
 
-    if !resources.resources.is_empty() {
-        lines.push("  Resources:".to_string());
-        for (resource, amount) in &resources.resources {
-            lines.push(format!("    {}: {}", shorten_type(resource), amount));
+    if !resources.revealed.is_empty() {
+        lines.push("  Revealed:".to_string());
+        for (resource, amount) in &resources.revealed {
+            let amount_val = amount.as_i64().unwrap_or(0);
+            lines.push(format!("    {}: {}", shorten_type(resource), amount_val));
         }
+    }
+
+    if resources.luxuries.is_empty() && resources.revealed.is_empty() {
+        lines.push("  No resources".to_string());
     }
 
     lines.join("\n")

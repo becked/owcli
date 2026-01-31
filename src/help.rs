@@ -123,33 +123,35 @@ pub const QUERIES: &[QueryInfo] = &[
         path: "tribe/<type>",
         description: "Single tribe by type",
     },
-    // Diplomacy and events
+    // Diplomacy
     QueryInfo {
-        path: "team-diplomacy",
+        path: "diplomacy/teams",
         description: "Team diplomatic relations",
     },
     QueryInfo {
-        path: "team-alliances",
+        path: "diplomacy/tribes",
+        description: "Tribe diplomatic relations",
+    },
+    // Alliances
+    QueryInfo {
+        path: "alliances/teams",
         description: "Team alliances",
     },
     QueryInfo {
-        path: "tribe-diplomacy",
-        description: "Tribe diplomatic relations",
-    },
-    QueryInfo {
-        path: "tribe-alliances",
+        path: "alliances/tribes",
         description: "Tribe alliances",
     },
+    // Events
     QueryInfo {
-        path: "character-events",
+        path: "events/characters",
         description: "Character events",
     },
     QueryInfo {
-        path: "unit-events",
+        path: "events/units",
         description: "Unit events",
     },
     QueryInfo {
-        path: "city-events",
+        path: "events/cities",
         description: "City events",
     },
 ];
@@ -458,6 +460,9 @@ pub fn get_query_completions() -> Vec<&'static str> {
                         "unit/" => completions.push("unit/"),
                         "tile/" => completions.push("tile/"),
                         "tribe/" => completions.push("tribe/"),
+                        "diplomacy/" => completions.push("diplomacy/"),
+                        "alliances/" => completions.push("alliances/"),
+                        "events/" => completions.push("events/"),
                         _ => {}
                     }
                 }
@@ -606,8 +611,8 @@ mod tests {
         let names = get_command_names();
         assert!(names.contains(&"move-unit".to_string()));
         assert!(names.contains(&"end-turn".to_string()));
-        assert!(names.contains(&"declare-war".to_string()));
-        assert_eq!(names.len(), 158); // 158 commands per OpenAPI spec
+        assert!(names.contains(&"diplomacy-player".to_string()));
+        assert_eq!(names.len(), 209); // 209 commands per OpenAPI spec v2.4.0
     }
 
     #[test]
@@ -624,8 +629,8 @@ mod tests {
         assert!(help.is_some());
         let help = help.unwrap();
         assert!(help.contains("move-unit"));
-        assert!(help.contains("--unit"));
-        assert!(help.contains("--target"));
+        assert!(help.contains("--unit_id"));
+        assert!(help.contains("--tile_id"));
     }
 
     #[test]

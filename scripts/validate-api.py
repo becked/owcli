@@ -21,32 +21,22 @@ import yaml
 
 BASE_URL = "http://localhost:9877"
 
-ENDPOINTS = [
+# Static endpoints that don't require dynamic IDs
+# NOTE: The API still uses old paths (team-diplomacy, etc.) even though
+# the spec defines new paths (diplomacy/teams, etc.)
+STATIC_ENDPOINTS = [
     # (path, schema_name, is_array)
     ("/state", "GameState", False),
     ("/config", "GameConfig", False),
     ("/players", "Player", True),
-    ("/player/0", "Player", False),
-    ("/player/0/units", "Unit", True),
-    ("/player/0/techs", "PlayerTechs", False),
-    ("/player/0/families", "PlayerFamilies", False),
-    ("/player/0/religion", "PlayerReligion", False),
-    ("/player/0/goals", "PlayerGoals", False),
-    ("/player/0/decisions", "PlayerDecisions", False),
-    ("/player/0/laws", "PlayerLaws", False),
-    ("/player/0/missions", "PlayerMissions", False),
-    ("/player/0/resources", "PlayerResources", False),
     ("/cities", "City", True),
-    ("/city/0", "City", False),
     ("/characters", "Character", True),
-    ("/character/0", "Character", False),
     ("/units", "Unit", True),
-    ("/unit/0", "Unit", False),
     ("/tribes", "Tribe", True),
     ("/religions", "Religion", True),
     ("/map", "MapMetadata", False),
-    ("/tiles?limit=10", "TilesPaginated", False),
-    ("/tile/0", "Tile", False),
+    ("/tiles?limit=10", "PaginatedTiles", False),
+    # Old paths that the API actually uses (spec says different paths)
     ("/team-diplomacy", "TeamDiplomacy", True),
     ("/team-alliances", "TeamAlliance", True),
     ("/tribe-diplomacy", "TribeDiplomacy", True),
@@ -54,6 +44,26 @@ ENDPOINTS = [
     ("/character-events", "CharacterEvent", True),
     ("/unit-events", "UnitEvent", True),
     ("/city-events", "CityEvent", True),
+]
+
+# Dynamic endpoints - IDs will be discovered from list endpoints
+# (path_template, schema_name, id_source, id_field)
+DYNAMIC_ENDPOINTS = [
+    ("/player/{id}", "Player", "/players", "index"),
+    ("/player/{id}/units", "Unit", "/players", "index", True),
+    ("/player/{id}/techs", "PlayerTechs", "/players", "index"),
+    ("/player/{id}/families", "PlayerFamilies", "/players", "index"),
+    ("/player/{id}/religion", "PlayerReligion", "/players", "index"),
+    ("/player/{id}/goals", "PlayerGoals", "/players", "index"),
+    ("/player/{id}/decisions", "PlayerDecisions", "/players", "index"),
+    ("/player/{id}/laws", "PlayerLaws", "/players", "index"),
+    ("/player/{id}/missions", "PlayerMissions", "/players", "index"),
+    ("/player/{id}/resources", "PlayerResources", "/players", "index"),
+    ("/city/{id}", "City", "/cities", "id"),
+    ("/character/{id}", "Character", "/characters", "id"),
+    ("/unit/{id}", "Unit", "/units", "id"),
+    ("/tile/{id}", "Tile", "/tiles?limit=10", "id"),
+    ("/tribe/{id}", "Tribe", "/tribes", "tribeType"),
 ]
 
 
@@ -75,7 +85,7 @@ class SchemaValidator:
         if "$ref" in schema:
             return schema["$ref"].split("/")[-1]
         if "enum" in schema:
-            return f"enum{schema['enum']}"
+            return f"enum[{len(schema['enum'])} values]"
         if schema.get("type") == "array":
             items = schema.get("items", {})
             item_type = self.get_type_description(items)
@@ -101,7 +111,7 @@ class SchemaValidator:
         if isinstance(value, list):
             if len(value) > 0:
                 return f"array<{self.infer_actual_type(value[0])}>"
-            return "array<unknown>"
+            return "array<empty>"
         if isinstance(value, dict):
             return "object"
         return "unknown"
@@ -112,12 +122,13 @@ class SchemaValidator:
         schema: dict,
         path: str = "",
         schema_name: str = "",
+        check_missing: bool = True,
     ) -> None:
         if "$ref" in schema:
             resolved = self.resolve_ref(schema["$ref"])
             if resolved:
                 ref_name = schema["$ref"].split("/")[-1]
-                self.validate(data, resolved, path, ref_name)
+                self.validate(data, resolved, path, ref_name, check_missing)
             return
 
         expected_type = schema.get("type")
@@ -149,14 +160,17 @@ class SchemaValidator:
 
             spec_props = schema.get("properties", {})
             additional_props = schema.get("additionalProperties")
+            required_fields = set(schema.get("required", []))
 
             if additional_props:
+                # Map/dict type - validate values against additionalProperties schema
                 for key, val in data.items():
-                    self.validate(val, additional_props, f"{path}.{key}", schema_name)
+                    self.validate(val, additional_props, f"{path}.{key}", schema_name, check_missing)
             else:
+                # Regular object - validate against properties
                 for key, val in data.items():
                     if key in spec_props:
-                        self.validate(val, spec_props[key], f"{path}.{key}", schema_name)
+                        self.validate(val, spec_props[key], f"{path}.{key}", schema_name, check_missing)
                     else:
                         self.issues.append({
                             "schema": schema_name,
@@ -166,6 +180,34 @@ class SchemaValidator:
                             "actual": self.infer_actual_type(val),
                             "value": self._truncate(val),
                         })
+
+                # Check for missing required fields
+                if check_missing:
+                    for field in required_fields:
+                        if field not in data:
+                            field_schema = spec_props.get(field, {})
+                            self.issues.append({
+                                "schema": schema_name,
+                                "path": f"{path}.{field}",
+                                "issue": "missing_required",
+                                "expected": self.get_type_description(field_schema),
+                                "actual": "missing",
+                                "value": None,
+                            })
+
+                    # Also report optional fields that are consistently missing (for info)
+                    for field, field_schema in spec_props.items():
+                        if field not in data and field not in required_fields:
+                            # Only report if not nullable
+                            if not field_schema.get("nullable", False):
+                                self.issues.append({
+                                    "schema": schema_name,
+                                    "path": f"{path}.{field}",
+                                    "issue": "missing_optional",
+                                    "expected": self.get_type_description(field_schema),
+                                    "actual": "missing",
+                                    "value": None,
+                                })
 
         elif expected_type == "array":
             if not isinstance(data, list):
@@ -180,8 +222,9 @@ class SchemaValidator:
                 return
 
             items_schema = schema.get("items", {})
-            for i, item in enumerate(data[:5]):
-                self.validate(item, items_schema, f"{path}[{i}]", schema_name)
+            # Validate up to 10 items for better coverage
+            for i, item in enumerate(data[:10]):
+                self.validate(item, items_schema, f"{path}[{i}]", schema_name, check_missing)
 
         elif expected_type == "string":
             if not isinstance(data, str):
@@ -198,7 +241,7 @@ class SchemaValidator:
                     "schema": schema_name,
                     "path": path or "(root)",
                     "issue": "enum_mismatch",
-                    "expected": f"enum{schema['enum']}",
+                    "expected": f"one of {len(schema['enum'])} enum values",
                     "actual": f'"{data}"',
                     "value": data,
                 })
@@ -250,7 +293,7 @@ def fetch_endpoint(base_url: str, path: str) -> tuple[dict | list | None, str | 
         if resp.status_code == 200:
             return resp.json(), None
         elif resp.status_code == 404:
-            return None, f"404 Not Found"
+            return None, "404 Not Found"
         elif resp.status_code == 503:
             return None, "503 Game Not Available"
         else:
@@ -261,23 +304,72 @@ def fetch_endpoint(base_url: str, path: str) -> tuple[dict | list | None, str | 
         return None, str(e)
 
 
+def discover_ids(base_url: str) -> dict[str, list[Any]]:
+    """Fetch list endpoints and extract IDs for dynamic endpoint testing."""
+    ids: dict[str, list[Any]] = {}
+
+    sources = [
+        ("/players", "playerInt"),  # API uses playerInt, not index
+        ("/cities", "id"),
+        ("/characters", "id"),
+        ("/units", "id"),
+        ("/tiles?limit=10", "id"),
+        ("/tribes", "tribeType"),
+    ]
+
+    for path, id_field in sources:
+        data, error = fetch_endpoint(base_url, path)
+        if error or data is None:
+            continue
+
+        # Handle paginated responses
+        if isinstance(data, dict) and "tiles" in data:
+            data = data["tiles"]
+
+        if isinstance(data, list) and len(data) > 0:
+            extracted = []
+            for item in data[:3]:  # Get up to 3 IDs
+                if isinstance(item, dict) and id_field in item:
+                    extracted.append(item[id_field])
+            if extracted:
+                ids[path] = extracted
+
+    return ids
+
+
 def generate_report(
     results: list[dict],
     all_issues: list[dict],
     output_path: Path,
+    json_output_path: Path,
 ) -> None:
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     success_count = sum(1 for r in results if r["status"] == "ok")
     error_count = sum(1 for r in results if r["status"] == "error")
-    issues_count = sum(1 for r in results if r["status"] == "ok" and r["issues"] > 0)
 
-    issues_by_schema: dict[str, list[dict]] = {}
+    # Count issues by type
+    type_mismatches = [i for i in all_issues if i["issue"] == "type_mismatch"]
+    extra_fields = [i for i in all_issues if i["issue"] == "extra_field"]
+    missing_required = [i for i in all_issues if i["issue"] == "missing_required"]
+    missing_optional = [i for i in all_issues if i["issue"] == "missing_optional"]
+    enum_mismatches = [i for i in all_issues if i["issue"] == "enum_mismatch"]
+    unexpected_nulls = [i for i in all_issues if i["issue"] == "unexpected_null"]
+
+    # Group issues by schema and deduplicate
+    issues_by_schema: dict[str, dict[str, dict]] = {}
     for issue in all_issues:
         schema = issue["schema"]
         if schema not in issues_by_schema:
-            issues_by_schema[schema] = []
-        issues_by_schema[schema].append(issue)
+            issues_by_schema[schema] = {}
+
+        # Use path + issue type as dedup key
+        key = (issue["path"], issue["issue"], issue["expected"], issue["actual"])
+        if key not in issues_by_schema[schema]:
+            issues_by_schema[schema][key] = issue
+
+    # Count unique issues per schema
+    unique_issues_count = sum(len(v) for v in issues_by_schema.values())
 
     lines = [
         "# API Spec Validation Report",
@@ -289,8 +381,18 @@ def generate_report(
         f"- **Endpoints tested:** {len(results)}",
         f"- **Successful:** {success_count}",
         f"- **Failed to fetch:** {error_count}",
-        f"- **With schema issues:** {issues_count}",
-        f"- **Total issues found:** {len(all_issues)}",
+        f"- **Unique schema issues:** {unique_issues_count}",
+        "",
+        "### Issues by Type",
+        "",
+        f"| Type | Count |",
+        f"|------|-------|",
+        f"| Type mismatch | {len(set((i['schema'], i['path']) for i in type_mismatches))} |",
+        f"| Extra field (in response, not in spec) | {len(set((i['schema'], i['path']) for i in extra_fields))} |",
+        f"| Missing required field | {len(set((i['schema'], i['path']) for i in missing_required))} |",
+        f"| Missing optional field | {len(set((i['schema'], i['path']) for i in missing_optional))} |",
+        f"| Enum value mismatch | {len(set((i['schema'], i['path']) for i in enum_mismatches))} |",
+        f"| Unexpected null | {len(set((i['schema'], i['path']) for i in unexpected_nulls))} |",
         "",
     ]
 
@@ -302,56 +404,145 @@ def generate_report(
                 lines.append(f"- `{r['path']}`: {r['error']}")
         lines.append("")
 
-    if issues_by_schema:
-        lines.append("## Schema Discrepancies")
+    # Type mismatches are the most important - these break deserialization
+    if type_mismatches:
+        lines.append("## Type Mismatches (Critical)")
+        lines.append("")
+        lines.append("These fields have incorrect types in the spec and will cause deserialization failures.")
         lines.append("")
 
         for schema_name in sorted(issues_by_schema.keys()):
-            issues = issues_by_schema[schema_name]
+            schema_type_issues = [
+                v for k, v in issues_by_schema[schema_name].items()
+                if v["issue"] == "type_mismatch"
+            ]
+            if not schema_type_issues:
+                continue
+
             lines.append(f"### {schema_name}")
             lines.append("")
-            lines.append("| Path | Issue | Expected | Actual | Example |")
-            lines.append("|------|-------|----------|--------|---------|")
+            lines.append("| Field | Spec Type | Actual Type | Example Value |")
+            lines.append("|-------|-----------|-------------|---------------|")
 
-            seen = set()
-            for issue in issues:
-                key = (issue["path"], issue["issue"], issue["expected"], issue["actual"])
-                if key in seen:
-                    continue
-                seen.add(key)
-
+            for issue in sorted(schema_type_issues, key=lambda x: x["path"]):
                 path = issue["path"].lstrip(".")
-                issue_type = issue["issue"].replace("_", " ")
+                # Remove array indices for cleaner display
+                import re
+                path = re.sub(r'\[\d+\]', '', path).lstrip(".")
                 expected = issue["expected"] or "-"
                 actual = issue["actual"]
-                value = str(issue["value"]).replace("|", "\\|")[:30]
-
-                lines.append(f"| `{path}` | {issue_type} | {expected} | {actual} | `{value}` |")
+                value = str(issue["value"]).replace("|", "\\|")[:40]
+                lines.append(f"| `{path}` | {expected} | {actual} | `{value}` |")
 
             lines.append("")
-    else:
-        lines.append("## No Schema Discrepancies Found")
+
+    # Extra fields - informational, spec may need updating
+    if extra_fields:
+        lines.append("## Extra Fields (Spec Missing)")
         lines.append("")
+        lines.append("These fields appear in API responses but are not defined in the spec.")
+        lines.append("")
+
+        for schema_name in sorted(issues_by_schema.keys()):
+            schema_extra = [
+                v for k, v in issues_by_schema[schema_name].items()
+                if v["issue"] == "extra_field"
+            ]
+            if not schema_extra:
+                continue
+
+            lines.append(f"### {schema_name}")
+            lines.append("")
+            lines.append("| Field | Actual Type | Example Value |")
+            lines.append("|-------|-------------|---------------|")
+
+            seen_paths = set()
+            for issue in sorted(schema_extra, key=lambda x: x["path"]):
+                path = issue["path"].lstrip(".")
+                import re
+                path = re.sub(r'\[\d+\]', '', path).lstrip(".")
+                if path in seen_paths:
+                    continue
+                seen_paths.add(path)
+                actual = issue["actual"]
+                value = str(issue["value"]).replace("|", "\\|")[:40]
+                lines.append(f"| `{path}` | {actual} | `{value}` |")
+
+            lines.append("")
+
+    # Missing required fields
+    if missing_required:
+        lines.append("## Missing Required Fields")
+        lines.append("")
+        lines.append("These fields are marked required in spec but missing from responses.")
+        lines.append("")
+
+        for schema_name in sorted(issues_by_schema.keys()):
+            schema_missing = [
+                v for k, v in issues_by_schema[schema_name].items()
+                if v["issue"] == "missing_required"
+            ]
+            if not schema_missing:
+                continue
+
+            lines.append(f"### {schema_name}")
+            lines.append("")
+
+            seen_paths = set()
+            for issue in sorted(schema_missing, key=lambda x: x["path"]):
+                path = issue["path"].lstrip(".")
+                import re
+                path = re.sub(r'\[\d+\]', '', path).lstrip(".")
+                if path in seen_paths:
+                    continue
+                seen_paths.add(path)
+                lines.append(f"- `{path}` (expected: {issue['expected']})")
+
+            lines.append("")
 
     lines.append("## Endpoints Tested")
     lines.append("")
-    lines.append("| Endpoint | Schema | Status | Issues |")
-    lines.append("|----------|--------|--------|--------|")
+    lines.append("| Endpoint | Schema | Status |")
+    lines.append("|----------|--------|--------|")
     for r in results:
         status = r["status"]
         issues = r.get("issues", 0)
         if status == "error":
-            status_display = f"error: {r['error'][:20]}"
+            status_display = f"error: {r['error'][:30]}"
         elif issues > 0:
-            status_display = f"issues: {issues}"
+            status_display = f"{issues} issues"
         else:
             status_display = "ok"
-        lines.append(f"| `{r['path']}` | {r['schema']} | {status_display} | {issues} |")
+        lines.append(f"| `{r['path']}` | {r['schema']} | {status_display} |")
     lines.append("")
 
+    # Write markdown report
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text("\n".join(lines))
-    print(f"Report written to: {output_path}")
+    print(f"Markdown report: {output_path}")
+
+    # Write JSON report
+    json_report = {
+        "generated": now,
+        "summary": {
+            "endpoints_tested": len(results),
+            "successful": success_count,
+            "failed": error_count,
+            "unique_issues": unique_issues_count,
+        },
+        "issues_by_type": {
+            "type_mismatch": len(set((i['schema'], i['path']) for i in type_mismatches)),
+            "extra_field": len(set((i['schema'], i['path']) for i in extra_fields)),
+            "missing_required": len(set((i['schema'], i['path']) for i in missing_required)),
+            "missing_optional": len(set((i['schema'], i['path']) for i in missing_optional)),
+            "enum_mismatch": len(set((i['schema'], i['path']) for i in enum_mismatches)),
+            "unexpected_null": len(set((i['schema'], i['path']) for i in unexpected_nulls)),
+        },
+        "results": results,
+        "issues": all_issues,
+    }
+    json_output_path.write_text(json.dumps(json_report, indent=2))
+    print(f"JSON report: {json_output_path}")
 
 
 def main():
@@ -365,7 +556,8 @@ def main():
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
     spec_path = project_root / "openapi.yaml"
-    output_path = project_root / "docs" / "api-spec-validation.md"
+    output_path = project_root / "docs" / "api-validation-report.md"
+    json_output_path = project_root / "docs" / "api-validation-report.json"
 
     print(f"Loading spec from: {spec_path}")
     with open(spec_path) as f:
@@ -374,13 +566,20 @@ def main():
     validator = SchemaValidator(spec)
 
     print(f"Testing against: {base_url}")
-    print(f"Endpoints to test: {len(ENDPOINTS)}")
+    print()
+
+    # First, discover IDs from list endpoints
+    print("Discovering IDs from list endpoints...")
+    discovered_ids = discover_ids(base_url)
+    for source, ids in discovered_ids.items():
+        print(f"  {source}: {ids[:3]}")
     print()
 
     results = []
-    all_issues = []
 
-    for path, schema_name, is_array in ENDPOINTS:
+    # Test static endpoints
+    print(f"Testing {len(STATIC_ENDPOINTS)} static endpoints...")
+    for path, schema_name, is_array in STATIC_ENDPOINTS:
         print(f"  {path} ... ", end="", flush=True)
 
         data, error = fetch_endpoint(base_url, path)
@@ -409,7 +608,79 @@ def main():
         issues_before = len(validator.issues)
 
         if is_array and isinstance(data, list):
-            for i, item in enumerate(data[:3]):
+            for i, item in enumerate(data[:5]):
+                validator.validate(item, schema, f"[{i}]", schema_name)
+        else:
+            validator.validate(data, schema, "", schema_name)
+
+        new_issues = len(validator.issues) - issues_before
+
+        if new_issues > 0:
+            print(f"ISSUES: {new_issues}")
+        else:
+            print("OK")
+
+        results.append({
+            "path": path,
+            "schema": schema_name,
+            "status": "ok",
+            "issues": new_issues,
+        })
+
+    # Test dynamic endpoints with discovered IDs
+    print()
+    print("Testing dynamic endpoints with discovered IDs...")
+    for endpoint_def in DYNAMIC_ENDPOINTS:
+        if len(endpoint_def) == 5:
+            path_template, schema_name, id_source, id_field, is_array = endpoint_def
+        else:
+            path_template, schema_name, id_source, id_field = endpoint_def
+            is_array = False
+
+        # Get IDs for this endpoint
+        ids = discovered_ids.get(id_source, [])
+        if not ids:
+            print(f"  {path_template} ... SKIP (no IDs from {id_source})")
+            results.append({
+                "path": path_template,
+                "schema": schema_name,
+                "status": "error",
+                "error": f"No IDs discovered from {id_source}",
+            })
+            continue
+
+        # Test with first discovered ID
+        test_id = ids[0]
+        path = path_template.replace("{id}", str(test_id))
+        print(f"  {path} ... ", end="", flush=True)
+
+        data, error = fetch_endpoint(base_url, path)
+
+        if error:
+            print(f"ERROR: {error}")
+            results.append({
+                "path": path,
+                "schema": schema_name,
+                "status": "error",
+                "error": error,
+            })
+            continue
+
+        schema = validator.get_schema(schema_name)
+        if not schema:
+            print(f"SKIP (schema not found: {schema_name})")
+            results.append({
+                "path": path,
+                "schema": schema_name,
+                "status": "error",
+                "error": f"Schema not found: {schema_name}",
+            })
+            continue
+
+        issues_before = len(validator.issues)
+
+        if is_array and isinstance(data, list):
+            for i, item in enumerate(data[:5]):
                 validator.validate(item, schema, f"[{i}]", schema_name)
         else:
             validator.validate(data, schema, "", schema_name)
@@ -433,7 +704,7 @@ def main():
     print()
     print(f"Total issues found: {len(all_issues)}")
 
-    generate_report(results, all_issues, output_path)
+    generate_report(results, all_issues, output_path, json_output_path)
 
 
 if __name__ == "__main__":

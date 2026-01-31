@@ -4,1279 +4,1677 @@
 //
 // Included via include!() in cli.rs
 
-/// Game commands generated from OpenAPI spec (158 commands)
+/// Game commands generated from OpenAPI spec (209 commands)
 /// See: https://github.com/becked/OldWorldAPIEndpoint/blob/main/docs/openapi.yaml
 #[derive(Subcommand, Debug)]
 pub enum Action {
-    /// Abandon an ambition
-    AbandonAmbition {
-        /// Goal ID to abandon
-        #[arg(long)]
-        goal_id: i64,
-    },
-    /// Add specific character type
-    AddCharacter {
-        /// Character type
-        #[arg(long)]
-        character_type: String,
-        /// Family type
-        #[arg(long)]
-        family_type: String,
-        /// Owner player index
-        #[arg(long)]
-        player_type: i64,
-    },
-    /// Add or remove character trait
-    AddCharacterTrait {
-        #[arg(long)]
-        character_id: i64,
-        /// Trait type (e.g., TRAIT_WARRIOR)
-        #[arg(long)]
-        trait_type: String,
-        /// Remove instead of add
-        #[arg(long)]
-        remove: bool,
-    },
-    /// Add money to player
-    AddMoney {
-        #[arg(long)]
-        amount: i64,
-        /// Player index
-        #[arg(long)]
-        player_type: i64,
-    },
-    /// Add a goal to player
-    AddPlayerGoal {
-        /// Goal type
-        #[arg(long)]
-        goal_type: String,
-        /// Player index
-        #[arg(long)]
-        player_type: i64,
-    },
-    /// Add a road to a tile
-    AddRoad {
-        #[arg(long)]
-        tile_id: i64,
-        #[arg(long)]
-        unit_id: i64,
-        /// Pay for goods if needed
-        #[arg(long)]
-        buy_goods: bool,
-        /// Queue the action
-        #[arg(long)]
-        queue: bool,
-    },
-    /// Grant technology to player
-    AddTech {
-        /// Player index
-        #[arg(long)]
-        player_type: i64,
-        /// Tech type (e.g., TECH_IRONWORKING)
-        #[arg(long)]
-        tech_type: String,
-    },
-    /// Add urban tile
-    AddUrban {
-        #[arg(long)]
-        unit_id: i64,
-        /// Pay for goods if needed
-        #[arg(long)]
-        buy_goods: bool,
-    },
-    /// Add yield to player stockpile
-    AddYield {
-        #[arg(long)]
-        amount: i64,
-        /// Player index
-        #[arg(long)]
-        player_type: i64,
-        /// Yield type
-        #[arg(long)]
-        yield_type: String,
-    },
-    /// Let AI finish turn
-    AiFinishTurn {
-        /// Number of turns for AI to play
-        #[arg(long)]
-        num_turns: Option<i64>,
-    },
-    /// Form an alliance with a tribe
-    AllyTribe {
-        /// Tribe type
-        #[arg(long)]
-        tribe_type: String,
-    },
-    /// Anchor ship
-    Anchor {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Apply effect to unit
-    ApplyEffectUnit {
-        /// Effect type
-        #[arg(long)]
-        effect_unit_type: String,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Assign a character as city agent
-    AssignAgent {
-        #[arg(long)]
-        character_id: i64,
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Assign a character as unit general
-    AssignGeneral {
-        #[arg(long)]
-        character_id: i64,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Assign a character as city governor
-    AssignGovernor {
-        #[arg(long)]
-        character_id: i64,
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Attack a target tile
-    Attack {
-        #[arg(long)]
-        target_tile_id: i64,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Start building a unit in a city
-    Build {
-        #[arg(long)]
-        city_id: i64,
-        /// Unit type (e.g., UNIT_WARRIOR)
-        #[arg(long)]
-        unit_type: String,
-        /// Pay for goods if needed
-        #[arg(long)]
-        buy_goods: bool,
-        /// Add to front of build queue
-        #[arg(long)]
-        first: bool,
-    },
-    /// Build an improvement on a tile
-    BuildImprovement {
-        /// Improvement type (e.g., IMPROVEMENT_FARM)
-        #[arg(long)]
-        improvement_type: String,
-        #[arg(long)]
-        tile_id: i64,
-        #[arg(long)]
-        unit_id: i64,
-        /// Pay for goods if needed
-        #[arg(long)]
-        buy_goods: bool,
-        /// Queue the action
-        #[arg(long)]
-        queue: bool,
-    },
-    /// Start building a project in a city
-    BuildProject {
-        #[arg(long)]
-        city_id: i64,
-        /// Project type (e.g., PROJECT_GRANARY)
-        #[arg(long)]
-        project_type: String,
-        /// Pay for goods if needed
-        #[arg(long)]
-        buy_goods: bool,
-        /// Add to front of build queue
-        #[arg(long)]
-        first: bool,
-        /// Repeat when complete
-        #[arg(long)]
-        repeat: bool,
-    },
-    /// Reorder the build queue
-    BuildQueue {
-        #[arg(long)]
-        city_id: i64,
-        /// New position in queue
-        #[arg(long)]
-        new_slot: i64,
-        /// Current position in queue
-        #[arg(long)]
-        old_slot: i64,
-    },
-    /// Build specialist on tile
-    BuildSpecialist {
-        /// Specialist type (e.g., SPECIALIST_SAGE)
-        #[arg(long)]
-        specialist_type: String,
-        #[arg(long)]
-        tile_id: i64,
-        /// Add to front of queue
-        #[arg(long)]
-        add_first: bool,
-        /// Pay for goods if needed
-        #[arg(long)]
-        buy_goods: bool,
-    },
-    /// Burn with a unit
-    Burn {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Buy a tile for a city
-    BuyTile {
-        /// City to buy tile for
-        #[arg(long)]
-        city_id: i64,
-        #[arg(long)]
-        tile_id: i64,
-        /// Yield type to use for payment
-        #[arg(long)]
-        yield_type: Option<String>,
-    },
-    /// Buy resources with money
-    BuyYield {
-        #[arg(long)]
-        amount: i64,
-        /// Yield type (e.g., YIELD_TRAINING)
-        #[arg(long)]
-        yield_type: String,
-    },
-    /// Cancel improvement being built
-    CancelImprovement {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Cancel an active law
-    CancelLaw {
-        /// Law type
-        #[arg(long)]
-        law_type: String,
-    },
-    /// Cancel unit's queued actions
-    CancelUnitQueue {
-        #[arg(long)]
-        unit_id: i64,
-        /// Cancel all queued actions
-        #[arg(long)]
-        clear_all: bool,
-    },
-    /// Cancel caravan mission
-    CaravanMissionCancel {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Start caravan mission
-    CaravanMissionStart {
-        /// Target player index for the mission
-        #[arg(long)]
-        target_player: i64,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Change city citizen count
-    ChangeCitizens {
-        #[arg(long)]
-        city_id: i64,
-        /// Amount to add (negative to remove)
-        #[arg(long)]
-        delta: i64,
-    },
-    /// Modify build progress
-    ChangeCityBuildTurns {
-        /// Turns to add (negative to reduce)
-        #[arg(long)]
-        amount: i64,
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Modify city damage
-    ChangeCityDamage {
-        #[arg(long)]
-        amount: i64,
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Modify discontent
-    ChangeCityDiscontentLevel {
-        #[arg(long)]
-        amount: i64,
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Modify unit cooldown
-    ChangeCooldown {
-        /// Amount to add (negative to reduce)
-        #[arg(long)]
-        delta: i64,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Grow or shrink city culture
-    ChangeCulture {
-        #[arg(long)]
-        city_id: i64,
-        /// Grow culture (true) or shrink (false)
-        #[arg(long)]
-        grow: bool,
-    },
-    /// Modify unit damage
-    ChangeDamage {
-        /// Amount to add (negative to heal)
-        #[arg(long)]
-        delta: i64,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Change city family
-    ChangeFamily {
-        #[arg(long)]
-        city_id: i64,
-        /// Family type
-        #[arg(long)]
-        family_type: String,
-    },
-    /// Change family seat city
-    ChangeFamilySeat {
-        #[arg(long)]
-        city_id: i64,
-        /// Family type
-        #[arg(long)]
-        family_type: String,
-    },
-    /// Modify project progress
-    ChangeProject {
-        #[arg(long)]
-        city_id: i64,
-        /// Project type
-        #[arg(long)]
-        project_type: String,
-        /// Progress to add (negative to remove)
-        #[arg(long)]
-        delta: Option<i64>,
-    },
-    /// Add or remove religion in city
-    ChangeReligion {
-        #[arg(long)]
-        city_id: i64,
-        /// Religion type
-        #[arg(long)]
-        religion_type: String,
-        /// Add (true) or remove (false)
-        #[arg(long)]
-        add: bool,
-    },
-    /// Transfer unit to player or tribe
-    ChangeUnitOwner {
-        #[arg(long)]
-        unit_id: i64,
-        /// New owner player index
-        #[arg(long)]
-        player_type: Option<i64>,
-        /// New owner tribe type
-        #[arg(long)]
-        tribe_type: Option<String>,
-    },
-    /// Set character name
-    CharacterName {
-        #[arg(long)]
-        character_id: i64,
-        #[arg(long)]
-        name: String,
-    },
-    /// Send chat message
-    Chat {
-        /// Chat type
-        #[arg(long)]
-        chat_type: String,
-        #[arg(long)]
-        message: String,
-        /// Target player (omit for all)
-        #[arg(long)]
-        to_player: Option<i64>,
-    },
-    /// Execute cheat hotkey
-    Cheat {
-        /// Hotkey type (e.g., HOTKEY_GAME_CHEAT_SHOW_ALL)
-        #[arg(long)]
-        hotkey_type: String,
-    },
-    /// Enact a law
-    ChooseLaw {
-        /// Law type (e.g., LAW_SLAVERY)
-        #[arg(long)]
-        law_type: String,
-    },
-    /// Toggle city automation
-    CityAutomate {
-        #[arg(long)]
-        city_id: i64,
-        #[arg(long)]
-        enable: bool,
-    },
-    /// Change city owner
-    CityOwner {
-        #[arg(long)]
-        city_id: i64,
-        /// New owner player index
-        #[arg(long)]
-        player_type: i64,
-    },
-    /// Rename a city
-    CityRename {
-        #[arg(long)]
-        city_id: i64,
-        #[arg(long)]
-        name: String,
-    },
-    /// Create agent network in city
-    CreateAgentNetwork {
-        #[arg(long)]
-        city_id: i64,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Create a city at a tile
-    CreateCity {
-        /// Family type
-        #[arg(long)]
-        family_type: String,
-        /// Owner player index
-        #[arg(long)]
-        player_type: i64,
-        #[arg(long)]
-        tile_id: i64,
-        /// Turn the city was founded
-        #[arg(long)]
-        turn: Option<i64>,
-    },
-    /// Create trade outpost on tile
-    CreateTradeOutpost {
-        #[arg(long)]
-        tile_id: i64,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Create a unit at a tile
-    CreateUnit {
-        #[arg(long)]
-        tile_id: i64,
-        /// Unit type (e.g., UNIT_WARRIOR)
-        #[arg(long)]
-        unit_type: String,
-        /// Player index (defaults to current)
-        #[arg(long)]
-        player_type: Option<i64>,
-        /// Tribe type (for tribal units)
-        #[arg(long)]
-        tribe_type: Option<String>,
-    },
-    /// Create custom reminder
-    CustomReminder {
-        #[arg(long)]
-        message: String,
-    },
-    /// Declare a truce with another player
-    DeclareTruce {
-        /// Target player index
-        #[arg(long)]
-        target_player: i64,
-    },
-    /// Declare a truce with a tribe
-    DeclareTruceTribe {
-        /// Tribe type
-        #[arg(long)]
-        tribe_type: String,
-    },
-    /// Declare war on another player
-    DeclareWar {
-        /// Target player index
-        #[arg(long)]
-        target_player: i64,
-    },
-    /// Declare war on a tribe
-    DeclareWarTribe {
-        /// Tribe type (e.g., TRIBE_GAULS)
-        #[arg(long)]
-        tribe_type: String,
-    },
-    /// Disband a unit
-    Disband {
-        #[arg(long)]
-        unit_id: i64,
-        /// Force disband without confirmation
-        #[arg(long)]
-        force: bool,
-    },
-    /// Execute unit's queued actions
-    DoUnitQueue {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// End the current turn
-    EndTurn {
-        /// Force end turn even with pending actions
-        #[arg(long)]
-        force: bool,
-    },
-    /// Establish theology
-    EstablishTheology {
-        /// Theology type (e.g., THEOLOGY_CLERGY)
-        #[arg(long)]
-        theology_type: String,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Trigger event story
-    EventStory {
-        /// Event type
-        #[arg(long)]
-        event_type: String,
-        /// Player index
-        #[arg(long)]
-        player_type: i64,
-    },
-    /// Extend game time
-    ExtendTime {
-        #[arg(long)]
-        seconds: i64,
-    },
-    /// Set family head
-    FamilyHead {
-        #[arg(long)]
-        character_id: i64,
-        /// Family type
-        #[arg(long)]
-        family_type: String,
-    },
-    /// Complete or fail a goal
-    FinishGoal {
-        /// Goal type
-        #[arg(long)]
-        goal_type: String,
-        /// Fail the goal (omit or false to complete)
-        #[arg(long)]
-        fail: bool,
-    },
-    /// Set unit formation
-    Formation {
-        /// Formation type (e.g., EFFECTUNIT_TESTUDO)
-        #[arg(long)]
-        effect_unit_type: String,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Fortify a unit
-    Fortify {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Found a new city with a settler
-    FoundCity {
-        /// Family type (e.g., FAMILY_CHAMPIONS)
-        #[arg(long)]
-        family_type: String,
-        #[arg(long)]
-        unit_id: i64,
-        /// Nation type for the city
-        #[arg(long)]
-        nation_type: Option<String>,
-    },
-    /// Gift a city to another player
-    GiftCity {
-        #[arg(long)]
-        city_id: i64,
-        /// Target player index
-        #[arg(long)]
-        target_player: i64,
-    },
-    /// Gift unit to another player
-    GiftUnit {
-        /// Target player index
-        #[arg(long)]
-        target_player: i64,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Gift resources to another player
-    GiftYield {
-        /// Target player index
-        #[arg(long)]
-        target_player: i64,
-        /// Yield type (e.g., YIELD_FOOD)
-        #[arg(long)]
-        yield_type: String,
-        /// Request instead of gift
-        #[arg(long)]
-        reverse: bool,
-    },
-    /// Harvest resource with worker
-    HarvestResource {
-        #[arg(long)]
-        unit_id: i64,
-        /// Enable auto-harvest mode
-        #[arg(long)]
-        auto_harvest: bool,
-    },
-    /// Heal a unit
-    Heal {
-        #[arg(long)]
-        unit_id: i64,
-        /// Enable auto-heal mode
-        #[arg(long)]
-        auto: bool,
-    },
-    /// Hire mercenary
-    HireMercenary {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Rush production with civics
-    HurryCivics {
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Rush production with money
-    HurryMoney {
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Rush production with orders
-    HurryOrders {
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Rush production with population
-    HurryPopulation {
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Rush production with training
-    HurryTraining {
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Set improvement build turns
-    ImprovementBuildTurns {
-        #[arg(long)]
-        tile_id: i64,
+    AIFinishTurn {
+        /// Turns (game param: iTurns)
         #[arg(long)]
         turns: i64,
     },
-    /// Join a unit to a city
-    JoinCity {
+    AbandonAmbition {
+        /// I d (game param: iID)
         #[arg(long)]
-        unit_id: i64,
+        i_d: i64,
     },
-    /// Launch offensive with general
-    LaunchOffensive {
+    AddCharacter {
+        /// CharacterType value (e.g., CHARACTER_EXAMPLE) (game param: eCharacter)
         #[arg(long)]
-        unit_id: i64,
-    },
-    /// Lock a unit in place
-    Lock {
+        character_type: String,
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
         #[arg(long)]
-        unit_id: i64,
+        family_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
     },
-    /// Kill a character
-    MakeCharacterDead {
+    AddCharacterTrait {
+        /// Character id (game param: iCharacterId)
         #[arg(long)]
         character_id: i64,
+        /// Remove (game param: bRemove)
+        #[arg(long)]
+        remove: bool,
+        /// TraitType value (e.g., TRAIT_EXAMPLE) (game param: eTrait)
+        #[arg(long)]
+        trait_type: String,
     },
-    /// Make character immune to death
-    MakeCharacterSafe {
-        #[arg(long)]
-        character_id: i64,
-        /// Number of turns to protect (default 10)
-        #[arg(long)]
-        num_turns: Option<i64>,
-    },
-    /// Make a decision choice
-    MakeDecision {
-        /// Index of the choice to select
-        #[arg(long)]
-        choice_index: i64,
-        #[arg(long)]
-        decision_id: i64,
-        /// Optional data for the choice
-        #[arg(long)]
-        data: Option<i64>,
-    },
-    /// Make peace with another player
-    MakePeace {
-        /// Target player index
-        #[arg(long)]
-        target_player: i64,
-    },
-    /// Make peace with a tribe
-    MakePeaceTribe {
-        /// Tribe type
-        #[arg(long)]
-        tribe_type: String,
-    },
-    /// Reveal entire map
-    MapReveal {
-        /// Team index (defaults to current player's team)
-        #[arg(long)]
-        team_type: Option<i64>,
-    },
-    /// Hide entire map
-    MapUnreveal {
-        /// Team index (defaults to current player's team)
-        #[arg(long)]
-        team_type: Option<i64>,
-    },
-    /// Set unit to march mode
-    March {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Move a unit to a target tile
-    MoveUnit {
-        /// Destination tile ID
-        #[arg(long)]
-        target_tile_id: i64,
-        /// Unit ID to move
-        #[arg(long)]
-        unit_id: i64,
-        /// Use march movement mode
-        #[arg(long)]
-        march: bool,
-        /// Queue the move instead of executing immediately
-        #[arg(long)]
-        queue: bool,
-        /// Optional waypoint tile ID
-        #[arg(long)]
-        waypoint_tile_id: Option<i64>,
-    },
-    /// Create random character
-    NewCharacter {
-        /// Owner player index
-        #[arg(long)]
-        player_type: i64,
-        /// Character age
-        #[arg(long)]
-        age: Option<i64>,
-        /// Family type
-        #[arg(long)]
-        family_type: Option<String>,
-        /// Fill random attribute values
-        #[arg(long)]
-        fill_value: bool,
-    },
-    /// Skip a unit's turn
-    Pass {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Pillage with a unit
-    Pillage {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Pin character in UI
-    PinCharacter {
-        #[arg(long)]
-        character_id: i64,
-    },
-    /// Ping a map location
-    Ping {
-        /// Ping type
-        #[arg(long)]
-        ping_type: String,
-        #[arg(long)]
-        tile_id: i64,
-        /// Optional ping message
-        #[arg(long)]
-        message: Option<String>,
-        /// Turn to trigger reminder
-        #[arg(long)]
-        reminder_turn: Option<i64>,
-    },
-    /// Set player leader
-    PlayerLeader {
-        #[arg(long)]
-        character_id: i64,
-        /// Player index
-        #[arg(long)]
-        player_type: i64,
-    },
-    /// Apply a promotion to a unit
-    Promote {
-        /// Promotion type (e.g., PROMOTION_FIERCE)
-        #[arg(long)]
-        promotion: String,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Purge religion from city
-    PurgeReligion {
-        /// Religion to purge
-        #[arg(long)]
-        religion_type: String,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Recruit mercenary
-    RecruitMercenary {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Release a city's agent
-    ReleaseAgent {
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Release a unit's general
-    ReleaseGeneral {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Release a city's governor
-    ReleaseGovernor {
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Remove a city
-    RemoveCity {
-        #[arg(long)]
-        city_id: i64,
-    },
-    /// Remove or dismiss a decision
-    RemoveDecision {
-        #[arg(long)]
-        decision_id: i64,
-    },
-    /// Remove player goal
-    RemovePlayerGoal {
-        /// Goal ID to remove
-        #[arg(long)]
-        goal_id: i64,
-        /// Player index (defaults to current)
-        #[arg(long)]
-        player_type: Option<i64>,
-    },
-    /// Remove vegetation from tile
-    RemoveVegetation {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Repair a unit
-    Repair {
-        #[arg(long)]
-        unit_id: i64,
-        /// Pay for goods if needed
-        #[arg(long)]
-        buy_goods: bool,
-        /// Queue the action
-        #[arg(long)]
-        queue: bool,
-        /// Tile to repair at
-        #[arg(long)]
-        tile_id: Option<i64>,
-    },
-    /// Replay previous turns
-    ReplayTurn {
-        /// Number of turns to replay
-        #[arg(long)]
-        num_turns: Option<i64>,
-        /// Step through replay
-        #[arg(long)]
-        step: bool,
-    },
-    /// Set the current research target
-    Research {
-        /// Tech type (e.g., TECH_FORESTRY)
-        #[arg(long)]
-        tech: String,
-    },
-    /// Build road to tiles
-    RoadTo {
-        #[arg(long)]
-        unit_id: i64,
-        /// Pay for goods if needed
-        #[arg(long)]
-        buy_goods: bool,
-        /// Comma-separated tile IDs for the path
-        #[arg(long)]
-        tile_ids: Option<String>,
-    },
-    /// Select a unit
-    SelectUnit {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Sell resources for money
-    SellYield {
+    AddMoney {
+        /// Amount (game param: iAmount)
         #[arg(long)]
         amount: i64,
-        /// Yield type
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
         #[arg(long)]
-        yield_type: String,
+        player_type: String,
     },
-    /// Set a unit to sentry mode
-    Sentry {
+    AddOccurrence {
+        /// OccurrenceType value (e.g., OCCURRENCE_EXAMPLE) (game param: eOccurrence)
+        #[arg(long)]
+        occurrence_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// Turn delay (game param: iTurnDelay)
+        #[arg(long)]
+        turn_delay: i64,
+    },
+    AddOccurrenceReady {
+        /// OccurrenceType value (e.g., OCCURRENCE_EXAMPLE) (game param: eOccurrence)
+        #[arg(long)]
+        occurrence_type: String,
+        /// Tile i d (game param: iTileID)
+        #[arg(long)]
+        tile_id: i64,
+        /// Turn delay (game param: iTurnDelay)
+        #[arg(long)]
+        turn_delay: i64,
+    },
+    AddOccurrenceTile {
+        /// OccurrenceType value (e.g., OCCURRENCE_EXAMPLE) (game param: eOccurrence)
+        #[arg(long)]
+        occurrence_type: String,
+        /// Tile i d (game param: iTileID)
+        #[arg(long)]
+        tile_id: i64,
+        /// Turn delay (game param: iTurnDelay)
+        #[arg(long)]
+        turn_delay: i64,
+    },
+    AddPlayerGoal {
+        /// GoalType value (e.g., GOAL_EXAMPLE) (game param: eGoal)
+        #[arg(long)]
+        goal_type: String,
+        #[arg(long)]
+        player: String,
+    },
+    AddPlayerRelationship {
+        #[arg(long)]
+        character1_i_d: i64,
+        #[arg(long)]
+        character2_i_d: i64,
+        /// RelationshipType value (e.g., RELATIONSHIP_EXAMPLE) (game param: eRelationship)
+        #[arg(long)]
+        relationship_type: String,
+    },
+    AddRoad {
+        /// Buy goods (game param: bBuyGoods)
+        #[arg(long)]
+        buy_goods: bool,
+        /// Queue (game param: bQueue)
+        #[arg(long)]
+        queue: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// Unit ID (game param: pUnit)
         #[arg(long)]
         unit_id: i64,
     },
-    /// Set character cognomen/title
-    SetCharacterCognomen {
+    AddTech {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
         #[arg(long)]
-        character_id: i64,
-        /// Cognomen type
-        #[arg(long)]
-        cognomen_type: String,
-    },
-    /// Set character council position
-    SetCharacterCouncil {
-        #[arg(long)]
-        character_id: i64,
-        /// Council type
-        #[arg(long)]
-        council_type: String,
-    },
-    /// Set character courtier role
-    SetCharacterCourtier {
-        #[arg(long)]
-        character_id: i64,
-        /// Courtier type
-        #[arg(long)]
-        courtier_type: String,
-    },
-    /// Set character XP
-    SetCharacterExperience {
-        #[arg(long)]
-        character_id: i64,
-        #[arg(long)]
-        xp: i64,
-    },
-    /// Set character family
-    SetCharacterFamily {
-        #[arg(long)]
-        character_id: i64,
-        /// Family type
-        #[arg(long)]
-        family_type: String,
-    },
-    /// Set character nation
-    SetCharacterNation {
-        #[arg(long)]
-        character_id: i64,
-        /// Nation type
-        #[arg(long)]
-        nation_type: String,
-    },
-    /// Set character rating value
-    SetCharacterRating {
-        #[arg(long)]
-        character_id: i64,
-        /// Rating type
-        #[arg(long)]
-        rating_type: String,
-        #[arg(long)]
-        value: i64,
-    },
-    /// Set character religion
-    SetCharacterReligion {
-        #[arg(long)]
-        character_id: i64,
-        /// Religion type
-        #[arg(long)]
-        religion_type: String,
-    },
-    /// Set city site marker
-    SetCitySite {
-        /// City site type
-        #[arg(long)]
-        city_site_type: String,
-        #[arg(long)]
-        tile_id: i64,
-    },
-    /// Set tile improvement
-    SetImprovement {
-        /// Improvement type
-        #[arg(long)]
-        improvement_type: String,
-        #[arg(long)]
-        tile_id: i64,
-    },
-    /// Set tile resource
-    SetResource {
-        /// Resource type
-        #[arg(long)]
-        resource_type: String,
-        #[arg(long)]
-        tile_id: i64,
-    },
-    /// Add or remove road
-    SetRoad {
-        #[arg(long)]
-        tile_id: i64,
-        /// Add road (true) or remove (false)
-        #[arg(long)]
-        has_road: bool,
-    },
-    /// Set tile specialist
-    SetSpecialist {
-        /// Specialist type
-        #[arg(long)]
-        specialist_type: String,
-        #[arg(long)]
-        tile_id: i64,
-    },
-    /// Set tile terrain type
-    SetTerrain {
-        /// Terrain type (e.g., TERRAIN_PLAINS)
-        #[arg(long)]
-        terrain_type: String,
-        #[arg(long)]
-        tile_id: i64,
-    },
-    /// Set tile height
-    SetTerrainHeight {
-        /// Height type (e.g., HEIGHT_HILL)
-        #[arg(long)]
-        height_type: String,
-        #[arg(long)]
-        tile_id: i64,
-    },
-    /// Set tile owner
-    SetTileOwner {
-        #[arg(long)]
-        tile_id: i64,
-        /// Owner player index
-        #[arg(long)]
-        player_type: Option<i64>,
-        /// Owner tribe type
-        #[arg(long)]
-        tribe_type: Option<String>,
-    },
-    /// Change unit's family
-    SetUnitFamily {
-        /// Family type
-        #[arg(long)]
-        family_type: String,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Set tile vegetation
-    SetVegetation {
-        #[arg(long)]
-        tile_id: i64,
-        /// Vegetation type
-        #[arg(long)]
-        vegetation_type: String,
-    },
-    /// Put a unit to sleep
-    Sleep {
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Spread religion to a city
-    SpreadReligion {
-        #[arg(long)]
-        city_id: i64,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Spread religion to tribe
-    SpreadReligionTribe {
-        /// Target tribe
-        #[arg(long)]
-        tribe_type: String,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Start a character mission
-    StartMission {
-        #[arg(long)]
-        character_id: i64,
-        /// Mission type (e.g., MISSION_INFLUENCE)
-        #[arg(long)]
-        mission_type: String,
-        /// Cancel an existing mission
-        #[arg(long)]
-        cancel: bool,
-        /// Optional target for the mission
-        #[arg(long)]
-        target: Option<String>,
-    },
-    /// Swap unit position with another unit
-    Swap {
-        #[arg(long)]
-        target_tile_id: i64,
-        #[arg(long)]
-        unit_id: i64,
-        /// Force march to swap position
-        #[arg(long)]
-        force_march: bool,
-    },
-    /// Set a long-term tech target
-    TargetTech {
-        /// Tech type (e.g., TECH_IRONWORKING)
+        player_type: String,
+        /// TechType value (e.g., TECH_EXAMPLE) (game param: eTech)
         #[arg(long)]
         tech_type: String,
     },
-    /// Create team alliance
-    TeamAlliance {
-        /// First player index
+    AddUrban {
+        /// Buy goods (game param: bBuyGoods)
         #[arg(long)]
-        player1: i64,
-        /// Second player index
+        buy_goods: bool,
+        /// Unit ID (game param: pUnit)
         #[arg(long)]
-        player2: i64,
+        unit_id: i64,
     },
-    /// Toggle luxury trading for a city
-    TradeCityLuxury {
-        #[arg(long)]
-        city_id: i64,
-        /// Resource type (e.g., RESOURCE_WINE)
-        #[arg(long)]
-        resource_type: String,
-        #[arg(long)]
-        enable: bool,
-    },
-    /// Toggle luxury trading for a family
-    TradeFamilyLuxury {
-        /// Family type
-        #[arg(long)]
-        family_type: String,
-        /// Resource type
-        #[arg(long)]
-        resource_type: String,
-        #[arg(long)]
-        enable: bool,
-    },
-    /// Toggle luxury trading with another player
-    TradePlayerLuxury {
-        /// Resource type
-        #[arg(long)]
-        resource_type: String,
-        /// Target player index
-        #[arg(long)]
-        target_player: i64,
-        #[arg(long)]
-        enable: bool,
-    },
-    /// Toggle luxury trading with a tribe
-    TradeTribeLuxury {
-        /// Resource type
-        #[arg(long)]
-        resource_type: String,
-        /// Tribe type
-        #[arg(long)]
-        tribe_type: String,
-        #[arg(long)]
-        enable: bool,
-    },
-    /// Trigger tribe invasion
-    TribeInvasion {
-        /// Target player
-        #[arg(long)]
-        target_player: i64,
-        /// Tribe type
-        #[arg(long)]
-        tribe_type: String,
-    },
-    /// Set tribe leader
-    TribeLeader {
-        #[arg(long)]
-        character_id: i64,
-        /// Tribe type
-        #[arg(long)]
-        tribe_type: String,
-    },
-    /// Send tribute to a player or tribe
-    Tribute {
+    AddYield {
+        /// Amount (game param: iAmount)
         #[arg(long)]
         amount: i64,
-        /// Yield type
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// YieldType value (e.g., YIELD_EXAMPLE) (game param: eYield)
         #[arg(long)]
         yield_type: String,
-        /// Source player (defaults to current)
-        #[arg(long)]
-        from_player: Option<i64>,
-        /// Target player index (or use toTribe)
-        #[arg(long)]
-        to_player: Option<i64>,
-        /// Target tribe type (or use toPlayer)
-        #[arg(long)]
-        to_tribe: Option<String>,
     },
-    /// Undo last action
-    Undo {
-        /// Undo entire turn instead of last action
+    AllyTribe {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
         #[arg(long)]
-        turn_undo: bool,
+        player_type: String,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
     },
-    /// Toggle unit automation
-    UnitAutomate {
+    Anchor {
+        /// Unit ID (game param: pUnit)
         #[arg(long)]
         unit_id: i64,
     },
-    /// Add or remove promotion
-    UnitChangePromotion {
-        /// Promotion type
+    ApplyEffectUnit {
+        /// EffectUnitType value (e.g., EFFECTUNIT_EXAMPLE) (game param: eEffectUnit)
         #[arg(long)]
-        promotion_type: String,
-        #[arg(long)]
-        unit_id: i64,
-        /// Change amount (negative to remove)
-        #[arg(long)]
-        delta: Option<i64>,
-    },
-    /// Increase unit level
-    UnitIncrementLevel {
+        effect_unit_type: String,
+        /// Unit ID (game param: pUnit)
         #[arg(long)]
         unit_id: i64,
     },
-    /// Set unit name
-    UnitName {
+    Attack {
+        /// Tile ID (game param: pTile)
         #[arg(long)]
-        name: String,
-        #[arg(long)]
-        unit_id: i64,
-    },
-    /// Unlimber artillery unit
-    Unlimber {
+        tile_id: i64,
+        /// Unit ID (game param: pUnit)
         #[arg(long)]
         unit_id: i64,
     },
-    /// Upgrade a unit to a new type
-    Upgrade {
+    BuildImprovement {
+        /// Buy goods (game param: bBuyGoods)
+        #[arg(long)]
+        buy_goods: bool,
+        /// ImprovementType value (e.g., IMPROVEMENT_EXAMPLE) (game param: eImprovement)
+        #[arg(long)]
+        improvement_type: String,
+        /// Queue (game param: bQueue)
+        #[arg(long)]
+        queue: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// Unit ID (game param: pUnit)
         #[arg(long)]
         unit_id: i64,
-        /// Target unit type (e.g., UNIT_SWORDSMAN)
+    },
+    BuildProject {
+        /// Buy goods (game param: bBuyGoods)
+        #[arg(long)]
+        buy_goods: bool,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// First (game param: bFirst)
+        #[arg(long)]
+        first: bool,
+        /// ProjectType value (e.g., PROJECT_EXAMPLE) (game param: eProject)
+        #[arg(long)]
+        project_type: String,
+        /// Repeat (game param: bRepeat)
+        #[arg(long)]
+        repeat: bool,
+    },
+    BuildQueue {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// New slot (game param: iNewSlot)
+        #[arg(long)]
+        new_slot: i64,
+        /// Old slot (game param: iOldSlot)
+        #[arg(long)]
+        old_slot: i64,
+    },
+    BuildSpecialist {
+        /// Buy goods (game param: bBuyGoods)
+        #[arg(long)]
+        buy_goods: bool,
+        /// First (game param: bFirst)
+        #[arg(long)]
+        first: bool,
+        /// SpecialistType value (e.g., SPECIALIST_EXAMPLE) (game param: eSpecialist)
+        #[arg(long)]
+        specialist_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    BuildUnit {
+        /// Buy goods (game param: bBuyGoods)
+        #[arg(long)]
+        buy_goods: bool,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// First (game param: bFirst)
+        #[arg(long)]
+        first: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// UnitType value (e.g., UNIT_EXAMPLE) (game param: eUnit)
         #[arg(long)]
         unit_type: String,
-        /// Pay for goods if needed
-        #[arg(long)]
-        buy_goods: bool,
     },
-    /// Upgrade an existing improvement
-    UpgradeImprovement {
+    Burn {
+        /// Unit ID (game param: pUnit)
         #[arg(long)]
         unit_id: i64,
-        /// Pay for goods if needed
+    },
+    BuyTile {
+        /// City i d (game param: iCityID)
+        #[arg(long)]
+        city_id: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+        /// YieldType value (e.g., YIELD_EXAMPLE) (game param: eYield)
+        #[arg(long)]
+        yield_type: String,
+    },
+    BuyYield {
+        /// Size (game param: iSize)
+        #[arg(long)]
+        size: i64,
+        /// YieldType value (e.g., YIELD_EXAMPLE) (game param: eYield)
+        #[arg(long)]
+        yield_type: String,
+    },
+    CancelImprovement {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    CancelLaw {
+        /// LawType value (e.g., LAW_EXAMPLE) (game param: eLaw)
+        #[arg(long)]
+        law_type: String,
+    },
+    CancelUnitQueue {
+        /// Single (game param: bSingle)
+        #[arg(long)]
+        single: bool,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    CaravanMissionCancel {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    CaravanMissionStart {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: eTargetPlayer)
+        #[arg(long)]
+        target_player_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    ChangeCitizens {
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: i64,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    ChangeCityBuildTurns {
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: i64,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    ChangeCityDamage {
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: i64,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    ChangeCityDiscontentLevel {
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: i64,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    ChangeCooldown {
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    ChangeCulture {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// Grow (game param: bGrow)
+        #[arg(long)]
+        grow: bool,
+    },
+    ChangeDamage {
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    ChangeFamily {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
+        #[arg(long)]
+        family_type: String,
+    },
+    ChangeFamilySeat {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
+        #[arg(long)]
+        family_type: String,
+    },
+    ChangeProject {
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: i64,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// ProjectType value (e.g., PROJECT_EXAMPLE) (game param: eProject)
+        #[arg(long)]
+        project_type: String,
+    },
+    ChangeReligion {
+        #[arg(long)]
+        add: bool,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// ReligionType value (e.g., RELIGION_EXAMPLE) (game param: eReligion)
+        #[arg(long)]
+        religion_type: String,
+    },
+    ChangeUnitOwner {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    CharacterName {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// Name (game param: zName)
+        #[arg(long)]
+        name: String,
+    },
+    Chat {
+        /// ChatType value (e.g., CHAT_EXAMPLE) (game param: eChat)
+        #[arg(long)]
+        chat_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// Text (game param: zText)
+        #[arg(long)]
+        text: String,
+    },
+    Cheat {
+        /// HotkeyType value (e.g., HOTKEY_EXAMPLE) (game param: eHotkey)
+        #[arg(long)]
+        hotkey_type: String,
+    },
+    ChooseLaw {
+        /// LawType value (e.g., LAW_EXAMPLE) (game param: eLaw)
+        #[arg(long)]
+        law_type: String,
+    },
+    CityAutomate {
+        /// Automate (game param: bAutomate)
+        #[arg(long)]
+        automate: bool,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    CityOwner {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+    },
+    CityRename {
+        /// City i d (game param: iCityID)
+        #[arg(long)]
+        city_id: i64,
+        /// Name (game param: zName)
+        #[arg(long)]
+        name: String,
+    },
+    ClearChat,
+    ClearIgnoreReminders,
+    ClearPlayerAchievement {
+        /// AchievementType value (e.g., ACHIEVEMENT_EXAMPLE) (game param: eAchievementType)
+        #[arg(long)]
+        achievement_type_type: String,
+        #[arg(long)]
+        player: String,
+    },
+    ClearTurnSummary {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+    },
+    CloudContinue {
+        /// Active player id (game param: zActivePlayerId)
+        #[arg(long)]
+        active_player_id: String,
+        /// Game name (game param: zGameName)
+        #[arg(long)]
+        game_name: String,
+        /// Host player id (game param: zHostPlayerId)
+        #[arg(long)]
+        host_player_id: String,
+    },
+    ConvertLegitimacy,
+    ConvertOrders,
+    ConvertOrdersToScience,
+    CreateAgentNetwork {
+        /// City i d (game param: iCityID)
+        #[arg(long)]
+        city_id: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    CreateCity {
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
+        #[arg(long)]
+        family_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// Turn (game param: iTurn)
+        #[arg(long)]
+        turn: i64,
+    },
+    CreateTradeOutpost {
+        /// Tile i d (game param: iTileID)
+        #[arg(long)]
+        tile_id: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    CreateUnit {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
+        /// UnitType value (e.g., UNIT_EXAMPLE) (game param: eUnit)
+        #[arg(long)]
+        unit_type: String,
+    },
+    CustomName {
+        /// Name (game param: zName)
+        #[arg(long)]
+        name: String,
+        /// Type (game param: zType)
+        #[arg(long)]
+        r#type: String,
+    },
+    CustomReminder {
+        #[arg(long)]
+        s: String,
+    },
+    DiplomacyPlayer {
+        #[arg(long)]
+        action: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer1)
+        #[arg(long)]
+        player1_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer2)
+        #[arg(long)]
+        player2_type: String,
+    },
+    DiplomacyTribe {
+        #[arg(long)]
+        action: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
+    },
+    Disband {
+        /// Force (game param: bForce)
+        #[arg(long)]
+        force: bool,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    DismissLogType {
+        /// GameLogType value (e.g., GAMELOG_EXAMPLE) (game param: eLogType)
+        #[arg(long)]
+        log_type_type: String,
+        /// Turn (game param: iTurn)
+        #[arg(long)]
+        turn: i64,
+    },
+    DoUnitQueue {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    EndOccurrence {
+        #[arg(long)]
+        occurrence_i_d: i64,
+        /// OccurrenceType value (e.g., OCCURRENCE_EXAMPLE) (game param: eOccurrence)
+        #[arg(long)]
+        occurrence_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+    },
+    EndTurn {
+        /// Force (game param: bForce)
+        #[arg(long)]
+        force: bool,
+        /// Turn (game param: iTurn)
+        #[arg(long)]
+        turn: i64,
+    },
+    EstablishTheology {
+        /// TheologyType value (e.g., THEOLOGY_EXAMPLE) (game param: eTheology)
+        #[arg(long)]
+        theology_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    EventStory {
+        /// EventStoryType value (e.g., EVENTSTORY_EXAMPLE) (game param: eEventStory)
+        #[arg(long)]
+        event_story_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+    },
+    EventStoryMaxPriority {
+        /// EventStoryType value (e.g., EVENTSTORY_EXAMPLE) (game param: eEventStory)
+        #[arg(long)]
+        event_story_type: String,
+    },
+    EventTriggerUnit {
+        /// EventTriggerType value (e.g., EVENTTRIGGER_EXAMPLE) (game param: eEventTrigger)
+        #[arg(long)]
+        event_trigger_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// Unit i d (game param: iUnitID)
+        #[arg(long)]
+        unit_id: i64,
+        /// Data (game param: iData)
+        #[arg(long)]
+        data: Option<i64>,
+    },
+    ExtendTime,
+    FamilyHead {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: efamilyType)
+        #[arg(long)]
+        efamily_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayerType)
+        #[arg(long)]
+        player_type_type: String,
+    },
+    FinishGoal {
+        /// Fail (game param: bFail)
+        #[arg(long)]
+        fail: bool,
+        /// GoalType value (e.g., GOAL_EXAMPLE) (game param: eGoal)
+        #[arg(long)]
+        goal_type: String,
+    },
+    Formation {
+        /// EffectUnitType value (e.g., EFFECTUNIT_EXAMPLE) (game param: eEffectUnit)
+        #[arg(long)]
+        effect_unit_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Fortify {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    FoundCity {
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
+        #[arg(long)]
+        family_type: String,
+        /// NationType value (e.g., NATION_EXAMPLE) (game param: eNation)
+        #[arg(long)]
+        nation_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    GiftCity {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+    },
+    GiftUnit {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: eToPlayer)
+        #[arg(long)]
+        to_player_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    GiftYield {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// Reverse (game param: bReverse)
+        #[arg(long)]
+        reverse: bool,
+        /// YieldType value (e.g., YIELD_EXAMPLE) (game param: eYield)
+        #[arg(long)]
+        yield_type: String,
+    },
+    HarvestResource {
+        /// Auto (game param: bAuto)
+        #[arg(long)]
+        auto: bool,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Heal {
+        /// Auto (game param: bAuto)
+        #[arg(long)]
+        auto: bool,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    HireMercenary {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    HurryCivics {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    HurryMoney {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    HurryOrders {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    HurryPopulation {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    HurryTraining {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    IgnoreReminder {
+        /// ReminderType value (e.g., REMINDER_EXAMPLE) (game param: eReminder)
+        #[arg(long)]
+        reminder_type: String,
+        /// Add (game param: bAdd)
+        #[arg(long)]
+        add: bool,
+        /// Data (game param: iData)
+        #[arg(long)]
+        data: Option<i64>,
+    },
+    ImprovementBuildTurns {
+        /// Build turns (game param: iBuildTurns)
+        #[arg(long)]
+        build_turns: i64,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    ImprovementTribe {
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
+    },
+    JoinCity {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Kick {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// Surrender (game param: bSurrender)
+        #[arg(long)]
+        surrender: bool,
+    },
+    LandmarkRename {
+        /// Name (game param: zName)
+        #[arg(long)]
+        name: String,
+        /// Tile i d (game param: iTileID)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    LaunchOffensive {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Load {
+        /// Browse (game param: bBrowse)
+        #[arg(long)]
+        browse: bool,
+    },
+    Lock {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    MakeAgent {
+        /// Character ID (game param: pCharacter)
+        #[arg(long)]
+        character_id: i64,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    MakeCharacterDead {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+    },
+    MakeCharacterSafe {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// Num turns (game param: iNumTurns)
+        #[arg(long)]
+        num_turns: i64,
+    },
+    MakeDecision {
+        /// Choice (game param: iChoice)
+        #[arg(long)]
+        choice: i64,
+        /// Data (game param: iData)
+        #[arg(long)]
+        data: i64,
+        /// I d (game param: iID)
+        #[arg(long)]
+        i_d: i64,
+    },
+    MakeGovernor {
+        /// Character ID (game param: pCharacter)
+        #[arg(long)]
+        character_id: i64,
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    MakeNation {
+        /// NationType value (e.g., NATION_EXAMPLE) (game param: eNation)
+        #[arg(long)]
+        nation_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+    },
+    MakeUnitCharacter {
+        /// Character ID (game param: pCharacter)
+        #[arg(long)]
+        character_id: i64,
+        /// General (game param: bGeneral)
+        #[arg(long)]
+        general: bool,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    MapReveal {
+        /// TeamType value (e.g., TEAM_EXAMPLE) (game param: eTeam)
+        #[arg(long)]
+        team_type: String,
+    },
+    MapUnreveal {
+        /// TeamType value (e.g., TEAM_EXAMPLE) (game param: eTeam)
+        #[arg(long)]
+        team_type: String,
+    },
+    March {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    MoveCity {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    MoveUnit {
+        /// March (game param: bMarch)
+        #[arg(long)]
+        march: bool,
+        /// Queue (game param: bQueue)
+        #[arg(long)]
+        queue: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+        /// Tile ID (game param: pWaypoint)
+        #[arg(long)]
+        waypoint_id: Option<i64>,
+    },
+    MoveUnitInEditor {
+        #[arg(long)]
+        destination_tile: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    NewCharacter {
+        /// Age (game param: iAge)
+        #[arg(long)]
+        age: i64,
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
+        #[arg(long)]
+        family_type: String,
+        /// Fill value (game param: iFillValue)
+        #[arg(long)]
+        fill_value: i64,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+    },
+    Pass {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Pause,
+    Pillage {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Pillaged {
+        /// Pillaged (game param: bPillaged)
+        #[arg(long)]
+        pillaged: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    PinCharacter {
+        /// Character i d (game param: iCharacterID)
+        #[arg(long)]
+        character_id: i64,
+    },
+    Ping {
+        /// ImprovementType value (e.g., IMPROVEMENT_EXAMPLE) (game param: eImprovement)
+        #[arg(long)]
+        improvement_type: String,
+        /// PingType value (e.g., PING_EXAMPLE) (game param: ePing)
+        #[arg(long)]
+        ping_type: String,
+        /// Remind turn (game param: iRemindTurn)
+        #[arg(long)]
+        remind_turn: i64,
+        /// Text (game param: zText)
+        #[arg(long)]
+        text: String,
+        /// Tile i d (game param: iTileID)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    PlayerInformation {
+        /// Clear replay (game param: bClearReplay)
+        #[arg(long)]
+        clear_replay: bool,
+        /// Email (game param: zEmail)
+        #[arg(long)]
+        email: String,
+        /// Name (game param: zName)
+        #[arg(long)]
+        name: String,
+    },
+    PlayerLanguage {
+        /// LanguageType value (e.g., LANGUAGE_EXAMPLE) (game param: eLanguage)
+        #[arg(long)]
+        language_type: String,
+    },
+    PlayerLeader {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+    },
+    PlayerLogData {
+        /// GameLogType value (e.g., GAMELOG_EXAMPLE) (game param: eLogType)
+        #[arg(long)]
+        log_type_type: String,
+        #[arg(long)]
+        message: String,
+        #[arg(long)]
+        player: String,
+    },
+    PlayerOption {
+        /// Clear replay (game param: bClearReplay)
+        #[arg(long)]
+        clear_replay: bool,
+        /// PlayerOptionType value (e.g., PLAYEROPTION_EXAMPLE) (game param: ePlayerOption)
+        #[arg(long)]
+        player_option_type: String,
+        /// Value (game param: bValue)
+        #[arg(long)]
+        value: bool,
+    },
+    ProcessYieldWhole {
+        #[arg(long)]
+        amount: i64,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        #[arg(long)]
+        tile_index: i64,
+        /// YieldType value (e.g., YIELD_EXAMPLE) (game param: eYield)
+        #[arg(long)]
+        yield_type: String,
+    },
+    Promote {
+        /// PromotionType value (e.g., PROMOTION_EXAMPLE) (game param: ePromotion)
+        #[arg(long)]
+        promotion_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    PurgeReligion {
+        /// ReligionType value (e.g., RELIGION_EXAMPLE) (game param: eReligion)
+        #[arg(long)]
+        religion_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    RecruitMercenary {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Redo,
+    RedrawTech,
+    ReleaseAgent {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    ReleaseGovernor {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    ReleaseUnitCharacter {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    RemoveAchievementLocked {
+        /// Cleared (game param: bCleared)
+        #[arg(long)]
+        cleared: bool,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// AchievementType value (e.g., ACHIEVEMENT_EXAMPLE) (game param: eValue)
+        #[arg(long)]
+        value_type: String,
+    },
+    RemoveAchievementUnlocked {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// Unlocked (game param: bUnlocked)
+        #[arg(long)]
+        unlocked: bool,
+        /// AchievementType value (e.g., ACHIEVEMENT_EXAMPLE) (game param: eValue)
+        #[arg(long)]
+        value_type: String,
+    },
+    RemoveCity {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+    },
+    RemoveDecision {
+        /// I d (game param: iID)
+        #[arg(long)]
+        i_d: i64,
+    },
+    RemovePlayerGoal {
+        #[arg(long)]
+        goal_i_d: i64,
+        #[arg(long)]
+        player: String,
+    },
+    RemovePlayerRelationship {
+        #[arg(long)]
+        character1_i_d: i64,
+        #[arg(long)]
+        character2_i_d: i64,
+        /// RelationshipType value (e.g., RELATIONSHIP_EXAMPLE) (game param: eRelationship)
+        #[arg(long)]
+        relationship_type: String,
+    },
+    RemovePopup {
+        /// I d (game param: iID)
+        #[arg(long)]
+        i_d: i64,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+    },
+    RemoveScenarioCompleted {
+        /// Completed (game param: bCompleted)
+        #[arg(long)]
+        completed: bool,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// ScenarioType value (e.g., SCENARIO_EXAMPLE) (game param: eValue)
+        #[arg(long)]
+        value_type: String,
+    },
+    RemoveVegetation {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Repair {
+        /// Buy goods (game param: bBuyGoods)
         #[arg(long)]
         buy_goods: bool,
+        /// Queue (game param: bQueue)
+        #[arg(long)]
+        queue: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
     },
-    /// Set victory for team
+    ReplayTurn {
+        /// Num turns (game param: iNumTurns)
+        #[arg(long)]
+        num_turns: i64,
+        /// Step (game param: bStep)
+        #[arg(long)]
+        step: bool,
+    },
+    ResearchTech {
+        /// TechType value (e.g., TECH_EXAMPLE) (game param: eTech)
+        #[arg(long)]
+        tech_type: String,
+    },
+    Resource {
+        /// ResourceType value (e.g., RESOURCE_EXAMPLE) (game param: eResource)
+        #[arg(long)]
+        resource_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    River {
+        /// DirectionType value (e.g., DIRECTION_EXAMPLE) (game param: eDirection)
+        #[arg(long)]
+        direction_type: String,
+        /// River (game param: bRiver)
+        #[arg(long)]
+        river: bool,
+        /// RotationType value (e.g., ROTATION_EXAMPLE) (game param: eRotation)
+        #[arg(long)]
+        rotation_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    Road {
+        /// Road (game param: bRoad)
+        #[arg(long)]
+        road: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    Save {
+        /// Ack (game param: bAck)
+        #[arg(long)]
+        ack: bool,
+        /// Completed (game param: bCompleted)
+        #[arg(long)]
+        completed: bool,
+    },
+    SaveCompleted,
+    SaveScenario {
+        /// Ack (game param: bAck)
+        #[arg(long)]
+        ack: bool,
+        #[arg(long)]
+        path: String,
+    },
+    SawTechDiscovered,
+    SelectUnit {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    SellYield {
+        /// Size (game param: iSize)
+        #[arg(long)]
+        size: i64,
+        /// YieldType value (e.g., YIELD_EXAMPLE) (game param: eYield)
+        #[arg(long)]
+        yield_type: String,
+    },
+    Sentry {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    SetCharacterCognomen {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// CognomenType value (e.g., COGNOMEN_EXAMPLE) (game param: eCognomen)
+        #[arg(long)]
+        cognomen_type: String,
+    },
+    SetCharacterCouncil {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// CouncilType value (e.g., COUNCIL_EXAMPLE) (game param: eCouncil)
+        #[arg(long)]
+        council_type: String,
+    },
+    SetCharacterCourtier {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// CourtierType value (e.g., COURTIER_EXAMPLE) (game param: eCourtier)
+        #[arg(long)]
+        courtier_type: String,
+    },
+    SetCharacterExperience {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// X p (game param: iXP)
+        #[arg(long)]
+        x_p: i64,
+    },
+    SetCharacterFamily {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
+        #[arg(long)]
+        family_type: String,
+    },
+    SetCharacterNation {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// NationType value (e.g., NATION_EXAMPLE) (game param: eNation)
+        #[arg(long)]
+        nation_type: String,
+    },
+    SetCharacterRating {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// Rating (game param: iRating)
+        #[arg(long)]
+        rating: i64,
+        /// RatingType value (e.g., RATING_EXAMPLE) (game param: eRating)
+        #[arg(long)]
+        rating_type: String,
+    },
+    SetCharacterReligion {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// ReligionType value (e.g., RELIGION_EXAMPLE) (game param: eReligion)
+        #[arg(long)]
+        religion_type: String,
+    },
+    SetCharacterReligionHead {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// ReligionType value (e.g., RELIGION_EXAMPLE) (game param: eReligion)
+        #[arg(long)]
+        religion_type: String,
+    },
+    SetCitySite {
+        /// CitySiteType value (e.g., CITYSITE_EXAMPLE) (game param: eCitySite)
+        #[arg(long)]
+        city_site_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    SetImprovement {
+        /// ImprovementType value (e.g., IMPROVEMENT_EXAMPLE) (game param: eImprovement)
+        #[arg(long)]
+        improvement_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    SetPlayerAchievement {
+        /// AchievementType value (e.g., ACHIEVEMENT_EXAMPLE) (game param: eAchievementType)
+        #[arg(long)]
+        achievement_type_type: String,
+        #[arg(long)]
+        player: String,
+    },
+    SetSpecialist {
+        /// SpecialistType value (e.g., SPECIALIST_EXAMPLE) (game param: eSpecialist)
+        #[arg(long)]
+        specialist_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    SetUnitFamily {
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
+        #[arg(long)]
+        family_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    SetVegetation {
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// VegetationType value (e.g., VEGETATION_EXAMPLE) (game param: eVegetation)
+        #[arg(long)]
+        vegetation_type: String,
+    },
+    Sleep {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    SpreadReligion {
+        /// City i d (game param: iCityID)
+        #[arg(long)]
+        city_id: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    SpreadReligionTribe {
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    StartMission {
+        /// Cancel (game param: bCancel)
+        #[arg(long)]
+        cancel: bool,
+        /// Character i d (game param: iCharacterID)
+        #[arg(long)]
+        character_id: i64,
+        /// MissionType value (e.g., MISSION_EXAMPLE) (game param: eMission)
+        #[arg(long)]
+        mission_type: String,
+        /// Target (game param: zTarget)
+        #[arg(long)]
+        target: String,
+    },
+    StartingCity {
+        /// Age (game param: iAge)
+        #[arg(long)]
+        age: i64,
+        /// TraitType value (e.g., TRAIT_EXAMPLE) (game param: eArchetype)
+        #[arg(long)]
+        archetype_type: String,
+        /// DynastyType value (e.g., DYNASTY_EXAMPLE) (game param: eDynasty)
+        #[arg(long)]
+        dynasty_type: String,
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
+        #[arg(long)]
+        family_type: String,
+        /// GenderType value (e.g., GENDER_EXAMPLE) (game param: eGender)
+        #[arg(long)]
+        gender_type: String,
+        /// NameType value (e.g., NAME_EXAMPLE) (game param: eName)
+        #[arg(long)]
+        name_type: String,
+        /// NationType value (e.g., NATION_EXAMPLE) (game param: eNation)
+        #[arg(long)]
+        nation_type: String,
+        /// CharacterPortraitType value (e.g., CHARACTERPORTRAIT_EXAMPLE) (game param: ePortrait)
+        #[arg(long)]
+        portrait_type: String,
+        /// TraitType value (e.g., TRAIT_EXAMPLE) (game param: eTrait)
+        #[arg(long)]
+        trait_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Swap {
+        /// March (game param: bMarch)
+        #[arg(long)]
+        march: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    TargetTech {
+        /// Target (game param: bTarget)
+        #[arg(long)]
+        target: bool,
+        /// TechType value (e.g., TECH_EXAMPLE) (game param: eTech)
+        #[arg(long)]
+        tech_type: String,
+    },
+    TeamAlliance {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer1)
+        #[arg(long)]
+        player1_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer2)
+        #[arg(long)]
+        player2_type: String,
+    },
+    Terrain {
+        /// TerrainType value (e.g., TERRAIN_EXAMPLE) (game param: eTerrain)
+        #[arg(long)]
+        terrain_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    TerrainHeight {
+        /// HeightType value (e.g., HEIGHT_EXAMPLE) (game param: eHeight)
+        #[arg(long)]
+        height_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    TerrainStamp {
+        /// TerrainStampType value (e.g., TERRAINSTAMP_EXAMPLE) (game param: eTerrainStamp)
+        #[arg(long)]
+        terrain_stamp_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    TileBoundary {
+        /// Boundary (game param: bBoundary)
+        #[arg(long)]
+        boundary: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    TileName {
+        #[arg(long)]
+        tile_index: i64,
+        #[arg(long)]
+        tile_name: String,
+    },
+    TileOwner {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
+    },
+    TileRevealed {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: eForPlayer)
+        #[arg(long)]
+        for_player_type: String,
+        /// Revealed (game param: bRevealed)
+        #[arg(long)]
+        revealed: bool,
+        /// Tile ID (game param: pTile)
+        #[arg(long)]
+        tile_id: i64,
+    },
+    ToggleNoReplay,
+    TradeCityLuxury {
+        /// City ID (game param: pCity)
+        #[arg(long)]
+        city_id: i64,
+        /// On (game param: bOn)
+        #[arg(long)]
+        on: bool,
+        /// ResourceType value (e.g., RESOURCE_EXAMPLE) (game param: eResource)
+        #[arg(long)]
+        resource_type: String,
+    },
+    TradeFamilyLuxury {
+        /// FamilyType value (e.g., FAMILY_EXAMPLE) (game param: eFamily)
+        #[arg(long)]
+        family_type: String,
+        /// On (game param: bOn)
+        #[arg(long)]
+        on: bool,
+        /// ResourceType value (e.g., RESOURCE_EXAMPLE) (game param: eResource)
+        #[arg(long)]
+        resource_type: String,
+    },
+    TradePlayerLuxury {
+        /// On (game param: bOn)
+        #[arg(long)]
+        on: bool,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// ResourceType value (e.g., RESOURCE_EXAMPLE) (game param: eResource)
+        #[arg(long)]
+        resource_type: String,
+    },
+    TradeTribeLuxury {
+        /// On (game param: bOn)
+        #[arg(long)]
+        on: bool,
+        /// ResourceType value (e.g., RESOURCE_EXAMPLE) (game param: eResource)
+        #[arg(long)]
+        resource_type: String,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
+    },
+    TribeInvasion {
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: ePlayer)
+        #[arg(long)]
+        player_type: String,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
+    },
+    TribeLeader {
+        /// Character id (game param: iCharacterId)
+        #[arg(long)]
+        character_id: i64,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eTribe)
+        #[arg(long)]
+        tribe_type: String,
+    },
+    Tribute {
+        /// Amount (game param: iAmount)
+        #[arg(long)]
+        amount: i64,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: eFromPlayer)
+        #[arg(long)]
+        from_player_type: String,
+        /// PlayerType value (e.g., PLAYER_EXAMPLE) (game param: eToPlayer)
+        #[arg(long)]
+        to_player_type: String,
+        /// TribeType value (e.g., TRIBE_EXAMPLE) (game param: eToTribe)
+        #[arg(long)]
+        to_tribe_type: String,
+        /// YieldType value (e.g., YIELD_EXAMPLE) (game param: eYield)
+        #[arg(long)]
+        yield_type: String,
+    },
+    TurnStyle {
+        /// TurnStyleType value (e.g., TURNSTYLE_EXAMPLE) (game param: eTurnStyle)
+        #[arg(long)]
+        turn_style_type: String,
+    },
+    TurnStyleChange {
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: i64,
+    },
+    TurnTimer {
+        /// TurnTimerType value (e.g., TURNTIMER_EXAMPLE) (game param: eTurnTimer)
+        #[arg(long)]
+        turn_timer_type: String,
+    },
+    TurnTimerChange {
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: i64,
+    },
+    Undo {
+        /// Turn (game param: bTurn)
+        #[arg(long)]
+        turn: bool,
+    },
+    UnitAutomate {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    UnitChangePromotion {
+        /// PromotionType value (e.g., PROMOTION_EXAMPLE) (game param: ePromotion)
+        #[arg(long)]
+        promotion_type: String,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+        /// Change (game param: iChange)
+        #[arg(long)]
+        change: Option<i64>,
+    },
+    UnitIncrementLevel {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    UnitName {
+        /// Name (game param: zName)
+        #[arg(long)]
+        name: String,
+        /// Unit id (game param: iUnitId)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Unlimber {
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
+    Upgrade {
+        /// Buy goods (game param: bBuyGoods)
+        #[arg(long)]
+        buy_goods: bool,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+        /// UnitType value (e.g., UNIT_EXAMPLE) (game param: eUnit)
+        #[arg(long)]
+        unit_type: String,
+    },
+    UpgradeImprovement {
+        /// Buy goods (game param: bBuyGoods)
+        #[arg(long)]
+        buy_goods: bool,
+        /// Unit ID (game param: pUnit)
+        #[arg(long)]
+        unit_id: i64,
+    },
     VictoryTeam {
-        /// Action type
         #[arg(long)]
-        action_type: String,
-        /// Team index
+        action: String,
+        /// TeamType value (e.g., TEAM_EXAMPLE) (game param: eTeam)
         #[arg(long)]
-        team_type: i64,
-        /// Victory type
+        team_type: String,
+        /// VictoryType value (e.g., VICTORY_EXAMPLE) (game param: eVictory)
         #[arg(long)]
         victory_type: String,
     },
-    /// Wake a sleeping or sentry unit
     Wake {
+        /// Unit ID (game param: pUnit)
         #[arg(long)]
         unit_id: i64,
     },
@@ -1285,1745 +1683,2073 @@ pub enum Action {
 impl Action {
     /// Convert CLI action to generated GameCommand type
     pub fn to_game_command(&self) -> crate::client::types::GameCommand {
-        use crate::client::types::{GameCommand, *};
+        use crate::client::types::{GameCommand, GameCommandAction};
 
         match self {
-            Action::AbandonAmbition { goal_id } => {
-                let params = AbandonAmbitionParams {
-                    goal_id: *goal_id,
-                };
-                GameCommand::AbandonAmbitionCommand(AbandonAmbitionCommand {
-                    action: "abandonAmbition".to_string(),
+            Action::AIFinishTurn { turns } => {
+                let mut params = serde_json::Map::new();
+                params.insert("turns".to_string(), serde_json::Value::Number((*turns).into()));
+                GameCommand {
+                    action: GameCommandAction::AIFinishTurn,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::AbandonAmbition { i_d } => {
+                let mut params = serde_json::Map::new();
+                params.insert("i_d".to_string(), serde_json::Value::Number((*i_d).into()));
+                GameCommand {
+                    action: GameCommandAction::AbandonAmbition,
+                    params,
+                    request_id: None,
+                }
             }
             Action::AddCharacter { character_type, family_type, player_type } => {
-                let params = AddCharacterParams {
-                    character_type: character_type.clone(),
-                    family_type: family_type.clone(),
-                    player_type: *player_type,
-                };
-                GameCommand::AddCharacterCommand(AddCharacterCommand {
-                    action: "addCharacter".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_type".to_string(), serde_json::Value::String(character_type.clone()));
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::AddCharacter,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::AddCharacterTrait { character_id, trait_type, remove } => {
-                let params = AddCharacterTraitParams {
-                    character_id: *character_id,
-                    trait_type: trait_type.clone(),
-                    remove: if *remove { Some(true) } else { None },
-                };
-                GameCommand::AddCharacterTraitCommand(AddCharacterTraitCommand {
-                    action: "addCharacterTrait".to_string(),
+            Action::AddCharacterTrait { character_id, remove, trait_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("remove".to_string(), serde_json::Value::Bool(*remove));
+                params.insert("trait_type".to_string(), serde_json::Value::String(trait_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::AddCharacterTrait,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::AddMoney { amount, player_type } => {
-                let params = AddMoneyParams {
-                    amount: *amount,
-                    player_type: *player_type,
-                };
-                GameCommand::AddMoneyCommand(AddMoneyCommand {
-                    action: "addMoney".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("amount".to_string(), serde_json::Value::Number((*amount).into()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::AddMoney,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::AddPlayerGoal { goal_type, player_type } => {
-                let params = AddPlayerGoalParams {
-                    goal_type: goal_type.clone(),
-                    player_type: *player_type,
-                };
-                GameCommand::AddPlayerGoalCommand(AddPlayerGoalCommand {
-                    action: "addPlayerGoal".to_string(),
+            Action::AddOccurrence { occurrence_type, player_type, turn_delay } => {
+                let mut params = serde_json::Map::new();
+                params.insert("occurrence_type".to_string(), serde_json::Value::String(occurrence_type.clone()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("turn_delay".to_string(), serde_json::Value::Number((*turn_delay).into()));
+                GameCommand {
+                    action: GameCommandAction::AddOccurrence,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::AddRoad { tile_id, unit_id, buy_goods, queue } => {
-                let params = AddRoadParams {
-                    tile_id: *tile_id,
-                    unit_id: *unit_id,
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                    queue: if *queue { Some(true) } else { None },
-                };
-                GameCommand::AddRoadCommand(AddRoadCommand {
-                    action: "addRoad".to_string(),
+            Action::AddOccurrenceReady { occurrence_type, tile_id, turn_delay } => {
+                let mut params = serde_json::Map::new();
+                params.insert("occurrence_type".to_string(), serde_json::Value::String(occurrence_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("turn_delay".to_string(), serde_json::Value::Number((*turn_delay).into()));
+                GameCommand {
+                    action: GameCommandAction::AddOccurrenceReady,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::AddOccurrenceTile { occurrence_type, tile_id, turn_delay } => {
+                let mut params = serde_json::Map::new();
+                params.insert("occurrence_type".to_string(), serde_json::Value::String(occurrence_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("turn_delay".to_string(), serde_json::Value::Number((*turn_delay).into()));
+                GameCommand {
+                    action: GameCommandAction::AddOccurrenceTile,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::AddPlayerGoal { goal_type, player } => {
+                let mut params = serde_json::Map::new();
+                params.insert("goal_type".to_string(), serde_json::Value::String(goal_type.clone()));
+                params.insert("player".to_string(), serde_json::Value::String(player.clone()));
+                GameCommand {
+                    action: GameCommandAction::AddPlayerGoal,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::AddPlayerRelationship { character1_i_d, character2_i_d, relationship_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character1ID".to_string(), serde_json::Value::Number((*character1_i_d).into()));
+                params.insert("character2ID".to_string(), serde_json::Value::Number((*character2_i_d).into()));
+                params.insert("relationship_type".to_string(), serde_json::Value::String(relationship_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::AddPlayerRelationship,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::AddRoad { buy_goods, queue, tile_id, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("buy_goods".to_string(), serde_json::Value::Bool(*buy_goods));
+                params.insert("queue".to_string(), serde_json::Value::Bool(*queue));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::AddRoad,
+                    params,
+                    request_id: None,
+                }
             }
             Action::AddTech { player_type, tech_type } => {
-                let params = AddTechParams {
-                    player_type: *player_type,
-                    tech_type: tech_type.clone(),
-                };
-                GameCommand::AddTechCommand(AddTechCommand {
-                    action: "addTech".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("tech_type".to_string(), serde_json::Value::String(tech_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::AddTech,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::AddUrban { unit_id, buy_goods } => {
-                let params = AddUrbanParams {
-                    unit_id: *unit_id,
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                };
-                GameCommand::AddUrbanCommand(AddUrbanCommand {
-                    action: "addUrban".to_string(),
+            Action::AddUrban { buy_goods, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("buy_goods".to_string(), serde_json::Value::Bool(*buy_goods));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::AddUrban,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::AddYield { amount, player_type, yield_type } => {
-                let params = AddYieldParams {
-                    amount: *amount,
-                    player_type: *player_type,
-                    yield_type: yield_type.clone(),
-                };
-                GameCommand::AddYieldCommand(AddYieldCommand {
-                    action: "addYield".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("amount".to_string(), serde_json::Value::Number((*amount).into()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("yield_type".to_string(), serde_json::Value::String(yield_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::AddYield,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::AiFinishTurn { num_turns } => {
-                let params = AiFinishTurnParams {
-                    num_turns: *num_turns,
-                };
-                GameCommand::AiFinishTurnCommand(AiFinishTurnCommand {
-                    action: "aiFinishTurn".to_string(),
+            Action::AllyTribe { player_type, tribe_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::AllyTribe,
                     params,
                     request_id: None,
-                })
-            }
-            Action::AllyTribe { tribe_type } => {
-                let params = AllyTribeParams {
-                    tribe_type: tribe_type.clone(),
-                };
-                GameCommand::AllyTribeCommand(AllyTribeCommand {
-                    action: "allyTribe".to_string(),
-                    params,
-                    request_id: None,
-                })
+                }
             }
             Action::Anchor { unit_id } => {
-                let params = AnchorParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::AnchorCommand(AnchorCommand {
-                    action: "anchor".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Anchor,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::ApplyEffectUnit { effect_unit_type, unit_id } => {
-                let params = ApplyEffectUnitParams {
-                    effect_unit_type: effect_unit_type.clone(),
-                    unit_id: *unit_id,
-                };
-                GameCommand::ApplyEffectUnitCommand(ApplyEffectUnitCommand {
-                    action: "applyEffectUnit".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("effect_unit_type".to_string(), serde_json::Value::String(effect_unit_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ApplyEffectUnit,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::AssignAgent { character_id, city_id } => {
-                let params = AssignAgentParams {
-                    character_id: *character_id,
-                    city_id: *city_id,
-                };
-                GameCommand::AssignAgentCommand(AssignAgentCommand {
-                    action: "assignAgent".to_string(),
+            Action::Attack { tile_id, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Attack,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::AssignGeneral { character_id, unit_id } => {
-                let params = AssignGeneralParams {
-                    character_id: *character_id,
-                    unit_id: *unit_id,
-                };
-                GameCommand::AssignGeneralCommand(AssignGeneralCommand {
-                    action: "assignGeneral".to_string(),
+            Action::BuildImprovement { buy_goods, improvement_type, queue, tile_id, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("buy_goods".to_string(), serde_json::Value::Bool(*buy_goods));
+                params.insert("improvement_type".to_string(), serde_json::Value::String(improvement_type.clone()));
+                params.insert("queue".to_string(), serde_json::Value::Bool(*queue));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::BuildImprovement,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::AssignGovernor { character_id, city_id } => {
-                let params = AssignGovernorParams {
-                    character_id: *character_id,
-                    city_id: *city_id,
-                };
-                GameCommand::AssignGovernorCommand(AssignGovernorCommand {
-                    action: "assignGovernor".to_string(),
+            Action::BuildProject { buy_goods, city_id, first, project_type, repeat } => {
+                let mut params = serde_json::Map::new();
+                params.insert("buy_goods".to_string(), serde_json::Value::Bool(*buy_goods));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("first".to_string(), serde_json::Value::Bool(*first));
+                params.insert("project_type".to_string(), serde_json::Value::String(project_type.clone()));
+                params.insert("repeat".to_string(), serde_json::Value::Bool(*repeat));
+                GameCommand {
+                    action: GameCommandAction::BuildProject,
                     params,
                     request_id: None,
-                })
-            }
-            Action::Attack { target_tile_id, unit_id } => {
-                let params = AttackParams {
-                    target_tile_id: *target_tile_id,
-                    unit_id: *unit_id,
-                };
-                GameCommand::AttackCommand(AttackCommand {
-                    action: "attack".to_string(),
-                    params,
-                    request_id: None,
-                })
-            }
-            Action::Build { city_id, unit_type, buy_goods, first } => {
-                let params = BuildParams {
-                    city_id: *city_id,
-                    unit_type: unit_type.clone(),
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                    first: if *first { Some(true) } else { None },
-                };
-                GameCommand::BuildCommand(BuildCommand {
-                    action: "build".to_string(),
-                    params,
-                    request_id: None,
-                })
-            }
-            Action::BuildImprovement { improvement_type, tile_id, unit_id, buy_goods, queue } => {
-                let params = BuildImprovementParams {
-                    improvement_type: improvement_type.clone(),
-                    tile_id: *tile_id,
-                    unit_id: *unit_id,
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                    queue: if *queue { Some(true) } else { None },
-                };
-                GameCommand::BuildImprovementCommand(BuildImprovementCommand {
-                    action: "buildImprovement".to_string(),
-                    params,
-                    request_id: None,
-                })
-            }
-            Action::BuildProject { city_id, project_type, buy_goods, first, repeat } => {
-                let params = BuildProjectParams {
-                    city_id: *city_id,
-                    project_type: project_type.clone(),
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                    first: if *first { Some(true) } else { None },
-                    repeat: if *repeat { Some(true) } else { None },
-                };
-                GameCommand::BuildProjectCommand(BuildProjectCommand {
-                    action: "buildProject".to_string(),
-                    params,
-                    request_id: None,
-                })
+                }
             }
             Action::BuildQueue { city_id, new_slot, old_slot } => {
-                let params = BuildQueueParams {
-                    city_id: *city_id,
-                    new_slot: *new_slot,
-                    old_slot: *old_slot,
-                };
-                GameCommand::BuildQueueCommand(BuildQueueCommand {
-                    action: "buildQueue".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("new_slot".to_string(), serde_json::Value::Number((*new_slot).into()));
+                params.insert("old_slot".to_string(), serde_json::Value::Number((*old_slot).into()));
+                GameCommand {
+                    action: GameCommandAction::BuildQueue,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::BuildSpecialist { specialist_type, tile_id, add_first, buy_goods } => {
-                let params = BuildSpecialistParams {
-                    specialist_type: specialist_type.clone(),
-                    tile_id: *tile_id,
-                    add_first: if *add_first { Some(true) } else { None },
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                };
-                GameCommand::BuildSpecialistCommand(BuildSpecialistCommand {
-                    action: "buildSpecialist".to_string(),
+            Action::BuildSpecialist { buy_goods, first, specialist_type, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("buy_goods".to_string(), serde_json::Value::Bool(*buy_goods));
+                params.insert("first".to_string(), serde_json::Value::Bool(*first));
+                params.insert("specialist_type".to_string(), serde_json::Value::String(specialist_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::BuildSpecialist,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::BuildUnit { buy_goods, city_id, first, tile_id, unit_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("buy_goods".to_string(), serde_json::Value::Bool(*buy_goods));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("first".to_string(), serde_json::Value::Bool(*first));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("unit_type".to_string(), serde_json::Value::String(unit_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::BuildUnit,
+                    params,
+                    request_id: None,
+                }
             }
             Action::Burn { unit_id } => {
-                let params = BurnParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::BurnCommand(BurnCommand {
-                    action: "burn".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Burn,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::BuyTile { city_id, tile_id, yield_type } => {
-                let params = BuyTileParams {
-                    city_id: *city_id,
-                    tile_id: *tile_id,
-                    yield_type: yield_type.clone(),
-                };
-                GameCommand::BuyTileCommand(BuyTileCommand {
-                    action: "buyTile".to_string(),
+            Action::BuyTile { city_id, unit_id, yield_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                params.insert("yield_type".to_string(), serde_json::Value::String(yield_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::BuyTile,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::BuyYield { amount, yield_type } => {
-                let params = BuyYieldParams {
-                    amount: *amount,
-                    yield_type: yield_type.clone(),
-                };
-                GameCommand::BuyYieldCommand(BuyYieldCommand {
-                    action: "buyYield".to_string(),
+            Action::BuyYield { size, yield_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("size".to_string(), serde_json::Value::Number((*size).into()));
+                params.insert("yield_type".to_string(), serde_json::Value::String(yield_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::BuyYield,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::CancelImprovement { unit_id } => {
-                let params = CancelImprovementParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::CancelImprovementCommand(CancelImprovementCommand {
-                    action: "cancelImprovement".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::CancelImprovement,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::CancelLaw { law_type } => {
-                let params = CancelLawParams {
-                    law_type: law_type.clone(),
-                };
-                GameCommand::CancelLawCommand(CancelLawCommand {
-                    action: "cancelLaw".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("law_type".to_string(), serde_json::Value::String(law_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::CancelLaw,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::CancelUnitQueue { unit_id, clear_all } => {
-                let params = CancelUnitQueueParams {
-                    unit_id: *unit_id,
-                    clear_all: if *clear_all { Some(true) } else { None },
-                };
-                GameCommand::CancelUnitQueueCommand(CancelUnitQueueCommand {
-                    action: "cancelUnitQueue".to_string(),
+            Action::CancelUnitQueue { single, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("single".to_string(), serde_json::Value::Bool(*single));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::CancelUnitQueue,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::CaravanMissionCancel { unit_id } => {
-                let params = CaravanMissionCancelParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::CaravanMissionCancelCommand(CaravanMissionCancelCommand {
-                    action: "caravanMissionCancel".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::CaravanMissionCancel,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::CaravanMissionStart { target_player, unit_id } => {
-                let params = CaravanMissionStartParams {
-                    target_player: *target_player,
-                    unit_id: *unit_id,
-                };
-                GameCommand::CaravanMissionStartCommand(CaravanMissionStartCommand {
-                    action: "caravanMissionStart".to_string(),
+            Action::CaravanMissionStart { target_player_type, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("target_player_type".to_string(), serde_json::Value::String(target_player_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::CaravanMissionStart,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ChangeCitizens { city_id, delta } => {
-                let params = ChangeCitizensParams {
-                    city_id: *city_id,
-                    delta: *delta,
-                };
-                GameCommand::ChangeCitizensCommand(ChangeCitizensCommand {
-                    action: "changeCitizens".to_string(),
+            Action::ChangeCitizens { change, city_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("change".to_string(), serde_json::Value::Number((*change).into()));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ChangeCitizens,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ChangeCityBuildTurns { amount, city_id } => {
-                let params = ChangeCityBuildTurnsParams {
-                    amount: *amount,
-                    city_id: *city_id,
-                };
-                GameCommand::ChangeCityBuildTurnsCommand(ChangeCityBuildTurnsCommand {
-                    action: "changeCityBuildTurns".to_string(),
+            Action::ChangeCityBuildTurns { change, city_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("change".to_string(), serde_json::Value::Number((*change).into()));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ChangeCityBuildTurns,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ChangeCityDamage { amount, city_id } => {
-                let params = ChangeCityDamageParams {
-                    amount: *amount,
-                    city_id: *city_id,
-                };
-                GameCommand::ChangeCityDamageCommand(ChangeCityDamageCommand {
-                    action: "changeCityDamage".to_string(),
+            Action::ChangeCityDamage { change, city_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("change".to_string(), serde_json::Value::Number((*change).into()));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ChangeCityDamage,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ChangeCityDiscontentLevel { amount, city_id } => {
-                let params = ChangeCityDiscontentLevelParams {
-                    amount: *amount,
-                    city_id: *city_id,
-                };
-                GameCommand::ChangeCityDiscontentLevelCommand(ChangeCityDiscontentLevelCommand {
-                    action: "changeCityDiscontentLevel".to_string(),
+            Action::ChangeCityDiscontentLevel { change, city_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("change".to_string(), serde_json::Value::Number((*change).into()));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ChangeCityDiscontentLevel,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ChangeCooldown { delta, unit_id } => {
-                let params = ChangeCooldownParams {
-                    delta: *delta,
-                    unit_id: *unit_id,
-                };
-                GameCommand::ChangeCooldownCommand(ChangeCooldownCommand {
-                    action: "changeCooldown".to_string(),
+            Action::ChangeCooldown { change, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("change".to_string(), serde_json::Value::Number((*change).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ChangeCooldown,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::ChangeCulture { city_id, grow } => {
-                let params = ChangeCultureParams {
-                    city_id: *city_id,
-                    grow: if *grow { Some(true) } else { None },
-                };
-                GameCommand::ChangeCultureCommand(ChangeCultureCommand {
-                    action: "changeCulture".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("grow".to_string(), serde_json::Value::Bool(*grow));
+                GameCommand {
+                    action: GameCommandAction::ChangeCulture,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ChangeDamage { delta, unit_id } => {
-                let params = ChangeDamageParams {
-                    delta: *delta,
-                    unit_id: *unit_id,
-                };
-                GameCommand::ChangeDamageCommand(ChangeDamageCommand {
-                    action: "changeDamage".to_string(),
+            Action::ChangeDamage { change, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("change".to_string(), serde_json::Value::Number((*change).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ChangeDamage,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::ChangeFamily { city_id, family_type } => {
-                let params = ChangeFamilyParams {
-                    city_id: *city_id,
-                    family_type: family_type.clone(),
-                };
-                GameCommand::ChangeFamilyCommand(ChangeFamilyCommand {
-                    action: "changeFamily".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::ChangeFamily,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::ChangeFamilySeat { city_id, family_type } => {
-                let params = ChangeFamilySeatParams {
-                    city_id: *city_id,
-                    family_type: family_type.clone(),
-                };
-                GameCommand::ChangeFamilySeatCommand(ChangeFamilySeatCommand {
-                    action: "changeFamilySeat".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::ChangeFamilySeat,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ChangeProject { city_id, project_type, delta } => {
-                let params = ChangeProjectParams {
-                    city_id: *city_id,
-                    project_type: project_type.clone(),
-                    delta: *delta,
-                };
-                GameCommand::ChangeProjectCommand(ChangeProjectCommand {
-                    action: "changeProject".to_string(),
+            Action::ChangeProject { change, city_id, project_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("change".to_string(), serde_json::Value::Number((*change).into()));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("project_type".to_string(), serde_json::Value::String(project_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::ChangeProject,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ChangeReligion { city_id, religion_type, add } => {
-                let params = ChangeReligionParams {
-                    city_id: *city_id,
-                    religion_type: religion_type.clone(),
-                    add: *add,
-                };
-                GameCommand::ChangeReligionCommand(ChangeReligionCommand {
-                    action: "changeReligion".to_string(),
+            Action::ChangeReligion { add, city_id, religion_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("add".to_string(), serde_json::Value::Bool(*add));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("religion_type".to_string(), serde_json::Value::String(religion_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::ChangeReligion,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ChangeUnitOwner { unit_id, player_type, tribe_type } => {
-                let params = ChangeUnitOwnerParams {
-                    unit_id: *unit_id,
-                    player_type: *player_type,
-                    tribe_type: tribe_type.clone(),
-                };
-                GameCommand::ChangeUnitOwnerCommand(ChangeUnitOwnerCommand {
-                    action: "changeUnitOwner".to_string(),
+            Action::ChangeUnitOwner { player_type, tribe_type, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ChangeUnitOwner,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::CharacterName { character_id, name } => {
-                let params = CharacterNameParams {
-                    character_id: *character_id,
-                    name: name.clone(),
-                };
-                GameCommand::CharacterNameCommand(CharacterNameCommand {
-                    action: "characterName".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("name".to_string(), serde_json::Value::String(name.clone()));
+                GameCommand {
+                    action: GameCommandAction::CharacterName,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Chat { chat_type, message, to_player } => {
-                let params = ChatParams {
-                    chat_type: chat_type.clone(),
-                    message: message.clone(),
-                    to_player: *to_player,
-                };
-                GameCommand::ChatCommand(ChatCommand {
-                    action: "chat".to_string(),
+            Action::Chat { chat_type, player_type, text } => {
+                let mut params = serde_json::Map::new();
+                params.insert("chat_type".to_string(), serde_json::Value::String(chat_type.clone()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("text".to_string(), serde_json::Value::String(text.clone()));
+                GameCommand {
+                    action: GameCommandAction::Chat,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::Cheat { hotkey_type } => {
-                let params = CheatParams {
-                    hotkey_type: hotkey_type.clone(),
-                };
-                GameCommand::CheatCommand(CheatCommand {
-                    action: "cheat".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("hotkey_type".to_string(), serde_json::Value::String(hotkey_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::Cheat,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::ChooseLaw { law_type } => {
-                let params = ChooseLawParams {
-                    law_type: law_type.clone(),
-                };
-                GameCommand::ChooseLawCommand(ChooseLawCommand {
-                    action: "chooseLaw".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("law_type".to_string(), serde_json::Value::String(law_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::ChooseLaw,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::CityAutomate { city_id, enable } => {
-                let params = CityAutomateParams {
-                    city_id: *city_id,
-                    enable: *enable,
-                };
-                GameCommand::CityAutomateCommand(CityAutomateCommand {
-                    action: "cityAutomate".to_string(),
+            Action::CityAutomate { automate, city_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("automate".to_string(), serde_json::Value::Bool(*automate));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::CityAutomate,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::CityOwner { city_id, player_type } => {
-                let params = CityOwnerParams {
-                    city_id: *city_id,
-                    player_type: *player_type,
-                };
-                GameCommand::CityOwnerCommand(CityOwnerCommand {
-                    action: "cityOwner".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::CityOwner,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::CityRename { city_id, name } => {
-                let params = CityRenameParams {
-                    city_id: *city_id,
-                    name: name.clone(),
-                };
-                GameCommand::CityRenameCommand(CityRenameCommand {
-                    action: "cityRename".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("name".to_string(), serde_json::Value::String(name.clone()));
+                GameCommand {
+                    action: GameCommandAction::CityRename,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::CreateAgentNetwork { city_id, unit_id } => {
-                let params = CreateAgentNetworkParams {
-                    city_id: *city_id,
-                    unit_id: *unit_id,
-                };
-                GameCommand::CreateAgentNetworkCommand(CreateAgentNetworkCommand {
-                    action: "createAgentNetwork".to_string(),
+            Action::ClearChat => GameCommand {
+                action: GameCommandAction::ClearChat,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
+            Action::ClearIgnoreReminders => GameCommand {
+                action: GameCommandAction::ClearIgnoreReminders,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
+            Action::ClearPlayerAchievement { achievement_type_type, player } => {
+                let mut params = serde_json::Map::new();
+                params.insert("achievement_type_type".to_string(), serde_json::Value::String(achievement_type_type.clone()));
+                params.insert("player".to_string(), serde_json::Value::String(player.clone()));
+                GameCommand {
+                    action: GameCommandAction::ClearPlayerAchievement,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::ClearTurnSummary { player_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::ClearTurnSummary,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::CloudContinue { active_player_id, game_name, host_player_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("active_player_id".to_string(), serde_json::Value::String(active_player_id.clone()));
+                params.insert("game_name".to_string(), serde_json::Value::String(game_name.clone()));
+                params.insert("host_player_id".to_string(), serde_json::Value::String(host_player_id.clone()));
+                GameCommand {
+                    action: GameCommandAction::CloudContinue,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::ConvertLegitimacy => GameCommand {
+                action: GameCommandAction::ConvertLegitimacy,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
+            Action::ConvertOrders => GameCommand {
+                action: GameCommandAction::ConvertOrders,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
+            Action::ConvertOrdersToScience => GameCommand {
+                action: GameCommandAction::ConvertOrdersToScience,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
+            Action::CreateAgentNetwork { city_id, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::CreateAgentNetwork,
+                    params,
+                    request_id: None,
+                }
             }
             Action::CreateCity { family_type, player_type, tile_id, turn } => {
-                let params = CreateCityParams {
-                    family_type: family_type.clone(),
-                    player_type: *player_type,
-                    tile_id: *tile_id,
-                    turn: *turn,
-                };
-                GameCommand::CreateCityCommand(CreateCityCommand {
-                    action: "createCity".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("turn".to_string(), serde_json::Value::Number((*turn).into()));
+                GameCommand {
+                    action: GameCommandAction::CreateCity,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::CreateTradeOutpost { tile_id, unit_id } => {
-                let params = CreateTradeOutpostParams {
-                    tile_id: *tile_id,
-                    unit_id: *unit_id,
-                };
-                GameCommand::CreateTradeOutpostCommand(CreateTradeOutpostCommand {
-                    action: "createTradeOutpost".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::CreateTradeOutpost,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::CreateUnit { tile_id, unit_type, player_type, tribe_type } => {
-                let params = CreateUnitParams {
-                    tile_id: *tile_id,
-                    unit_type: unit_type.clone(),
-                    player_type: *player_type,
-                    tribe_type: tribe_type.clone(),
-                };
-                GameCommand::CreateUnitCommand(CreateUnitCommand {
-                    action: "createUnit".to_string(),
+            Action::CreateUnit { player_type, tile_id, tribe_type, unit_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                params.insert("unit_type".to_string(), serde_json::Value::String(unit_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::CreateUnit,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::CustomReminder { message } => {
-                let params = CustomReminderParams {
-                    message: message.clone(),
-                };
-                GameCommand::CustomReminderCommand(CustomReminderCommand {
-                    action: "customReminder".to_string(),
+            Action::CustomName { name, r#type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("name".to_string(), serde_json::Value::String(name.clone()));
+                params.insert("type".to_string(), serde_json::Value::String(r#type.clone()));
+                GameCommand {
+                    action: GameCommandAction::CustomName,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::DeclareTruce { target_player } => {
-                let params = DeclareTruceParams {
-                    target_player: *target_player,
-                };
-                GameCommand::DeclareTruceCommand(DeclareTruceCommand {
-                    action: "declareTruce".to_string(),
+            Action::CustomReminder { s } => {
+                let mut params = serde_json::Map::new();
+                params.insert("s".to_string(), serde_json::Value::String(s.clone()));
+                GameCommand {
+                    action: GameCommandAction::CustomReminder,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::DeclareTruceTribe { tribe_type } => {
-                let params = DeclareTruceTribeParams {
-                    tribe_type: tribe_type.clone(),
-                };
-                GameCommand::DeclareTruceTribeCommand(DeclareTruceTribeCommand {
-                    action: "declareTruceTribe".to_string(),
+            Action::DiplomacyPlayer { action, player1_type, player2_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("action".to_string(), serde_json::Value::String(action.clone()));
+                params.insert("player1_type".to_string(), serde_json::Value::String(player1_type.clone()));
+                params.insert("player2_type".to_string(), serde_json::Value::String(player2_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::DiplomacyPlayer,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::DeclareWar { target_player } => {
-                let params = DeclareWarParams {
-                    target_player: *target_player,
-                };
-                GameCommand::DeclareWarCommand(DeclareWarCommand {
-                    action: "declareWar".to_string(),
+            Action::DiplomacyTribe { action, player_type, tribe_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("action".to_string(), serde_json::Value::String(action.clone()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::DiplomacyTribe,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::DeclareWarTribe { tribe_type } => {
-                let params = DeclareWarTribeParams {
-                    tribe_type: tribe_type.clone(),
-                };
-                GameCommand::DeclareWarTribeCommand(DeclareWarTribeCommand {
-                    action: "declareWarTribe".to_string(),
+            Action::Disband { force, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("force".to_string(), serde_json::Value::Bool(*force));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Disband,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Disband { unit_id, force } => {
-                let params = DisbandParams {
-                    unit_id: *unit_id,
-                    force: if *force { Some(true) } else { None },
-                };
-                GameCommand::DisbandCommand(DisbandCommand {
-                    action: "disband".to_string(),
+            Action::DismissLogType { log_type_type, turn } => {
+                let mut params = serde_json::Map::new();
+                params.insert("log_type_type".to_string(), serde_json::Value::String(log_type_type.clone()));
+                params.insert("turn".to_string(), serde_json::Value::Number((*turn).into()));
+                GameCommand {
+                    action: GameCommandAction::DismissLogType,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::DoUnitQueue { unit_id } => {
-                let params = DoUnitQueueParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::DoUnitQueueCommand(DoUnitQueueCommand {
-                    action: "doUnitQueue".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::DoUnitQueue,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::EndTurn { force } => {
-                let params = EndTurnParams {
-                    force: *force,
-                };
-                GameCommand::EndTurnCommand(EndTurnCommand {
-                    action: "endTurn".to_string(),
+            Action::EndOccurrence { occurrence_i_d, occurrence_type, player_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("occurrenceID".to_string(), serde_json::Value::Number((*occurrence_i_d).into()));
+                params.insert("occurrence_type".to_string(), serde_json::Value::String(occurrence_type.clone()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::EndOccurrence,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::EndTurn { force, turn } => {
+                let mut params = serde_json::Map::new();
+                params.insert("force".to_string(), serde_json::Value::Bool(*force));
+                params.insert("turn".to_string(), serde_json::Value::Number((*turn).into()));
+                GameCommand {
+                    action: GameCommandAction::EndTurn,
+                    params,
+                    request_id: None,
+                }
             }
             Action::EstablishTheology { theology_type, unit_id } => {
-                let params = EstablishTheologyParams {
-                    theology_type: theology_type.clone(),
-                    unit_id: *unit_id,
-                };
-                GameCommand::EstablishTheologyCommand(EstablishTheologyCommand {
-                    action: "establishTheology".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("theology_type".to_string(), serde_json::Value::String(theology_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::EstablishTheology,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::EventStory { event_type, player_type } => {
-                let params = EventStoryParams {
-                    event_type: event_type.clone(),
-                    player_type: *player_type,
-                };
-                GameCommand::EventStoryCommand(EventStoryCommand {
-                    action: "eventStory".to_string(),
+            Action::EventStory { event_story_type, player_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("event_story_type".to_string(), serde_json::Value::String(event_story_type.clone()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::EventStory,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ExtendTime { seconds } => {
-                let params = ExtendTimeParams {
-                    seconds: *seconds,
-                };
-                let _ = params;
-                GameCommand::ExtendTimeCommand(ExtendTimeCommand {
-                    action: "extendTime".to_string(),
-                    request_id: None,
-                })
-            }
-            Action::FamilyHead { character_id, family_type } => {
-                let params = FamilyHeadParams {
-                    character_id: *character_id,
-                    family_type: family_type.clone(),
-                };
-                GameCommand::FamilyHeadCommand(FamilyHeadCommand {
-                    action: "familyHead".to_string(),
+            Action::EventStoryMaxPriority { event_story_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("event_story_type".to_string(), serde_json::Value::String(event_story_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::EventStoryMaxPriority,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::FinishGoal { goal_type, fail } => {
-                let params = FinishGoalParams {
-                    goal_type: goal_type.clone(),
-                    fail: if *fail { Some(true) } else { None },
-                };
-                GameCommand::FinishGoalCommand(FinishGoalCommand {
-                    action: "finishGoal".to_string(),
+            Action::EventTriggerUnit { event_trigger_type, player_type, unit_id, data } => {
+                let mut params = serde_json::Map::new();
+                params.insert("event_trigger_type".to_string(), serde_json::Value::String(event_trigger_type.clone()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                if let Some(v) = data { params.insert("data".to_string(), serde_json::Value::Number((*v).into())); }
+                GameCommand {
+                    action: GameCommandAction::EventTriggerUnit,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::ExtendTime => GameCommand {
+                action: GameCommandAction::ExtendTime,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
+            Action::FamilyHead { character_id, efamily_type, player_type_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("efamilyType".to_string(), serde_json::Value::String(efamily_type.clone()));
+                params.insert("player_type_type".to_string(), serde_json::Value::String(player_type_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::FamilyHead,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::FinishGoal { fail, goal_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("fail".to_string(), serde_json::Value::Bool(*fail));
+                params.insert("goal_type".to_string(), serde_json::Value::String(goal_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::FinishGoal,
+                    params,
+                    request_id: None,
+                }
             }
             Action::Formation { effect_unit_type, unit_id } => {
-                let params = FormationParams {
-                    effect_unit_type: effect_unit_type.clone(),
-                    unit_id: *unit_id,
-                };
-                GameCommand::FormationCommand(FormationCommand {
-                    action: "formation".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("effect_unit_type".to_string(), serde_json::Value::String(effect_unit_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Formation,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::Fortify { unit_id } => {
-                let params = FortifyParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::FortifyCommand(FortifyCommand {
-                    action: "fortify".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Fortify,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::FoundCity { family_type, unit_id, nation_type } => {
-                let params = FoundCityParams {
-                    family_type: family_type.clone(),
-                    unit_id: *unit_id,
-                    nation_type: nation_type.clone(),
-                };
-                GameCommand::FoundCityCommand(FoundCityCommand {
-                    action: "foundCity".to_string(),
+            Action::FoundCity { family_type, nation_type, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                params.insert("nation_type".to_string(), serde_json::Value::String(nation_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::FoundCity,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::GiftCity { city_id, target_player } => {
-                let params = GiftCityParams {
-                    city_id: *city_id,
-                    target_player: *target_player,
-                };
-                GameCommand::GiftCityCommand(GiftCityCommand {
-                    action: "giftCity".to_string(),
+            Action::GiftCity { city_id, player_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::GiftCity,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::GiftUnit { target_player, unit_id } => {
-                let params = GiftUnitParams {
-                    target_player: *target_player,
-                    unit_id: *unit_id,
-                };
-                GameCommand::GiftUnitCommand(GiftUnitCommand {
-                    action: "giftUnit".to_string(),
+            Action::GiftUnit { to_player_type, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("to_player_type".to_string(), serde_json::Value::String(to_player_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::GiftUnit,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::GiftYield { target_player, yield_type, reverse } => {
-                let params = GiftYieldParams {
-                    target_player: *target_player,
-                    yield_type: yield_type.clone(),
-                    reverse: if *reverse { Some(true) } else { None },
-                };
-                GameCommand::GiftYieldCommand(GiftYieldCommand {
-                    action: "giftYield".to_string(),
+            Action::GiftYield { player_type, reverse, yield_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("reverse".to_string(), serde_json::Value::Bool(*reverse));
+                params.insert("yield_type".to_string(), serde_json::Value::String(yield_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::GiftYield,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::HarvestResource { unit_id, auto_harvest } => {
-                let params = HarvestResourceParams {
-                    unit_id: *unit_id,
-                    auto_harvest: if *auto_harvest { Some(true) } else { None },
-                };
-                GameCommand::HarvestResourceCommand(HarvestResourceCommand {
-                    action: "harvestResource".to_string(),
+            Action::HarvestResource { auto, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("auto".to_string(), serde_json::Value::Bool(*auto));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::HarvestResource,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Heal { unit_id, auto } => {
-                let params = HealParams {
-                    unit_id: *unit_id,
-                    auto: if *auto { Some(true) } else { None },
-                };
-                GameCommand::HealCommand(HealCommand {
-                    action: "heal".to_string(),
+            Action::Heal { auto, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("auto".to_string(), serde_json::Value::Bool(*auto));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Heal,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::HireMercenary { unit_id } => {
-                let params = HireMercenaryParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::HireMercenaryCommand(HireMercenaryCommand {
-                    action: "hireMercenary".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::HireMercenary,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::HurryCivics { city_id } => {
-                let params = HurryCivicsParams {
-                    city_id: *city_id,
-                };
-                GameCommand::HurryCivicsCommand(HurryCivicsCommand {
-                    action: "hurryCivics".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::HurryCivics,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::HurryMoney { city_id } => {
-                let params = HurryMoneyParams {
-                    city_id: *city_id,
-                };
-                GameCommand::HurryMoneyCommand(HurryMoneyCommand {
-                    action: "hurryMoney".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::HurryMoney,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::HurryOrders { city_id } => {
-                let params = HurryOrdersParams {
-                    city_id: *city_id,
-                };
-                GameCommand::HurryOrdersCommand(HurryOrdersCommand {
-                    action: "hurryOrders".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::HurryOrders,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::HurryPopulation { city_id } => {
-                let params = HurryPopulationParams {
-                    city_id: *city_id,
-                };
-                GameCommand::HurryPopulationCommand(HurryPopulationCommand {
-                    action: "hurryPopulation".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::HurryPopulation,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::HurryTraining { city_id } => {
-                let params = HurryTrainingParams {
-                    city_id: *city_id,
-                };
-                GameCommand::HurryTrainingCommand(HurryTrainingCommand {
-                    action: "hurryTraining".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::HurryTraining,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::ImprovementBuildTurns { tile_id, turns } => {
-                let params = ImprovementBuildTurnsParams {
-                    tile_id: *tile_id,
-                    turns: *turns,
-                };
-                GameCommand::ImprovementBuildTurnsCommand(ImprovementBuildTurnsCommand {
-                    action: "improvementBuildTurns".to_string(),
+            Action::IgnoreReminder { reminder_type, add, data } => {
+                let mut params = serde_json::Map::new();
+                params.insert("reminder_type".to_string(), serde_json::Value::String(reminder_type.clone()));
+                if *add { params.insert("add".to_string(), serde_json::Value::Bool(true)); }
+                if let Some(v) = data { params.insert("data".to_string(), serde_json::Value::Number((*v).into())); }
+                GameCommand {
+                    action: GameCommandAction::IgnoreReminder,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::ImprovementBuildTurns { build_turns, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("build_turns".to_string(), serde_json::Value::Number((*build_turns).into()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ImprovementBuildTurns,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::ImprovementTribe { tile_id, tribe_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::ImprovementTribe,
+                    params,
+                    request_id: None,
+                }
             }
             Action::JoinCity { unit_id } => {
-                let params = JoinCityParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::JoinCityCommand(JoinCityCommand {
-                    action: "joinCity".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::JoinCity,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::Kick { player_type, surrender } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("surrender".to_string(), serde_json::Value::Bool(*surrender));
+                GameCommand {
+                    action: GameCommandAction::Kick,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::LandmarkRename { name, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("name".to_string(), serde_json::Value::String(name.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::LandmarkRename,
+                    params,
+                    request_id: None,
+                }
             }
             Action::LaunchOffensive { unit_id } => {
-                let params = LaunchOffensiveParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::LaunchOffensiveCommand(LaunchOffensiveCommand {
-                    action: "launchOffensive".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::LaunchOffensive,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::Load { browse } => {
+                let mut params = serde_json::Map::new();
+                params.insert("browse".to_string(), serde_json::Value::Bool(*browse));
+                GameCommand {
+                    action: GameCommandAction::Load,
+                    params,
+                    request_id: None,
+                }
             }
             Action::Lock { unit_id } => {
-                let params = LockParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::LockCommand(LockCommand {
-                    action: "lock".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Lock,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::MakeAgent { character_id, city_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::MakeAgent,
+                    params,
+                    request_id: None,
+                }
             }
             Action::MakeCharacterDead { character_id } => {
-                let params = MakeCharacterDeadParams {
-                    character_id: *character_id,
-                };
-                GameCommand::MakeCharacterDeadCommand(MakeCharacterDeadCommand {
-                    action: "makeCharacterDead".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                GameCommand {
+                    action: GameCommandAction::MakeCharacterDead,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::MakeCharacterSafe { character_id, num_turns } => {
-                let params = MakeCharacterSafeParams {
-                    character_id: *character_id,
-                    num_turns: *num_turns,
-                };
-                GameCommand::MakeCharacterSafeCommand(MakeCharacterSafeCommand {
-                    action: "makeCharacterSafe".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("num_turns".to_string(), serde_json::Value::Number((*num_turns).into()));
+                GameCommand {
+                    action: GameCommandAction::MakeCharacterSafe,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::MakeDecision { choice_index, decision_id, data } => {
-                let params = MakeDecisionParams {
-                    choice_index: *choice_index,
-                    decision_id: *decision_id,
-                    data: *data,
-                };
-                GameCommand::MakeDecisionCommand(MakeDecisionCommand {
-                    action: "makeDecision".to_string(),
+            Action::MakeDecision { choice, data, i_d } => {
+                let mut params = serde_json::Map::new();
+                params.insert("choice".to_string(), serde_json::Value::Number((*choice).into()));
+                params.insert("data".to_string(), serde_json::Value::Number((*data).into()));
+                params.insert("i_d".to_string(), serde_json::Value::Number((*i_d).into()));
+                GameCommand {
+                    action: GameCommandAction::MakeDecision,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::MakePeace { target_player } => {
-                let params = MakePeaceParams {
-                    target_player: *target_player,
-                };
-                GameCommand::MakePeaceCommand(MakePeaceCommand {
-                    action: "makePeace".to_string(),
+            Action::MakeGovernor { character_id, city_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::MakeGovernor,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::MakePeaceTribe { tribe_type } => {
-                let params = MakePeaceTribeParams {
-                    tribe_type: tribe_type.clone(),
-                };
-                GameCommand::MakePeaceTribeCommand(MakePeaceTribeCommand {
-                    action: "makePeaceTribe".to_string(),
+            Action::MakeNation { nation_type, player_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("nation_type".to_string(), serde_json::Value::String(nation_type.clone()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::MakeNation,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::MakeUnitCharacter { character_id, general, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("general".to_string(), serde_json::Value::Bool(*general));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::MakeUnitCharacter,
+                    params,
+                    request_id: None,
+                }
             }
             Action::MapReveal { team_type } => {
-                let params = MapRevealParams {
-                    team_type: *team_type,
-                };
-                GameCommand::MapRevealCommand(MapRevealCommand {
-                    action: "mapReveal".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("team_type".to_string(), serde_json::Value::String(team_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::MapReveal,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::MapUnreveal { team_type } => {
-                let params = MapUnrevealParams {
-                    team_type: *team_type,
-                };
-                GameCommand::MapUnrevealCommand(MapUnrevealCommand {
-                    action: "mapUnreveal".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("team_type".to_string(), serde_json::Value::String(team_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::MapUnreveal,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::March { unit_id } => {
-                let params = MarchParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::MarchCommand(MarchCommand {
-                    action: "march".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::March,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::MoveUnit { target_tile_id, unit_id, march, queue, waypoint_tile_id } => {
-                let params = MoveUnitParams {
-                    target_tile_id: *target_tile_id,
-                    unit_id: *unit_id,
-                    march: if *march { Some(true) } else { None },
-                    queue: if *queue { Some(true) } else { None },
-                    waypoint_tile_id: *waypoint_tile_id,
-                };
-                GameCommand::MoveUnitCommand(MoveUnitCommand {
-                    action: "moveUnit".to_string(),
+            Action::MoveCity { city_id, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::MoveCity,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::NewCharacter { player_type, age, family_type, fill_value } => {
-                let params = NewCharacterParams {
-                    player_type: *player_type,
-                    age: *age,
-                    family_type: family_type.clone(),
-                    fill_value: if *fill_value { Some(true) } else { None },
-                };
-                GameCommand::NewCharacterCommand(NewCharacterCommand {
-                    action: "newCharacter".to_string(),
+            Action::MoveUnit { march, queue, tile_id, unit_id, waypoint_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("march".to_string(), serde_json::Value::Bool(*march));
+                params.insert("queue".to_string(), serde_json::Value::Bool(*queue));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                if let Some(v) = waypoint_id { params.insert("waypoint_id".to_string(), serde_json::Value::Number((*v).into())); }
+                GameCommand {
+                    action: GameCommandAction::MoveUnit,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::MoveUnitInEditor { destination_tile, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("destinationTile".to_string(), serde_json::Value::Number((*destination_tile).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::MoveUnitInEditor,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::NewCharacter { age, family_type, fill_value, player_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("age".to_string(), serde_json::Value::Number((*age).into()));
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                params.insert("fill_value".to_string(), serde_json::Value::Number((*fill_value).into()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::NewCharacter,
+                    params,
+                    request_id: None,
+                }
             }
             Action::Pass { unit_id } => {
-                let params = PassParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::PassCommand(PassCommand {
-                    action: "pass".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Pass,
                     params,
                     request_id: None,
-                })
+                }
             }
+            Action::Pause => GameCommand {
+                action: GameCommandAction::Pause,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
             Action::Pillage { unit_id } => {
-                let params = PillageParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::PillageCommand(PillageCommand {
-                    action: "pillage".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Pillage,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::Pillaged { pillaged, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("pillaged".to_string(), serde_json::Value::Bool(*pillaged));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Pillaged,
+                    params,
+                    request_id: None,
+                }
             }
             Action::PinCharacter { character_id } => {
-                let params = PinCharacterParams {
-                    character_id: *character_id,
-                };
-                GameCommand::PinCharacterCommand(PinCharacterCommand {
-                    action: "pinCharacter".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                GameCommand {
+                    action: GameCommandAction::PinCharacter,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Ping { ping_type, tile_id, message, reminder_turn } => {
-                let params = PingParams {
-                    ping_type: ping_type.clone(),
-                    tile_id: *tile_id,
-                    message: message.clone(),
-                    reminder_turn: *reminder_turn,
-                };
-                GameCommand::PingCommand(PingCommand {
-                    action: "ping".to_string(),
+            Action::Ping { improvement_type, ping_type, remind_turn, text, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("improvement_type".to_string(), serde_json::Value::String(improvement_type.clone()));
+                params.insert("ping_type".to_string(), serde_json::Value::String(ping_type.clone()));
+                params.insert("remind_turn".to_string(), serde_json::Value::Number((*remind_turn).into()));
+                params.insert("text".to_string(), serde_json::Value::String(text.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Ping,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::PlayerInformation { clear_replay, email, name } => {
+                let mut params = serde_json::Map::new();
+                params.insert("clear_replay".to_string(), serde_json::Value::Bool(*clear_replay));
+                params.insert("email".to_string(), serde_json::Value::String(email.clone()));
+                params.insert("name".to_string(), serde_json::Value::String(name.clone()));
+                GameCommand {
+                    action: GameCommandAction::PlayerInformation,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::PlayerLanguage { language_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("language_type".to_string(), serde_json::Value::String(language_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::PlayerLanguage,
+                    params,
+                    request_id: None,
+                }
             }
             Action::PlayerLeader { character_id, player_type } => {
-                let params = PlayerLeaderParams {
-                    character_id: *character_id,
-                    player_type: *player_type,
-                };
-                GameCommand::PlayerLeaderCommand(PlayerLeaderCommand {
-                    action: "playerLeader".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::PlayerLeader,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Promote { promotion, unit_id } => {
-                let params = PromoteParams {
-                    promotion: promotion.clone(),
-                    unit_id: *unit_id,
-                };
-                GameCommand::PromoteCommand(PromoteCommand {
-                    action: "promote".to_string(),
+            Action::PlayerLogData { log_type_type, message, player } => {
+                let mut params = serde_json::Map::new();
+                params.insert("log_type_type".to_string(), serde_json::Value::String(log_type_type.clone()));
+                params.insert("message".to_string(), serde_json::Value::String(message.clone()));
+                params.insert("player".to_string(), serde_json::Value::String(player.clone()));
+                GameCommand {
+                    action: GameCommandAction::PlayerLogData,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::PlayerOption { clear_replay, player_option_type, value } => {
+                let mut params = serde_json::Map::new();
+                params.insert("clear_replay".to_string(), serde_json::Value::Bool(*clear_replay));
+                params.insert("player_option_type".to_string(), serde_json::Value::String(player_option_type.clone()));
+                params.insert("value".to_string(), serde_json::Value::Bool(*value));
+                GameCommand {
+                    action: GameCommandAction::PlayerOption,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::ProcessYieldWhole { amount, player_type, tile_index, yield_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("amount".to_string(), serde_json::Value::Number((*amount).into()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("tileIndex".to_string(), serde_json::Value::Number((*tile_index).into()));
+                params.insert("yield_type".to_string(), serde_json::Value::String(yield_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::ProcessYieldWhole,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::Promote { promotion_type, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("promotion_type".to_string(), serde_json::Value::String(promotion_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Promote,
+                    params,
+                    request_id: None,
+                }
             }
             Action::PurgeReligion { religion_type, unit_id } => {
-                let params = PurgeReligionParams {
-                    religion_type: religion_type.clone(),
-                    unit_id: *unit_id,
-                };
-                GameCommand::PurgeReligionCommand(PurgeReligionCommand {
-                    action: "purgeReligion".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("religion_type".to_string(), serde_json::Value::String(religion_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::PurgeReligion,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::RecruitMercenary { unit_id } => {
-                let params = RecruitMercenaryParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::RecruitMercenaryCommand(RecruitMercenaryCommand {
-                    action: "recruitMercenary".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::RecruitMercenary,
                     params,
                     request_id: None,
-                })
+                }
             }
+            Action::Redo => GameCommand {
+                action: GameCommandAction::Redo,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
+            Action::RedrawTech => GameCommand {
+                action: GameCommandAction::RedrawTech,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
             Action::ReleaseAgent { city_id } => {
-                let params = ReleaseAgentParams {
-                    city_id: *city_id,
-                };
-                GameCommand::ReleaseAgentCommand(ReleaseAgentCommand {
-                    action: "releaseAgent".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ReleaseAgent,
                     params,
                     request_id: None,
-                })
-            }
-            Action::ReleaseGeneral { unit_id } => {
-                let params = ReleaseGeneralParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::ReleaseGeneralCommand(ReleaseGeneralCommand {
-                    action: "releaseGeneral".to_string(),
-                    params,
-                    request_id: None,
-                })
+                }
             }
             Action::ReleaseGovernor { city_id } => {
-                let params = ReleaseGovernorParams {
-                    city_id: *city_id,
-                };
-                GameCommand::ReleaseGovernorCommand(ReleaseGovernorCommand {
-                    action: "releaseGovernor".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ReleaseGovernor,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::ReleaseUnitCharacter { unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::ReleaseUnitCharacter,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::RemoveAchievementLocked { cleared, player_type, value_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("cleared".to_string(), serde_json::Value::Bool(*cleared));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("value_type".to_string(), serde_json::Value::String(value_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::RemoveAchievementLocked,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::RemoveAchievementUnlocked { player_type, unlocked, value_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("unlocked".to_string(), serde_json::Value::Bool(*unlocked));
+                params.insert("value_type".to_string(), serde_json::Value::String(value_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::RemoveAchievementUnlocked,
+                    params,
+                    request_id: None,
+                }
             }
             Action::RemoveCity { city_id } => {
-                let params = RemoveCityParams {
-                    city_id: *city_id,
-                };
-                GameCommand::RemoveCityCommand(RemoveCityCommand {
-                    action: "removeCity".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                GameCommand {
+                    action: GameCommandAction::RemoveCity,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::RemoveDecision { decision_id } => {
-                let params = RemoveDecisionParams {
-                    decision_id: *decision_id,
-                };
-                GameCommand::RemoveDecisionCommand(RemoveDecisionCommand {
-                    action: "removeDecision".to_string(),
+            Action::RemoveDecision { i_d } => {
+                let mut params = serde_json::Map::new();
+                params.insert("i_d".to_string(), serde_json::Value::Number((*i_d).into()));
+                GameCommand {
+                    action: GameCommandAction::RemoveDecision,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::RemovePlayerGoal { goal_id, player_type } => {
-                let params = RemovePlayerGoalParams {
-                    goal_id: *goal_id,
-                    player_type: *player_type,
-                };
-                GameCommand::RemovePlayerGoalCommand(RemovePlayerGoalCommand {
-                    action: "removePlayerGoal".to_string(),
+            Action::RemovePlayerGoal { goal_i_d, player } => {
+                let mut params = serde_json::Map::new();
+                params.insert("goalID".to_string(), serde_json::Value::Number((*goal_i_d).into()));
+                params.insert("player".to_string(), serde_json::Value::String(player.clone()));
+                GameCommand {
+                    action: GameCommandAction::RemovePlayerGoal,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::RemovePlayerRelationship { character1_i_d, character2_i_d, relationship_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character1ID".to_string(), serde_json::Value::Number((*character1_i_d).into()));
+                params.insert("character2ID".to_string(), serde_json::Value::Number((*character2_i_d).into()));
+                params.insert("relationship_type".to_string(), serde_json::Value::String(relationship_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::RemovePlayerRelationship,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::RemovePopup { i_d, player_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("i_d".to_string(), serde_json::Value::Number((*i_d).into()));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::RemovePopup,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::RemoveScenarioCompleted { completed, player_type, value_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("completed".to_string(), serde_json::Value::Bool(*completed));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("value_type".to_string(), serde_json::Value::String(value_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::RemoveScenarioCompleted,
+                    params,
+                    request_id: None,
+                }
             }
             Action::RemoveVegetation { unit_id } => {
-                let params = RemoveVegetationParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::RemoveVegetationCommand(RemoveVegetationCommand {
-                    action: "removeVegetation".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::RemoveVegetation,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Repair { unit_id, buy_goods, queue, tile_id } => {
-                let params = RepairParams {
-                    unit_id: *unit_id,
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                    queue: if *queue { Some(true) } else { None },
-                    tile_id: *tile_id,
-                };
-                GameCommand::RepairCommand(RepairCommand {
-                    action: "repair".to_string(),
+            Action::Repair { buy_goods, queue, tile_id, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("buy_goods".to_string(), serde_json::Value::Bool(*buy_goods));
+                params.insert("queue".to_string(), serde_json::Value::Bool(*queue));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Repair,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::ReplayTurn { num_turns, step } => {
-                let params = ReplayTurnParams {
-                    num_turns: *num_turns,
-                    step: if *step { Some(true) } else { None },
-                };
-                GameCommand::ReplayTurnCommand(ReplayTurnCommand {
-                    action: "replayTurn".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("num_turns".to_string(), serde_json::Value::Number((*num_turns).into()));
+                params.insert("step".to_string(), serde_json::Value::Bool(*step));
+                GameCommand {
+                    action: GameCommandAction::ReplayTurn,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Research { tech } => {
-                let params = ResearchParams {
-                    tech: tech.clone(),
-                };
-                GameCommand::ResearchCommand(ResearchCommand {
-                    action: "research".to_string(),
+            Action::ResearchTech { tech_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("tech_type".to_string(), serde_json::Value::String(tech_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::ResearchTech,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::RoadTo { unit_id, buy_goods, tile_ids } => {
-                let params = RoadToParams {
-                    unit_id: *unit_id,
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                    tile_ids: tile_ids.clone(),
-                };
-                GameCommand::RoadToCommand(RoadToCommand {
-                    action: "roadTo".to_string(),
+            Action::Resource { resource_type, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("resource_type".to_string(), serde_json::Value::String(resource_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Resource,
                     params,
                     request_id: None,
-                })
+                }
             }
+            Action::River { direction_type, river, rotation_type, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("direction_type".to_string(), serde_json::Value::String(direction_type.clone()));
+                params.insert("river".to_string(), serde_json::Value::Bool(*river));
+                params.insert("rotation_type".to_string(), serde_json::Value::String(rotation_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::River,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::Road { road, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("road".to_string(), serde_json::Value::Bool(*road));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Road,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::Save { ack, completed } => {
+                let mut params = serde_json::Map::new();
+                params.insert("ack".to_string(), serde_json::Value::Bool(*ack));
+                params.insert("completed".to_string(), serde_json::Value::Bool(*completed));
+                GameCommand {
+                    action: GameCommandAction::Save,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::SaveCompleted => GameCommand {
+                action: GameCommandAction::SaveCompleted,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
+            Action::SaveScenario { ack, path } => {
+                let mut params = serde_json::Map::new();
+                params.insert("ack".to_string(), serde_json::Value::Bool(*ack));
+                params.insert("path".to_string(), serde_json::Value::String(path.clone()));
+                GameCommand {
+                    action: GameCommandAction::SaveScenario,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::SawTechDiscovered => GameCommand {
+                action: GameCommandAction::SawTechDiscovered,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
             Action::SelectUnit { unit_id } => {
-                let params = SelectUnitParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::SelectUnitCommand(SelectUnitCommand {
-                    action: "selectUnit".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::SelectUnit,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::SellYield { amount, yield_type } => {
-                let params = SellYieldParams {
-                    amount: *amount,
-                    yield_type: yield_type.clone(),
-                };
-                GameCommand::SellYieldCommand(SellYieldCommand {
-                    action: "sellYield".to_string(),
+            Action::SellYield { size, yield_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("size".to_string(), serde_json::Value::Number((*size).into()));
+                params.insert("yield_type".to_string(), serde_json::Value::String(yield_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SellYield,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::Sentry { unit_id } => {
-                let params = SentryParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::SentryCommand(SentryCommand {
-                    action: "sentry".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Sentry,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SetCharacterCognomen { character_id, cognomen_type } => {
-                let params = SetCharacterCognomenParams {
-                    character_id: *character_id,
-                    cognomen_type: cognomen_type.clone(),
-                };
-                GameCommand::SetCharacterCognomenCommand(SetCharacterCognomenCommand {
-                    action: "setCharacterCognomen".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("cognomen_type".to_string(), serde_json::Value::String(cognomen_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetCharacterCognomen,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SetCharacterCouncil { character_id, council_type } => {
-                let params = SetCharacterCouncilParams {
-                    character_id: *character_id,
-                    council_type: council_type.clone(),
-                };
-                GameCommand::SetCharacterCouncilCommand(SetCharacterCouncilCommand {
-                    action: "setCharacterCouncil".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("council_type".to_string(), serde_json::Value::String(council_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetCharacterCouncil,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SetCharacterCourtier { character_id, courtier_type } => {
-                let params = SetCharacterCourtierParams {
-                    character_id: *character_id,
-                    courtier_type: courtier_type.clone(),
-                };
-                GameCommand::SetCharacterCourtierCommand(SetCharacterCourtierCommand {
-                    action: "setCharacterCourtier".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("courtier_type".to_string(), serde_json::Value::String(courtier_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetCharacterCourtier,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::SetCharacterExperience { character_id, xp } => {
-                let params = SetCharacterExperienceParams {
-                    character_id: *character_id,
-                    xp: *xp,
-                };
-                GameCommand::SetCharacterExperienceCommand(SetCharacterExperienceCommand {
-                    action: "setCharacterExperience".to_string(),
+            Action::SetCharacterExperience { character_id, x_p } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("x_p".to_string(), serde_json::Value::Number((*x_p).into()));
+                GameCommand {
+                    action: GameCommandAction::SetCharacterExperience,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SetCharacterFamily { character_id, family_type } => {
-                let params = SetCharacterFamilyParams {
-                    character_id: *character_id,
-                    family_type: family_type.clone(),
-                };
-                GameCommand::SetCharacterFamilyCommand(SetCharacterFamilyCommand {
-                    action: "setCharacterFamily".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetCharacterFamily,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SetCharacterNation { character_id, nation_type } => {
-                let params = SetCharacterNationParams {
-                    character_id: *character_id,
-                    nation_type: nation_type.clone(),
-                };
-                GameCommand::SetCharacterNationCommand(SetCharacterNationCommand {
-                    action: "setCharacterNation".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("nation_type".to_string(), serde_json::Value::String(nation_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetCharacterNation,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::SetCharacterRating { character_id, rating_type, value } => {
-                let params = SetCharacterRatingParams {
-                    character_id: *character_id,
-                    rating_type: rating_type.clone(),
-                    value: *value,
-                };
-                GameCommand::SetCharacterRatingCommand(SetCharacterRatingCommand {
-                    action: "setCharacterRating".to_string(),
+            Action::SetCharacterRating { character_id, rating, rating_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("rating".to_string(), serde_json::Value::Number((*rating).into()));
+                params.insert("rating_type".to_string(), serde_json::Value::String(rating_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetCharacterRating,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SetCharacterReligion { character_id, religion_type } => {
-                let params = SetCharacterReligionParams {
-                    character_id: *character_id,
-                    religion_type: religion_type.clone(),
-                };
-                GameCommand::SetCharacterReligionCommand(SetCharacterReligionCommand {
-                    action: "setCharacterReligion".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("religion_type".to_string(), serde_json::Value::String(religion_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetCharacterReligion,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::SetCharacterReligionHead { character_id, religion_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("religion_type".to_string(), serde_json::Value::String(religion_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetCharacterReligionHead,
+                    params,
+                    request_id: None,
+                }
             }
             Action::SetCitySite { city_site_type, tile_id } => {
-                let params = SetCitySiteParams {
-                    city_site_type: city_site_type.clone(),
-                    tile_id: *tile_id,
-                };
-                GameCommand::SetCitySiteCommand(SetCitySiteCommand {
-                    action: "setCitySite".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_site_type".to_string(), serde_json::Value::String(city_site_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::SetCitySite,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SetImprovement { improvement_type, tile_id } => {
-                let params = SetImprovementParams {
-                    improvement_type: improvement_type.clone(),
-                    tile_id: *tile_id,
-                };
-                GameCommand::SetImprovementCommand(SetImprovementCommand {
-                    action: "setImprovement".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("improvement_type".to_string(), serde_json::Value::String(improvement_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::SetImprovement,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::SetResource { resource_type, tile_id } => {
-                let params = SetResourceParams {
-                    resource_type: resource_type.clone(),
-                    tile_id: *tile_id,
-                };
-                GameCommand::SetResourceCommand(SetResourceCommand {
-                    action: "setResource".to_string(),
+            Action::SetPlayerAchievement { achievement_type_type, player } => {
+                let mut params = serde_json::Map::new();
+                params.insert("achievement_type_type".to_string(), serde_json::Value::String(achievement_type_type.clone()));
+                params.insert("player".to_string(), serde_json::Value::String(player.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetPlayerAchievement,
                     params,
                     request_id: None,
-                })
-            }
-            Action::SetRoad { tile_id, has_road } => {
-                let params = SetRoadParams {
-                    tile_id: *tile_id,
-                    has_road: if *has_road { Some(true) } else { None },
-                };
-                GameCommand::SetRoadCommand(SetRoadCommand {
-                    action: "setRoad".to_string(),
-                    params,
-                    request_id: None,
-                })
+                }
             }
             Action::SetSpecialist { specialist_type, tile_id } => {
-                let params = SetSpecialistParams {
-                    specialist_type: specialist_type.clone(),
-                    tile_id: *tile_id,
-                };
-                GameCommand::SetSpecialistCommand(SetSpecialistCommand {
-                    action: "setSpecialist".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("specialist_type".to_string(), serde_json::Value::String(specialist_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::SetSpecialist,
                     params,
                     request_id: None,
-                })
-            }
-            Action::SetTerrain { terrain_type, tile_id } => {
-                let params = SetTerrainParams {
-                    terrain_type: terrain_type.clone(),
-                    tile_id: *tile_id,
-                };
-                GameCommand::SetTerrainCommand(SetTerrainCommand {
-                    action: "setTerrain".to_string(),
-                    params,
-                    request_id: None,
-                })
-            }
-            Action::SetTerrainHeight { height_type, tile_id } => {
-                let params = SetTerrainHeightParams {
-                    height_type: height_type.clone(),
-                    tile_id: *tile_id,
-                };
-                GameCommand::SetTerrainHeightCommand(SetTerrainHeightCommand {
-                    action: "setTerrainHeight".to_string(),
-                    params,
-                    request_id: None,
-                })
-            }
-            Action::SetTileOwner { tile_id, player_type, tribe_type } => {
-                let params = SetTileOwnerParams {
-                    tile_id: *tile_id,
-                    player_type: *player_type,
-                    tribe_type: tribe_type.clone(),
-                };
-                GameCommand::SetTileOwnerCommand(SetTileOwnerCommand {
-                    action: "setTileOwner".to_string(),
-                    params,
-                    request_id: None,
-                })
+                }
             }
             Action::SetUnitFamily { family_type, unit_id } => {
-                let params = SetUnitFamilyParams {
-                    family_type: family_type.clone(),
-                    unit_id: *unit_id,
-                };
-                GameCommand::SetUnitFamilyCommand(SetUnitFamilyCommand {
-                    action: "setUnitFamily".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::SetUnitFamily,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SetVegetation { tile_id, vegetation_type } => {
-                let params = SetVegetationParams {
-                    tile_id: *tile_id,
-                    vegetation_type: vegetation_type.clone(),
-                };
-                GameCommand::SetVegetationCommand(SetVegetationCommand {
-                    action: "setVegetation".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("vegetation_type".to_string(), serde_json::Value::String(vegetation_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::SetVegetation,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::Sleep { unit_id } => {
-                let params = SleepParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::SleepCommand(SleepCommand {
-                    action: "sleep".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Sleep,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SpreadReligion { city_id, unit_id } => {
-                let params = SpreadReligionParams {
-                    city_id: *city_id,
-                    unit_id: *unit_id,
-                };
-                GameCommand::SpreadReligionCommand(SpreadReligionCommand {
-                    action: "spreadReligion".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::SpreadReligion,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::SpreadReligionTribe { tribe_type, unit_id } => {
-                let params = SpreadReligionTribeParams {
-                    tribe_type: tribe_type.clone(),
-                    unit_id: *unit_id,
-                };
-                GameCommand::SpreadReligionTribeCommand(SpreadReligionTribeCommand {
-                    action: "spreadReligionTribe".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::SpreadReligionTribe,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::StartMission { character_id, mission_type, cancel, target } => {
-                let params = StartMissionParams {
-                    character_id: *character_id,
-                    mission_type: mission_type.clone(),
-                    cancel: if *cancel { Some(true) } else { None },
-                    target: target.clone(),
-                };
-                GameCommand::StartMissionCommand(StartMissionCommand {
-                    action: "startMission".to_string(),
+            Action::StartMission { cancel, character_id, mission_type, target } => {
+                let mut params = serde_json::Map::new();
+                params.insert("cancel".to_string(), serde_json::Value::Bool(*cancel));
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("mission_type".to_string(), serde_json::Value::String(mission_type.clone()));
+                params.insert("target".to_string(), serde_json::Value::String(target.clone()));
+                GameCommand {
+                    action: GameCommandAction::StartMission,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Swap { target_tile_id, unit_id, force_march } => {
-                let params = SwapParams {
-                    target_tile_id: *target_tile_id,
-                    unit_id: *unit_id,
-                    force_march: if *force_march { Some(true) } else { None },
-                };
-                GameCommand::SwapCommand(SwapCommand {
-                    action: "swap".to_string(),
+            Action::StartingCity { age, archetype_type, dynasty_type, family_type, gender_type, name_type, nation_type, portrait_type, trait_type, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("age".to_string(), serde_json::Value::Number((*age).into()));
+                params.insert("archetype_type".to_string(), serde_json::Value::String(archetype_type.clone()));
+                params.insert("dynasty_type".to_string(), serde_json::Value::String(dynasty_type.clone()));
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                params.insert("gender_type".to_string(), serde_json::Value::String(gender_type.clone()));
+                params.insert("name_type".to_string(), serde_json::Value::String(name_type.clone()));
+                params.insert("nation_type".to_string(), serde_json::Value::String(nation_type.clone()));
+                params.insert("portrait_type".to_string(), serde_json::Value::String(portrait_type.clone()));
+                params.insert("trait_type".to_string(), serde_json::Value::String(trait_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::StartingCity,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::TargetTech { tech_type } => {
-                let params = TargetTechParams {
-                    tech_type: tech_type.clone(),
-                };
-                GameCommand::TargetTechCommand(TargetTechCommand {
-                    action: "targetTech".to_string(),
+            Action::Swap { march, tile_id, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("march".to_string(), serde_json::Value::Bool(*march));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Swap,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::TeamAlliance { player1, player2 } => {
-                let params = TeamAllianceParams {
-                    player1: *player1,
-                    player2: *player2,
-                };
-                GameCommand::TeamAllianceCommand(TeamAllianceCommand {
-                    action: "teamAlliance".to_string(),
+            Action::TargetTech { target, tech_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("target".to_string(), serde_json::Value::Bool(*target));
+                params.insert("tech_type".to_string(), serde_json::Value::String(tech_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TargetTech,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::TradeCityLuxury { city_id, resource_type, enable } => {
-                let params = TradeCityLuxuryParams {
-                    city_id: *city_id,
-                    resource_type: resource_type.clone(),
-                    enable: *enable,
-                };
-                GameCommand::TradeCityLuxuryCommand(TradeCityLuxuryCommand {
-                    action: "tradeCityLuxury".to_string(),
+            Action::TeamAlliance { player1_type, player2_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player1_type".to_string(), serde_json::Value::String(player1_type.clone()));
+                params.insert("player2_type".to_string(), serde_json::Value::String(player2_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TeamAlliance,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::TradeFamilyLuxury { family_type, resource_type, enable } => {
-                let params = TradeFamilyLuxuryParams {
-                    family_type: family_type.clone(),
-                    resource_type: resource_type.clone(),
-                    enable: *enable,
-                };
-                GameCommand::TradeFamilyLuxuryCommand(TradeFamilyLuxuryCommand {
-                    action: "tradeFamilyLuxury".to_string(),
+            Action::Terrain { terrain_type, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("terrain_type".to_string(), serde_json::Value::String(terrain_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Terrain,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::TradePlayerLuxury { resource_type, target_player, enable } => {
-                let params = TradePlayerLuxuryParams {
-                    resource_type: resource_type.clone(),
-                    target_player: *target_player,
-                    enable: *enable,
-                };
-                GameCommand::TradePlayerLuxuryCommand(TradePlayerLuxuryCommand {
-                    action: "tradePlayerLuxury".to_string(),
+            Action::TerrainHeight { height_type, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("height_type".to_string(), serde_json::Value::String(height_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::TerrainHeight,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::TradeTribeLuxury { resource_type, tribe_type, enable } => {
-                let params = TradeTribeLuxuryParams {
-                    resource_type: resource_type.clone(),
-                    tribe_type: tribe_type.clone(),
-                    enable: *enable,
-                };
-                GameCommand::TradeTribeLuxuryCommand(TradeTribeLuxuryCommand {
-                    action: "tradeTribeLuxury".to_string(),
+            Action::TerrainStamp { terrain_stamp_type, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("terrain_stamp_type".to_string(), serde_json::Value::String(terrain_stamp_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::TerrainStamp,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::TribeInvasion { target_player, tribe_type } => {
-                let params = TribeInvasionParams {
-                    target_player: *target_player,
-                    tribe_type: tribe_type.clone(),
-                };
-                GameCommand::TribeInvasionCommand(TribeInvasionCommand {
-                    action: "tribeInvasion".to_string(),
+            Action::TileBoundary { boundary, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("boundary".to_string(), serde_json::Value::Bool(*boundary));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::TileBoundary,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::TileName { tile_index, tile_name } => {
+                let mut params = serde_json::Map::new();
+                params.insert("tileIndex".to_string(), serde_json::Value::Number((*tile_index).into()));
+                params.insert("tileName".to_string(), serde_json::Value::String(tile_name.clone()));
+                GameCommand {
+                    action: GameCommandAction::TileName,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::TileOwner { player_type, tile_id, tribe_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TileOwner,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::TileRevealed { for_player_type, revealed, tile_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("for_player_type".to_string(), serde_json::Value::String(for_player_type.clone()));
+                params.insert("revealed".to_string(), serde_json::Value::Bool(*revealed));
+                params.insert("tile_id".to_string(), serde_json::Value::Number((*tile_id).into()));
+                GameCommand {
+                    action: GameCommandAction::TileRevealed,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::ToggleNoReplay => GameCommand {
+                action: GameCommandAction::ToggleNoReplay,
+                params: serde_json::Map::new(),
+                request_id: None,
+            },
+            Action::TradeCityLuxury { city_id, on, resource_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("city_id".to_string(), serde_json::Value::Number((*city_id).into()));
+                params.insert("on".to_string(), serde_json::Value::Bool(*on));
+                params.insert("resource_type".to_string(), serde_json::Value::String(resource_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TradeCityLuxury,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::TradeFamilyLuxury { family_type, on, resource_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("family_type".to_string(), serde_json::Value::String(family_type.clone()));
+                params.insert("on".to_string(), serde_json::Value::Bool(*on));
+                params.insert("resource_type".to_string(), serde_json::Value::String(resource_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TradeFamilyLuxury,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::TradePlayerLuxury { on, player_type, resource_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("on".to_string(), serde_json::Value::Bool(*on));
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("resource_type".to_string(), serde_json::Value::String(resource_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TradePlayerLuxury,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::TradeTribeLuxury { on, resource_type, tribe_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("on".to_string(), serde_json::Value::Bool(*on));
+                params.insert("resource_type".to_string(), serde_json::Value::String(resource_type.clone()));
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TradeTribeLuxury,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::TribeInvasion { player_type, tribe_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("player_type".to_string(), serde_json::Value::String(player_type.clone()));
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TribeInvasion,
+                    params,
+                    request_id: None,
+                }
             }
             Action::TribeLeader { character_id, tribe_type } => {
-                let params = TribeLeaderParams {
-                    character_id: *character_id,
-                    tribe_type: tribe_type.clone(),
-                };
-                GameCommand::TribeLeaderCommand(TribeLeaderCommand {
-                    action: "tribeLeader".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("character_id".to_string(), serde_json::Value::Number((*character_id).into()));
+                params.insert("tribe_type".to_string(), serde_json::Value::String(tribe_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TribeLeader,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Tribute { amount, yield_type, from_player, to_player, to_tribe } => {
-                let params = TributeParams {
-                    amount: *amount,
-                    yield_type: yield_type.clone(),
-                    from_player: *from_player,
-                    to_player: *to_player,
-                    to_tribe: to_tribe.clone(),
-                };
-                GameCommand::TributeCommand(TributeCommand {
-                    action: "tribute".to_string(),
+            Action::Tribute { amount, from_player_type, to_player_type, to_tribe_type, yield_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("amount".to_string(), serde_json::Value::Number((*amount).into()));
+                params.insert("from_player_type".to_string(), serde_json::Value::String(from_player_type.clone()));
+                params.insert("to_player_type".to_string(), serde_json::Value::String(to_player_type.clone()));
+                params.insert("to_tribe_type".to_string(), serde_json::Value::String(to_tribe_type.clone()));
+                params.insert("yield_type".to_string(), serde_json::Value::String(yield_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::Tribute,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Undo { turn_undo } => {
-                let params = UndoParams {
-                    turn_undo: if *turn_undo { Some(true) } else { None },
-                };
-                GameCommand::UndoCommand(UndoCommand {
-                    action: "undo".to_string(),
+            Action::TurnStyle { turn_style_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("turn_style_type".to_string(), serde_json::Value::String(turn_style_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TurnStyle,
                     params,
                     request_id: None,
-                })
+                }
+            }
+            Action::TurnStyleChange { change } => {
+                let mut params = serde_json::Map::new();
+                params.insert("change".to_string(), serde_json::Value::Number((*change).into()));
+                GameCommand {
+                    action: GameCommandAction::TurnStyleChange,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::TurnTimer { turn_timer_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("turn_timer_type".to_string(), serde_json::Value::String(turn_timer_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::TurnTimer,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::TurnTimerChange { change } => {
+                let mut params = serde_json::Map::new();
+                params.insert("change".to_string(), serde_json::Value::Number((*change).into()));
+                GameCommand {
+                    action: GameCommandAction::TurnTimerChange,
+                    params,
+                    request_id: None,
+                }
+            }
+            Action::Undo { turn } => {
+                let mut params = serde_json::Map::new();
+                params.insert("turn".to_string(), serde_json::Value::Bool(*turn));
+                GameCommand {
+                    action: GameCommandAction::Undo,
+                    params,
+                    request_id: None,
+                }
             }
             Action::UnitAutomate { unit_id } => {
-                let params = UnitAutomateParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::UnitAutomateCommand(UnitAutomateCommand {
-                    action: "unitAutomate".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::UnitAutomate,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::UnitChangePromotion { promotion_type, unit_id, delta } => {
-                let params = UnitChangePromotionParams {
-                    promotion_type: promotion_type.clone(),
-                    unit_id: *unit_id,
-                    delta: *delta,
-                };
-                GameCommand::UnitChangePromotionCommand(UnitChangePromotionCommand {
-                    action: "unitChangePromotion".to_string(),
+            Action::UnitChangePromotion { promotion_type, unit_id, change } => {
+                let mut params = serde_json::Map::new();
+                params.insert("promotion_type".to_string(), serde_json::Value::String(promotion_type.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                if let Some(v) = change { params.insert("change".to_string(), serde_json::Value::Number((*v).into())); }
+                GameCommand {
+                    action: GameCommandAction::UnitChangePromotion,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::UnitIncrementLevel { unit_id } => {
-                let params = UnitIncrementLevelParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::UnitIncrementLevelCommand(UnitIncrementLevelCommand {
-                    action: "unitIncrementLevel".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::UnitIncrementLevel,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::UnitName { name, unit_id } => {
-                let params = UnitNameParams {
-                    name: name.clone(),
-                    unit_id: *unit_id,
-                };
-                GameCommand::UnitNameCommand(UnitNameCommand {
-                    action: "unitName".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("name".to_string(), serde_json::Value::String(name.clone()));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::UnitName,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::Unlimber { unit_id } => {
-                let params = UnlimberParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::UnlimberCommand(UnlimberCommand {
-                    action: "unlimber".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Unlimber,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::Upgrade { unit_id, unit_type, buy_goods } => {
-                let params = UpgradeParams {
-                    unit_id: *unit_id,
-                    unit_type: unit_type.clone(),
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                };
-                GameCommand::UpgradeCommand(UpgradeCommand {
-                    action: "upgrade".to_string(),
+            Action::Upgrade { buy_goods, unit_id, unit_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("buy_goods".to_string(), serde_json::Value::Bool(*buy_goods));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                params.insert("unit_type".to_string(), serde_json::Value::String(unit_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::Upgrade,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::UpgradeImprovement { unit_id, buy_goods } => {
-                let params = UpgradeImprovementParams {
-                    unit_id: *unit_id,
-                    buy_goods: if *buy_goods { Some(true) } else { None },
-                };
-                GameCommand::UpgradeImprovementCommand(UpgradeImprovementCommand {
-                    action: "upgradeImprovement".to_string(),
+            Action::UpgradeImprovement { buy_goods, unit_id } => {
+                let mut params = serde_json::Map::new();
+                params.insert("buy_goods".to_string(), serde_json::Value::Bool(*buy_goods));
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::UpgradeImprovement,
                     params,
                     request_id: None,
-                })
+                }
             }
-            Action::VictoryTeam { action_type, team_type, victory_type } => {
-                let params = VictoryTeamParams {
-                    action_type: action_type.clone(),
-                    team_type: *team_type,
-                    victory_type: victory_type.clone(),
-                };
-                GameCommand::VictoryTeamCommand(VictoryTeamCommand {
-                    action: "victoryTeam".to_string(),
+            Action::VictoryTeam { action, team_type, victory_type } => {
+                let mut params = serde_json::Map::new();
+                params.insert("action".to_string(), serde_json::Value::String(action.clone()));
+                params.insert("team_type".to_string(), serde_json::Value::String(team_type.clone()));
+                params.insert("victory_type".to_string(), serde_json::Value::String(victory_type.clone()));
+                GameCommand {
+                    action: GameCommandAction::VictoryTeam,
                     params,
                     request_id: None,
-                })
+                }
             }
             Action::Wake { unit_id } => {
-                let params = WakeParams {
-                    unit_id: *unit_id,
-                };
-                GameCommand::WakeCommand(WakeCommand {
-                    action: "wake".to_string(),
+                let mut params = serde_json::Map::new();
+                params.insert("unit_id".to_string(), serde_json::Value::Number((*unit_id).into()));
+                GameCommand {
+                    action: GameCommandAction::Wake,
                     params,
                     request_id: None,
-                })
+                }
             }
         }
     }

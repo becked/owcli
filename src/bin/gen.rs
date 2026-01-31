@@ -18,7 +18,17 @@ fn main() {
 
     let schemas = &spec["components"]["schemas"];
 
-    // Collect all *Params schemas
+    // Get valid action names from GameCommand action enum
+    let valid_actions: HashSet<String> = schemas["GameCommand"]["properties"]["action"]["enum"]
+        .as_sequence()
+        .map(|seq| {
+            seq.iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                .collect()
+        })
+        .unwrap_or_default();
+
+    // Collect all *Params schemas that have corresponding actions
     let mut commands: Vec<CommandDef> = Vec::new();
 
     if let Value::Mapping(map) = schemas {
@@ -26,25 +36,18 @@ fn main() {
             if let Value::String(name) = key {
                 if name.ends_with("Params") {
                     let action_name = name.strip_suffix("Params").unwrap();
-                    let cmd_schema_name = format!("{}Command", action_name);
 
-                    // Check if command schema exists and has params
-                    let cmd_schema = &schemas[&cmd_schema_name];
+                    // Convert PascalCase to camelCase for action string
+                    let action_const = to_camel_case(action_name);
 
-                    // Get description from *Command schema
-                    let description = cmd_schema["description"].as_str().unwrap_or("").to_string();
+                    // Skip if this action doesn't exist in the enum
+                    if !valid_actions.contains(&action_const) {
+                        eprintln!("Warning: Skipping {} - no matching action in enum", name);
+                        continue;
+                    }
 
-                    // Get action const value (for the action string field)
-                    let action_const = cmd_schema["properties"]["action"]["const"]
-                        .as_str()
-                        .map(|s| s.to_string())
-                        .unwrap_or_else(|| to_camel_case(action_name));
-
-                    // Check if the command schema has a params field
-                    let has_params = cmd_schema["properties"]["params"].as_mapping().is_some()
-                        || cmd_schema["properties"]["params"]["$ref"]
-                            .as_str()
-                            .is_some();
+                    // Get description from params schema
+                    let description = value["description"].as_str().unwrap_or("").to_string();
 
                     // Parse params
                     let params = parse_params(value);
@@ -54,7 +57,6 @@ fn main() {
                         action_const,
                         description,
                         params,
-                        has_params,
                     });
                 }
             }
@@ -82,7 +84,6 @@ struct CommandDef {
     action_const: String, // e.g., "moveUnit"
     description: String,
     params: Vec<ParamDef>,
-    has_params: bool, // Whether the command schema has a params field
 }
 
 #[derive(Debug)]
@@ -187,7 +188,7 @@ fn generate_action_enum(commands: &[CommandDef]) {
                 }
 
                 // Field with Clap attribute
-                let rust_field = to_snake_case(&param.name);
+                let rust_field = escape_keyword(&to_snake_case(&param.name));
                 let rust_type = param_to_rust_type(param);
 
                 println!("        #[arg(long)]");
@@ -205,47 +206,32 @@ fn generate_to_game_command(commands: &[CommandDef]) {
     println!("impl Action {{");
     println!("    /// Convert CLI action to generated GameCommand type");
     println!("    pub fn to_game_command(&self) -> crate::client::types::GameCommand {{");
-    println!("        use crate::client::types::{{GameCommand, *}};");
+    println!("        use crate::client::types::{{GameCommand, GameCommandAction}};");
     println!();
     println!("        match self {{");
 
     for cmd in commands {
         let variant_name = &cmd.name;
-        let cmd_struct_name = format!("{}Command", variant_name);
-        let params_struct_name = format!("{}Params", variant_name);
+        // Convert camelCase action to PascalCase for enum variant
+        let enum_variant = to_pascal_case(&cmd.action_const);
 
         if cmd.params.is_empty() {
             // Command with no params
-            if cmd.has_params {
-                // Command struct has params field but params struct is empty
-                println!(
-                    "            Action::{} => GameCommand::{}({} {{",
-                    variant_name, cmd_struct_name, cmd_struct_name
-                );
-                println!(
-                    "                action: \"{}\".to_string(),",
-                    cmd.action_const
-                );
-                println!("                params: {} {{}},", params_struct_name);
-                println!("                request_id: None,");
-                println!("            }}),");
-            } else {
-                // Command struct has no params field at all
-                println!(
-                    "            Action::{} => GameCommand::{}({} {{",
-                    variant_name, cmd_struct_name, cmd_struct_name
-                );
-                println!(
-                    "                action: \"{}\".to_string(),",
-                    cmd.action_const
-                );
-                println!("                request_id: None,");
-                println!("            }}),");
-            }
+            println!(
+                "            Action::{} => GameCommand {{",
+                variant_name
+            );
+            println!(
+                "                action: GameCommandAction::{},",
+                enum_variant
+            );
+            println!("                params: serde_json::Map::new(),");
+            println!("                request_id: None,");
+            println!("            }},");
         } else {
             // Command with params
-            // Collect field names
-            let fields: Vec<String> = cmd.params.iter().map(|p| to_snake_case(&p.name)).collect();
+            // Collect field names (escaped for Rust keywords)
+            let fields: Vec<String> = cmd.params.iter().map(|p| escape_keyword(&to_snake_case(&p.name))).collect();
 
             // Start match arm
             println!(
@@ -254,63 +240,77 @@ fn generate_to_game_command(commands: &[CommandDef]) {
                 fields.join(", ")
             );
 
-            // Create params struct
-            println!("                let params = {} {{", params_struct_name);
+            // Build params map
+            println!("                let mut params = serde_json::Map::new();");
 
             for param in &cmd.params {
-                let rust_field = to_snake_case(&param.name);
-                let value = match (&param.param_type, param.required, param.has_default) {
-                    // Boolean with default: it's a required bool field in the generated struct
-                    (ParamType::Boolean, _, true) => format!("*{}", rust_field),
-                    // Optional boolean without default: Option<bool>
-                    (ParamType::Boolean, false, false) => {
-                        format!("if *{} {{ Some(true) }} else {{ None }}", rust_field)
+                let rust_field = escape_keyword(&to_snake_case(&param.name));
+                let json_key = &param.name; // Keep original name for JSON
+
+                match (&param.param_type, param.required) {
+                    // Required fields - always insert
+                    (ParamType::Integer, true) => {
+                        println!(
+                            "                params.insert(\"{}\".to_string(), serde_json::Value::Number((*{}).into()));",
+                            json_key, rust_field
+                        );
                     }
-                    // Required boolean without default (shouldn't happen but handle it)
-                    (ParamType::Boolean, true, false) => format!("*{}", rust_field),
-                    // Required integers/strings
-                    (ParamType::Integer, true, _) => format!("*{}", rust_field),
-                    (ParamType::String, true, _) => format!("{}.clone()", rust_field),
-                    // Optional integers - need to dereference
-                    (ParamType::Integer, false, _) => format!("*{}", rust_field),
-                    (ParamType::String, false, _) => format!("{}.clone()", rust_field),
+                    (ParamType::String, true) => {
+                        println!(
+                            "                params.insert(\"{}\".to_string(), serde_json::Value::String({}.clone()));",
+                            json_key, rust_field
+                        );
+                    }
+                    (ParamType::Boolean, true) => {
+                        println!(
+                            "                params.insert(\"{}\".to_string(), serde_json::Value::Bool(*{}));",
+                            json_key, rust_field
+                        );
+                    }
+                    // Optional fields - only insert if Some/true
+                    (ParamType::Integer, false) => {
+                        println!(
+                            "                if let Some(v) = {} {{ params.insert(\"{}\".to_string(), serde_json::Value::Number((*v).into())); }}",
+                            rust_field, json_key
+                        );
+                    }
+                    (ParamType::String, false) => {
+                        println!(
+                            "                if let Some(v) = {} {{ params.insert(\"{}\".to_string(), serde_json::Value::String(v.clone())); }}",
+                            rust_field, json_key
+                        );
+                    }
+                    (ParamType::Boolean, false) => {
+                        // For CLI bool flags, only insert if true
+                        println!(
+                            "                if *{} {{ params.insert(\"{}\".to_string(), serde_json::Value::Bool(true)); }}",
+                            rust_field, json_key
+                        );
+                    }
                     // Arrays
-                    (ParamType::Array(_), _, _) => format!("{}.clone()", rust_field),
-                };
-                println!("                    {}: {},", rust_field, value);
+                    (ParamType::Array(_), true) => {
+                        println!(
+                            "                params.insert(\"{}\".to_string(), serde_json::to_value({}).unwrap());",
+                            json_key, rust_field
+                        );
+                    }
+                    (ParamType::Array(_), false) => {
+                        println!(
+                            "                if let Some(v) = {} {{ params.insert(\"{}\".to_string(), serde_json::to_value(v).unwrap()); }}",
+                            rust_field, json_key
+                        );
+                    }
+                }
             }
 
-            println!("                }};");
-            // Silence unused variable warning if command doesn't have params field
-            if !cmd.has_params {
-                println!("                let _ = params;");
-            }
-
-            if cmd.has_params {
-                println!(
-                    "                GameCommand::{}({} {{",
-                    cmd_struct_name, cmd_struct_name
-                );
-                println!(
-                    "                    action: \"{}\".to_string(),",
-                    cmd.action_const
-                );
-                println!("                    params,");
-                println!("                    request_id: None,");
-                println!("                }})");
-            } else {
-                // Shouldn't happen (has params but command doesn't use them) but handle it
-                println!(
-                    "                GameCommand::{}({} {{",
-                    cmd_struct_name, cmd_struct_name
-                );
-                println!(
-                    "                    action: \"{}\".to_string(),",
-                    cmd.action_const
-                );
-                println!("                    request_id: None,");
-                println!("                }})");
-            }
+            println!("                GameCommand {{");
+            println!(
+                "                    action: GameCommandAction::{},",
+                enum_variant
+            );
+            println!("                    params,");
+            println!("                    request_id: None,");
+            println!("                }}");
             println!("            }}");
         }
     }
@@ -383,4 +383,37 @@ fn to_camel_case(s: &str) -> String {
         }
     }
     result
+}
+
+fn to_pascal_case(s: &str) -> String {
+    let mut result = String::new();
+    let mut capitalize_next = true;
+    for c in s.chars() {
+        if c == '_' || c == '-' {
+            capitalize_next = true;
+        } else if capitalize_next {
+            result.push(c.to_uppercase().next().unwrap());
+            capitalize_next = false;
+        } else {
+            result.push(c);
+        }
+    }
+    result
+}
+
+/// Escape Rust reserved keywords by prefixing with r#
+fn escape_keyword(name: &str) -> String {
+    const KEYWORDS: &[&str] = &[
+        "as", "break", "const", "continue", "crate", "else", "enum", "extern",
+        "false", "fn", "for", "if", "impl", "in", "let", "loop", "match", "mod",
+        "move", "mut", "pub", "ref", "return", "self", "Self", "static", "struct",
+        "super", "trait", "true", "type", "unsafe", "use", "where", "while",
+        "async", "await", "dyn", "abstract", "become", "box", "do", "final",
+        "macro", "override", "priv", "typeof", "unsized", "virtual", "yield", "try",
+    ];
+    if KEYWORDS.contains(&name) {
+        format!("r#{}", name)
+    } else {
+        name.to_string()
+    }
 }

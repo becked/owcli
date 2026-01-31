@@ -30,14 +30,10 @@ pub struct MapData {
 
 impl MapData {
     pub fn from_game_data(tiles: &[Tile], cities: &[City], players: &[Player]) -> Self {
-        // Build player index -> nation map
-        let player_nations: HashMap<i64, String> = players
+        // Build player index -> nation mapping (players are returned in index order)
+        let player_nations: Vec<Option<&str>> = players
             .iter()
-            .filter_map(|p| {
-                let index = p.index?;
-                let nation = p.nation.clone()?;
-                Some((index, nation))
-            })
+            .map(|p| p.nation.as_deref())
             .collect();
 
         // Build city location -> marker map
@@ -62,17 +58,26 @@ impl MapData {
         let mut max_y = i32::MIN;
 
         for tile in tiles {
-            let x = tile.x.unwrap_or(0) as i32;
-            let y = tile.y.unwrap_or(0) as i32;
+            let x = tile.x.unwrap_or(0);
+            let y = tile.y.unwrap_or(0);
 
             min_x = min_x.min(x);
             max_x = max_x.max(x);
             min_y = min_y.min(y);
             max_y = max_y.max(y);
 
-            let owner_nation = tile
-                .owner_id
-                .and_then(|id| player_nations.get(&id).cloned());
+            // Map owner index to nation name
+            // owner is "NONE" for unowned tiles, or a player index like "0", "1", etc.
+            let owner_nation = tile.owner.as_ref().and_then(|owner| {
+                if owner == "NONE" {
+                    None
+                } else {
+                    // Parse player index and look up nation
+                    owner.parse::<usize>().ok().and_then(|idx| {
+                        player_nations.get(idx).and_then(|n| n.map(String::from))
+                    })
+                }
+            });
 
             let render_tile = RenderTile {
                 terrain: tile.terrain.clone(),

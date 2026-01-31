@@ -89,7 +89,7 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
             file,
             continue_on_error,
         } => {
-            use client::types::{BulkCommand, GameCommand};
+            use client::types::BulkCommand;
 
             let input = if file == "-" {
                 let mut buf = String::new();
@@ -99,18 +99,17 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
                 std::fs::read_to_string(&file)?
             };
 
-            // Parse JSON input into GameCommand enum variants
-            // Each command is deserialized using serde's untagged enum support
-            let game_commands: Vec<GameCommand> = serde_json::from_str(&input)?;
+            // Parse JSON input as BulkCommand object
+            // Format: {"commands": [...], "stopOnError": bool, "requestId": "..."}
+            let mut bulk: BulkCommand = serde_json::from_str(&input)?;
 
-            let bulk = BulkCommand {
-                commands: game_commands,
-                request_id: None,
-                stop_on_error: Some(!continue_on_error),
-            };
+            // Override stopOnError if --continue-on-error flag is set
+            if continue_on_error {
+                bulk.stop_on_error = Some(false);
+            }
 
             let client = ApiClient::new(config)?;
-            let response = client.execute_bulk_commands(&bulk).await?;
+            let response = client::fetch(client.inner.execute_bulk_commands(&bulk)).await?;
 
             let all_succeeded = response.all_succeeded.unwrap_or(true);
             let output = format_bulk_response(&response, config.json_output);
@@ -164,8 +163,8 @@ async fn handle_command(command: Commands, config: &Config) -> error::Result<()>
 
             // Fetch all required data
             let tiles_result = commands::query::execute_all_tiles_query(&client).await?;
-            let cities = client.get_cities().await?;
-            let players = client.get_players().await?;
+            let cities = client::fetch(client.inner.get_cities()).await?;
+            let players = client::fetch(client.inner.get_players()).await?;
 
             // Extract tiles from TypedResponse
             let tiles = match tiles_result {
