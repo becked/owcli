@@ -953,6 +953,9 @@ pub fn format_character(item: &types::Character) -> String {
             lines.push(format!("    {}: {}", shorten_type(k), v));
         }
     }
+    if let Some(v) = item.youngest_living_child_age {
+        lines.push(format!("  Youngest Living Child Age: {}", v));
+    }
 
     lines.join("\n")
 }
@@ -4004,6 +4007,9 @@ pub fn format_unit(item: &types::Unit) -> String {
     if let Some(v) = item.agent_network_cost {
         lines.push(format!("  Agent Network Cost: {}", v));
     }
+    if let Some(v) = item.anchored_turns {
+        lines.push(format!("  Anchored Turns: {}", v));
+    }
     if let Some(v) = &item.caravan_mission_target {
         lines.push(format!("  Caravan Mission Target: {}", shorten_type(v)));
     }
@@ -4217,6 +4223,11 @@ pub fn format_unit(item: &types::Unit) -> String {
     if let Some(v) = item.has_harvest {
         if v {
             lines.push("  Has Harvest: Yes".to_string());
+        }
+    }
+    if let Some(v) = item.has_heal_kill {
+        if v {
+            lines.push("  Has Heal Kill: Yes".to_string());
         }
     }
     if let Some(v) = item.has_heal_neutral {
@@ -4557,6 +4568,11 @@ pub fn format_unit(item: &types::Unit) -> String {
             lines.push("  Is Remove Vegatation: Yes".to_string());
         }
     }
+    if let Some(v) = item.is_road_builder {
+        if v {
+            lines.push("  Is Road Builder: Yes".to_string());
+        }
+    }
     if let Some(v) = item.is_scout {
         if v {
             lines.push("  Is Scout: Yes".to_string());
@@ -4729,6 +4745,9 @@ pub fn format_unit(item: &types::Unit) -> String {
     }
     if let Some(v) = &item.unit_cycle_group {
         lines.push(format!("  Unit Cycle Group: {}", v));
+    }
+    if let Some(v) = item.unlimbered_turns {
+        lines.push(format!("  Unlimbered Turns: {}", v));
     }
     if let Some(v) = &item.worker_animation_type {
         lines.push(format!("  Worker Animation Type: {}", shorten_type(v)));
